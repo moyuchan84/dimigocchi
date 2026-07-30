@@ -17,6 +17,12 @@ export default defineConfig({
 
 	integrations: [react()],
 
+	markdown: {
+		// FR-2.4 코드/터미널 예시 syntax highlight. Shiki 는 빌드 타임에 인라인 스타일 HTML 로 변환하므로
+		// 런타임 JS 가 0 이다(NFR-2).
+		shikiConfig: { theme: 'github-light', wrap: true },
+	},
+
 	vite: {
 		plugins: [tailwindcss()]
 	}

@@ -2,43 +2,65 @@
 /**
  * 입시 가이드 (UC-09 / FR-9.1 ~ FR-9.2).
  *
- * P1 에서는 `디미고_입시_준비_가이드.md` 의 9개 헤딩을 **목차 구조로만** 렌더한다.
- * 본문 페이지가 아직 없으므로 각 항목은 링크가 아닌 목록 항목이며,
- * P2 에서 Content Collections(`src/content/guide/`) 마크다운으로 이식되면서
- * 각 항목이 `#{slug}` 앵커 또는 하위 라우트로 연결된다.
+ * P2: 저장소 루트의 `디미고_입시_준비_가이드.md` 를 Content Collections(`src/content/guide/`)
+ * 마크다운 10개로 이식했다. 이 페이지는 그 10개를 order 순서대로 **한 페이지에 전부** 렌더한다.
+ * (사이트맵에 `/guide/[section]` 라우트가 없다 — 각 절은 `#{id}` 앵커로만 접근한다.)
+ *
+ * ── 설계 메모 ──
+ * 1. 섹션 목록/요약은 코드가 아니라 frontmatter(id/title/order/summary)가 소유한다.
+ *    가이드 내용을 고칠 때 이 파일을 건드릴 일이 없어야 한다(FR-10.1/10.2).
+ * 2. 목차는 데스크톱(lg 이상) 좌측 sticky 열, 모바일은 본문 위 네이티브 `<details>` 접이식이다.
+ *    현재 위치 하이라이팅(scrollspy)은 JS 가 필요하므로 하지 않는다 — 이 페이지의 JS 는 0 bytes 다.
+ * 3. `<summary>` 에 `aria-expanded` 를 수동으로 붙이지 않는다(Header.astro 와 동일한 이유 —
+ *    브라우저가 `<details>` 확장 상태를 네이티브로 노출하며, 수동 속성은 동기화가 깨진다).
+ * 4. 마크다운 본문에는 h1 이 없다(콘텐츠 작성 규칙). h1 은 PageHeader 하나뿐이고,
+ *    각 절 제목인 h2 는 이 페이지가 렌더한다. 그래서 md 본문은 h3(###)부터 시작한다.
  */
+import { getCollection, render } from 'astro:content';
+
 import Badge from '@components/astro/Badge.astro';
 import CardLink from '@components/astro/CardLink.astro';
 import PageHeader from '@components/astro/PageHeader.astro';
-import PlaceholderCard from '@components/astro/PlaceholderCard.astro';
 import BaseLayout from '@layouts/BaseLayout.astro';
 import type { Crumb } from '@lib/navigation';
-import { GUIDE_SECTIONS } from '@lib/taxonomy';
 
 const breadcrumbs: Crumb[] = [{ label: '홈', href: '/' }, { label: '입시 가이드' }];
 
 /**
- * 목차용 한 줄 요약. 원본 문서(`디미고_입시_준비_가이드.md`)의 각 절을 요약한 것으로,
- * P2 에서 마크다운 frontmatter 의 `summary` 필드로 옮겨간다.
- * 배점·일정 등 확정되지 않은 수치는 여기 적지 않는다(핵심 원칙 4).
+ * 번호를 붙이지 않는 절.
+ * 원문 가이드에서 "출처" 는 번호 없는 부록이라 목차·제목 모두 번호 없이 표기한다.
  */
-const SECTION_SUMMARY: Record<string, string> = {
-	'school-character': '지필고사가 아닌 자기주도학습전형으로 뽑는 IT 특성화고라는 점부터 이해해요.',
-	departments: '문과형 2개과·이과형 2개과 중 해킹방어과가 어떤 학과인지 살펴봐요.',
-	'admission-types': '일반전형과 진로적성특별전형의 선발 방식 차이를 정리해요.',
-	evaluation: '내신·소질적성검사·출결·생활기록부 등 무엇을 보는지 항목별로 확인해요.',
-	'aptitude-test': '정보 교과, 수리추론, 문제해결, 창의융합 사고력 등 출제 영역과 준비 방향이에요.',
-	interview: '지원동기·실적물 설명·과정 질문 등 자주 나오는 유형과 답변 준비법이에요.',
-	'special-admission': '실적물과 자기소개서로 승부하는 특별전형을 준비할 때의 포인트예요.',
-	timeline: '언제부터 무엇을 시작하면 좋은지, 중3에 시작해도 되는지 정리해요.',
-	checklist: '지원 전까지 반드시 확인해야 할 준비 항목을 한눈에 모았어요.',
-};
+const UNNUMBERED_SECTION_IDS = new Set(['sources']);
+
+const entries = (await getCollection('guide')).sort((a, b) => a.data.order - b.data.order);
+
+/**
+ * 표시 번호는 order 값이 아니라 **번호가 붙는 절만 센 연번**이다.
+ * (출처 절이 중간으로 옮겨가더라도 1..9 가 끊기지 않는다.)
+ */
+let visibleNumber = 0;
+const numbered = entries.map((entry) => ({
+	entry,
+	number: UNNUMBERED_SECTION_IDS.has(entry.data.id) ? null : ++visibleNumber,
+}));
+
+const sections = await Promise.all(
+	numbered.map(async ({ entry, number }) => ({
+		data: entry.data,
+		number,
+		Content: (await render(entry)).Content,
+	})),
+);
+
+/** 목차 링크 라벨 — "3. 전형 종류" / 번호 없는 절은 "출처". */
+const tocLabel = (number: number | null, title: string) => (number ? `${number}. ${title}` : title);
 ---
 
 <BaseLayout
 	title="입시 가이드"
 	description="디미고 전형 구조와 준비 방법을 정리한 입시 가이드입니다."
 	breadcrumbs={breadcrumbs}
+	wide
 >
 	<PageHeader
 		eyebrow="UC-09"
@@ -54,50 +76,100 @@ const SECTION_SUMMARY: Record<string, string> = {
 		</p>
 	</div>
 
-	<section aria-labelledby="guide-toc-heading" class="mb-10">
-		<h2 id="guide-toc-heading" class="text-lg font-bold text-slate-900 sm:text-xl">가이드 목차</h2>
-		<p class="mt-2 text-sm leading-relaxed text-slate-600">
-			총 {GUIDE_SECTIONS.length}개 항목으로 구성됩니다. 본문은 P2 에서 순서대로 이식됩니다.
-		</p>
+	{/*
+		모바일 목차 — 본문 위 접이식. Header 의 드로어와 같은 무JS 패턴(<details>/<summary>)이며,
+		lg 이상에서는 좌측 sticky 목차가 대신하므로 숨긴다.
+	*/}
+	<details class="mb-8 rounded-lg border border-slate-200 bg-white lg:hidden">
+		<summary
+			class="cursor-pointer list-none px-4 py-3 text-sm font-bold text-slate-900 [&::-webkit-details-marker]:hidden"
+		>
+			<span class="flex items-center justify-between gap-2">
+				<span>가이드 목차 ({sections.length}개 항목)</span>
+				<span aria-hidden="true" class="text-xs font-medium text-brand-700">열기/닫기</span>
+			</span>
+		</summary>
+		<nav aria-label="가이드 목차" class="border-t border-slate-200 px-2 py-2">
+			<ul class="space-y-0.5">
+				{
+					sections.map((section) => (
+						<li>
+							<a
+								href={`#${section.data.id}`}
+								class="block rounded-md px-2 py-2 text-sm leading-snug text-slate-700 hover:bg-slate-50 hover:text-brand-700"
+							>
+								{tocLabel(section.number, section.data.title)}
+							</a>
+						</li>
+					))
+				}
+			</ul>
+		</nav>
+	</details>
 
-		<ol class="mt-4 space-y-3">
+	{/*
+		데스크톱 2단 — 좌측 sticky 목차(16rem 고정) + 우측 본문(minmax(0,1fr) 이라야
+		본문 안의 넓은 표가 그리드 열을 밀어내지 않는다). items-start 가 있어야 sticky 가 동작한다.
+	*/}
+	<div class="lg:grid lg:grid-cols-[16rem_minmax(0,1fr)] lg:items-start lg:gap-10">
+		<nav aria-label="가이드 목차" class="hidden lg:sticky lg:top-20 lg:block">
+			<p class="px-3 text-xs font-bold tracking-wide text-slate-500 uppercase">가이드 목차</p>
+			<ul class="mt-3 space-y-0.5 border-l border-slate-200">
+				{
+					sections.map((section) => (
+						<li>
+							<a
+								href={`#${section.data.id}`}
+								class="-ml-px block border-l-2 border-transparent py-1.5 pl-3 text-sm leading-snug text-slate-600 hover:border-brand-600 hover:text-brand-700"
+							>
+								{tocLabel(section.number, section.data.title)}
+							</a>
+						</li>
+					))
+				}
+			</ul>
+		</nav>
+
+		<div class="space-y-10">
 			{
-				GUIDE_SECTIONS.map((section, index) => (
-					<li class="flex gap-3 rounded-lg border border-slate-200 bg-white p-4">
-						<span
-							aria-hidden="true"
-							class="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-brand-50 text-sm font-bold text-brand-800"
-						>
-							{index + 1}
-						</span>
-						<div class="min-w-0 flex-1">
-							<div class="flex flex-wrap items-center gap-x-2 gap-y-1">
-								<span class="font-semibold text-slate-900">{section.title}</span>
-								<Badge variant="phase">P2</Badge>
+				sections.map(({ data, number, Content }) => (
+					<section id={data.id} class="scroll-mt-24 border-t border-slate-200 pt-8 first:border-t-0 first:pt-0">
+						<h2 class="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">
+							{tocLabel(number, data.title)}
+						</h2>
+						<p class="mt-2 text-sm leading-relaxed text-slate-600">{data.summary}</p>
+
+						{/*
+							마크다운 본문. max-w-none 이 없으면 prose 기본 65ch 제한이 한 번 더 걸려 본문이 좁아진다.
+							overflow-x-auto 는 본문 안의 GFM 표(특히 §4 평가 항목의 "비고" 열)가 좁은 화면을
+							넘칠 때 **페이지 전체가 아니라 이 블록만** 가로 스크롤되게 한다
+							(global.css 의 `.prose table { width: 100% }` 주석 참고 —
+							가로 스크롤 래핑은 페이지 쪽 책임이다).
+						*/}
+						<div class="mt-4 overflow-x-auto">
+							<div class="prose prose-slate max-w-none">
+								<Content />
 							</div>
-							<p class="mt-1 text-sm leading-relaxed text-slate-600">
-								{SECTION_SUMMARY[section.slug]}
-							</p>
 						</div>
-					</li>
+					</section>
 				))
 			}
-		</ol>
-	</section>
+		</div>
+	</div>
 
-	<section aria-labelledby="guide-related-heading" class="mb-10">
+	<section aria-labelledby="guide-related-heading" class="mt-12 border-t border-slate-200 pt-8">
 		<h2 id="guide-related-heading" class="text-lg font-bold text-slate-900 sm:text-xl">
-			지금 바로 볼 수 있는 페이지
+			이어서 볼 페이지
 		</h2>
 		<p class="mt-2 text-sm leading-relaxed text-slate-600">
-			가이드 본문 중 일부는 이미 별도 페이지로 준비되어 있습니다.
+			가이드 본문 중 일부는 별도 페이지에서 더 자세히 다룹니다.
 		</p>
 
 		<div class="mt-4 grid gap-3 sm:grid-cols-2">
 			<CardLink
 				href="/checklist"
 				title="준비 체크리스트"
-				description="9번 '체크리스트' 항목을 직접 체크하며 진행할 수 있는 페이지입니다."
+				description="위 '체크리스트' 항목을 직접 체크하며 진행할 수 있는 페이지입니다."
 				meta="UC-07"
 				badge="체크"
 			/>
@@ -110,16 +182,4 @@ const SECTION_SUMMARY: Record<string, string> = {
 			/>
 		</div>
 	</section>
-
-	<PlaceholderCard phase="P2" uc="UC-09" fr="FR-9.1 ~ FR-9.2">
-		<p>
-			P2 에서 저장소 루트의 <code>디미고_입시_준비_가이드.md</code> 를 Content Collections(<code
-				>src/content/guide/</code
-			>)의 마크다운으로 이식합니다.
-		</p>
-		<p>
-			이식 후에는 위 목차가 각 절의 앵커로 연결되고, 본문 옆에 목차 네비게이션이 함께 렌더링됩니다.
-			이후 가이드 내용 수정은 코드 변경 없이 마크다운 파일만 고치면 됩니다.
-		</p>
-	</PlaceholderCard>
 </BaseLayout>

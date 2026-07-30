@@ -22,7 +22,14 @@
   - 각 페이지는 빈 껍데기가 아니라 `src/lib/taxonomy.ts` 데이터로 실제 정보 구조(목록/카드)를 렌더하고, 미구현 영역은 `PlaceholderCard`(Phase/UC/FR 표기)로 안내한다. 동작하지 않는 폼/입력/버튼은 노출하지 않음
   - **React 아일랜드 0개 — 페이지가 로드하는 JS 0 bytes**(P3 모의고사 엔진에서 첫 사용 예정). 모바일 내비는 React 대신 네이티브 `<details>` + ESC 닫기용 `is:inline` 스크립트 8줄로 구현
   - 참고: `@astrojs/react` 6.x는 아일랜드가 없어도 `dist/_astro/client.*.js`(약 188KB)를 방출한다. 단 **이를 참조하는 HTML이 0개**라 브라우저가 요청하지 않으므로 초기 로딩·Lighthouse에 영향이 없다. 스택을 임의 변경하지 않기 위해 `integrations: [react()]`는 그대로 유지한다 (상세는 `astro.config.mjs` 주석)
-- **다음 작업: P2 콘텐츠 스키마 + 입시 가이드 이식** — 나머지 Phase(P2~P8)는 아래 "개발 로드맵" 참고
+- [x] **P2 콘텐츠 스키마 + 입시 가이드 이식 — 완료 (2026-07-31)**
+  - `src/content.config.ts` 신설: `theory`/`guide`/`schedule` 3개 컬렉션, zod 스키마로 형식 강제 (`exams`/`interview`는 P3/P4에서 등록 예정 — 지금 등록하면 빈 컬렉션 경고가 뜬다)
+  - 이론 챕터 13개 md 전량 작성(`aptitude` 5 + `hacking-defense` 8), 입시 가이드 9섹션 + 출처(`sources`) md 총 10개 작성, 전형 일정 `src/content/schedule/2027.json` 1개
+  - `src/lib/taxonomy.ts`의 조회 함수 본문을 `getCollection()` 기반으로 교체, **시그니처/반환 타입은 P1과 동일하게 유지** → `src/pages/theory/index.astro`, `theory/[category]/[chapter].astro`, `guide/index.astro`, `guide/schedule.astro`의 `getStaticPaths` 무수정
+  - 빌드 47페이지 유지, 경고/에러 0건. FR-10.2(콘텐츠 파일 추가만으로 반영) 회귀 테스트 통과 — 임시 md 1개 추가 시 라우트 47→48, 삭제 시 47 복귀, 코드 수정 0줄
+  - 보안 콘텐츠 감사(핵심 원칙 3) 완료: `web-hacking-01`/`reversing-01`/`pwnable-01`/`crypto-01` 등 해킹방어 챕터 전량 검토, 실행 가능한 공격 코드·페이로드 0건 확인. 방어 결론 보강(명령어 삽입 방어 단락 추가 등) 및 사실관계 정정(저작권법 조문 번호, C11 표준 명시 등) 소수 반영
+  - 브랜치 `feat/p2-content-pipeline`에서 작업 중 — 아직 `main` 미병합
+- **다음 작업: P3 모의고사 엔진** — 나머지 Phase(P3~P8)는 아래 "개발 로드맵" 참고
 - 작업을 시작하거나 재개할 때는 이 섹션의 체크박스 상태를 확인하고, Phase를 완료하면 이 파일의 체크박스도 함께 갱신할 것
 
 ## 참고 문서 (반드시 확인)
