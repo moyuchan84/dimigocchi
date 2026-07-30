@@ -1,0 +1,125 @@
+---
+/**
+ * 입시 가이드 (UC-09 / FR-9.1 ~ FR-9.2).
+ *
+ * P1 에서는 `디미고_입시_준비_가이드.md` 의 9개 헤딩을 **목차 구조로만** 렌더한다.
+ * 본문 페이지가 아직 없으므로 각 항목은 링크가 아닌 목록 항목이며,
+ * P2 에서 Content Collections(`src/content/guide/`) 마크다운으로 이식되면서
+ * 각 항목이 `#{slug}` 앵커 또는 하위 라우트로 연결된다.
+ */
+import Badge from '@components/astro/Badge.astro';
+import CardLink from '@components/astro/CardLink.astro';
+import PageHeader from '@components/astro/PageHeader.astro';
+import PlaceholderCard from '@components/astro/PlaceholderCard.astro';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import type { Crumb } from '@lib/navigation';
+import { GUIDE_SECTIONS } from '@lib/taxonomy';
+
+const breadcrumbs: Crumb[] = [{ label: '홈', href: '/' }, { label: '입시 가이드' }];
+
+/**
+ * 목차용 한 줄 요약. 원본 문서(`디미고_입시_준비_가이드.md`)의 각 절을 요약한 것으로,
+ * P2 에서 마크다운 frontmatter 의 `summary` 필드로 옮겨간다.
+ * 배점·일정 등 확정되지 않은 수치는 여기 적지 않는다(핵심 원칙 4).
+ */
+const SECTION_SUMMARY: Record<string, string> = {
+	'school-character': '지필고사가 아닌 자기주도학습전형으로 뽑는 IT 특성화고라는 점부터 이해해요.',
+	departments: '문과형 2개과·이과형 2개과 중 해킹방어과가 어떤 학과인지 살펴봐요.',
+	'admission-types': '일반전형과 진로적성특별전형의 선발 방식 차이를 정리해요.',
+	evaluation: '내신·소질적성검사·출결·생활기록부 등 무엇을 보는지 항목별로 확인해요.',
+	'aptitude-test': '정보 교과, 수리추론, 문제해결, 창의융합 사고력 등 출제 영역과 준비 방향이에요.',
+	interview: '지원동기·실적물 설명·과정 질문 등 자주 나오는 유형과 답변 준비법이에요.',
+	'special-admission': '실적물과 자기소개서로 승부하는 특별전형을 준비할 때의 포인트예요.',
+	timeline: '언제부터 무엇을 시작하면 좋은지, 중3에 시작해도 되는지 정리해요.',
+	checklist: '지원 전까지 반드시 확인해야 할 준비 항목을 한눈에 모았어요.',
+};
+---
+
+<BaseLayout
+	title="입시 가이드"
+	description="디미고 전형 구조와 준비 방법을 정리한 입시 가이드입니다."
+	breadcrumbs={breadcrumbs}
+>
+	<PageHeader
+		eyebrow="UC-09"
+		title="입시 가이드"
+		description="디미고 전형 구조와 준비 방법을 한 곳에 정리했습니다."
+	/>
+
+	<div class="mb-8 rounded-lg border border-amber-300 bg-amber-50 p-4 sm:p-5">
+		<Badge variant="tentative">예정(가안)</Badge>
+		<p class="mt-2 text-sm leading-relaxed text-amber-900">
+			2027학년도 전형 요강은 확정 발표 전입니다. 아래 내용은 최근 연도 기준 참고치이며, 확정 시
+			갱신됩니다. (조사 시점: 2026-07)
+		</p>
+	</div>
+
+	<section aria-labelledby="guide-toc-heading" class="mb-10">
+		<h2 id="guide-toc-heading" class="text-lg font-bold text-slate-900 sm:text-xl">가이드 목차</h2>
+		<p class="mt-2 text-sm leading-relaxed text-slate-600">
+			총 {GUIDE_SECTIONS.length}개 항목으로 구성됩니다. 본문은 P2 에서 순서대로 이식됩니다.
+		</p>
+
+		<ol class="mt-4 space-y-3">
+			{
+				GUIDE_SECTIONS.map((section, index) => (
+					<li class="flex gap-3 rounded-lg border border-slate-200 bg-white p-4">
+						<span
+							aria-hidden="true"
+							class="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-brand-50 text-sm font-bold text-brand-800"
+						>
+							{index + 1}
+						</span>
+						<div class="min-w-0 flex-1">
+							<div class="flex flex-wrap items-center gap-x-2 gap-y-1">
+								<span class="font-semibold text-slate-900">{section.title}</span>
+								<Badge variant="phase">P2</Badge>
+							</div>
+							<p class="mt-1 text-sm leading-relaxed text-slate-600">
+								{SECTION_SUMMARY[section.slug]}
+							</p>
+						</div>
+					</li>
+				))
+			}
+		</ol>
+	</section>
+
+	<section aria-labelledby="guide-related-heading" class="mb-10">
+		<h2 id="guide-related-heading" class="text-lg font-bold text-slate-900 sm:text-xl">
+			지금 바로 볼 수 있는 페이지
+		</h2>
+		<p class="mt-2 text-sm leading-relaxed text-slate-600">
+			가이드 본문 중 일부는 이미 별도 페이지로 준비되어 있습니다.
+		</p>
+
+		<div class="mt-4 grid gap-3 sm:grid-cols-2">
+			<CardLink
+				href="/checklist"
+				title="준비 체크리스트"
+				description="9번 '체크리스트' 항목을 직접 체크하며 진행할 수 있는 페이지입니다."
+				meta="UC-07"
+				badge="체크"
+			/>
+			<CardLink
+				href="/guide/schedule"
+				title="전형 일정 · D-day"
+				description="원서접수부터 최종 발표까지의 전형 일정과 남은 기간을 확인합니다."
+				meta="UC-06"
+				badge="예정(가안)"
+			/>
+		</div>
+	</section>
+
+	<PlaceholderCard phase="P2" uc="UC-09" fr="FR-9.1 ~ FR-9.2">
+		<p>
+			P2 에서 저장소 루트의 <code>디미고_입시_준비_가이드.md</code> 를 Content Collections(<code
+				>src/content/guide/</code
+			>)의 마크다운으로 이식합니다.
+		</p>
+		<p>
+			이식 후에는 위 목차가 각 절의 앵커로 연결되고, 본문 옆에 목차 네비게이션이 함께 렌더링됩니다.
+			이후 가이드 내용 수정은 코드 변경 없이 마크다운 파일만 고치면 됩니다.
+		</p>
+	</PlaceholderCard>
+</BaseLayout>

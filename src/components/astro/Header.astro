@@ -1,0 +1,131 @@
+---
+/**
+ * 사이트 공통 헤더 — 브랜드 / 주 내비 / D-day 칩 / 검색 / 모바일 드로어.
+ *
+ * ── 설계 메모 ──
+ * 1. props 가 없다. 활성 내비 표시는 `Astro.url.pathname` 으로 자동 판정하므로,
+ *    페이지가 `activeNav` 같은 prop 을 넘기는 것을 잊어 활성 표시가 사라지는 사고가 없다.
+ * 2. React 아일랜드를 쓰지 않는다. 드로어는 네이티브 `<details>` 로 구현했고,
+ *    이 사이트는 MPA(정적 다중 페이지)이므로 **링크 클릭 = 새 문서 로드**다.
+ *    즉 라우트가 바뀌면 드로어 상태가 저절로 초기화되며,
+ *    SPA 에서 필요한 "라우트 변경 시 드로어 닫기" 로직이 아예 필요 없다.
+ * 3. NavLinks 가 desktop/mobile 두 벌 렌더되어 DOM 에는 링크가 중복 존재하지만,
+ *    `hidden`(display:none) 쪽은 접근성 트리에서 제거되므로 스크린리더가 두 번 읽지 않는다.
+ * 4. `<summary>` 에 `aria-expanded` 를 수동으로 붙이지 않는다. 브라우저가 `<details>` 의
+ *    확장 상태를 네이티브로 노출하며, 수동 속성은 열고 닫을 때 동기화가 깨진다.
+ * 5. 드로어가 열린 동안의 배경 스크롤 잠금은 `global.css` 의
+ *    `body:has(#site-nav-drawer[open])` 규칙이 JS 없이 처리한다.
+ */
+import Badge from '@components/astro/Badge.astro';
+import NavLinks from '@components/astro/NavLinks.astro';
+import { SITE_NAME, SITE_TAGLINE } from '@lib/navigation';
+
+const pathname = Astro.url.pathname;
+---
+
+<header class="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur">
+	<div class="mx-auto flex h-16 max-w-6xl items-center gap-3 px-4 sm:px-6 lg:px-8">
+		<a href="/" class="flex shrink-0 items-baseline gap-2 rounded-md">
+			<span class="text-base font-bold whitespace-nowrap text-brand-700 sm:text-lg">{SITE_NAME}</span>
+			{/* 태그라인은 xl 이상에서만. md~lg 구간에서는 내비 6개를 넣을 폭이 나오지 않는다. */}
+			<span class="hidden text-xs whitespace-nowrap text-slate-500 xl:inline">{SITE_TAGLINE}</span>
+		</a>
+
+		{/*
+			데스크톱 주 내비 — lg(1024px) 이상에서만 가로로 편다.
+			한글 라벨 6개의 자연 폭 합이 약 539px 라서 md(768px) 구간에서는
+			브랜드·검색과 함께 한 줄에 들어가지 않는다(약 750px 필요 > 720px 가용).
+			따라서 1024px 미만은 햄버거 드로어가 담당한다.
+			모바일에서는 이 nav 가 display:none 이라 아래 우측 묶음이 ml-auto 를 이어받는다.
+		*/}
+		<nav aria-label="주 메뉴" class="ml-auto hidden lg:block">
+			<NavLinks variant="desktop" pathname={pathname} />
+		</nav>
+
+		{/*
+			우측 묶음. 모바일(lg 미만)에서는 데스크톱 nav 가 사라지므로 여기서 ml-auto 로
+			오른쪽 끝에 붙이고, lg 이상에서는 nav 가 이미 ml-auto 를 가지므로 ml-0 으로 되돌린다.
+			(auto 마진이 두 개면 남는 공간이 양쪽으로 나뉘어 배치가 어긋난다.)
+		*/}
+		<div class="ml-auto flex shrink-0 items-center gap-1 lg:ml-0">
+			{/*
+				D-day 칩 — P5 에서 전형 일정 데이터를 읽어 실제 D-day 계산으로 교체한다.
+				지금부터 같은 크기의 슬롯을 확보해 두어야 나중에 레이아웃이 밀리지 않는다(CLS 방지).
+			*/}
+			<a
+				href="/guide/schedule"
+				class="hidden items-center gap-2 rounded-full border border-slate-200 px-3 py-1.5 whitespace-nowrap hover:bg-slate-50 xl:flex"
+			>
+				<Badge variant="tentative" size="sm">예정(가안)</Badge>
+				<span class="text-xs text-slate-600">2027 전형 일정</span>
+			</a>
+
+			{/*
+				검색 — P1 은 링크만 노출한다. 동작하지 않는 입력창을 두지 않는다는 원칙에 따라
+				검색창은 P6 에서 <form action="/search" method="get"> 로 교체한다.
+			*/}
+			<a
+				href="/search"
+				aria-label="검색"
+				class="flex items-center gap-1.5 rounded-md px-2 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 hover:text-brand-700"
+			>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					class="h-5 w-5"
+					aria-hidden="true"
+				>
+					<circle cx="11" cy="11" r="7"></circle>
+					<path d="m20 20-3.6-3.6"></path>
+				</svg>
+				<span class="hidden sm:inline">검색</span>
+			</a>
+
+			<details id="site-nav-drawer" class="relative lg:hidden">
+				<summary
+					class="flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-md text-slate-700 [&::-webkit-details-marker]:hidden"
+				>
+					<span class="sr-only">메뉴 열기/닫기</span>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						class="h-6 w-6"
+						aria-hidden="true"
+					>
+						<path d="M4 6h16"></path>
+						<path d="M4 12h16"></path>
+						<path d="M4 18h16"></path>
+					</svg>
+				</summary>
+				<nav
+					aria-label="주 메뉴"
+					class="fixed inset-x-0 top-16 z-40 max-h-[calc(100dvh-4rem)] overflow-y-auto border-b border-slate-200 bg-white p-4 shadow-lg"
+				>
+					<NavLinks variant="mobile" pathname={pathname} />
+				</nav>
+			</details>
+		</div>
+	</div>
+</header>
+
+{/* ESC 로 드로어 닫기. is:inline 이라 번들링/하이드레이션 없이 그대로 인라인 삽입된다. */}
+<script is:inline>
+	document.addEventListener('keydown', function (event) {
+		if (event.key !== 'Escape') return;
+		var drawer = document.getElementById('site-nav-drawer');
+		if (!drawer || !drawer.open) return;
+		drawer.open = false;
+		var summary = drawer.querySelector('summary');
+		if (summary) summary.focus();
+	});
+</script>

@@ -1,0 +1,11 @@
+# NFR-9: 개인/가족용 학습 사이트이므로 검색엔진 색인이 필요 없다. 전체 크롤링을 차단한다.
+#
+# 트레이드오프 (구글 가이던스상 robots.txt Disallow 와 meta robots noindex 는 상충한다):
+# robots.txt 로 크롤링을 막으면 크롤러가 페이지를 열지 못해 meta robots noindex 를 읽을 수 없다.
+# 그래서 외부 링크를 통해 URL 이 발견되면 "설명 없는 URL" 형태로 색인될 여지가 남는다.
+# 다만 이 사이트는 외부 인바운드 링크가 0 이라 실무상 무해하고, 크롤 트래픽 차단 이득이 더 크다.
+# 나중에 이 사이트를 어딘가에 링크하게 되면 Disallow 를 풀어
+# 크롤러가 meta robots noindex 를 확실히 읽을 수 있도록 전환할 것.
+
+User-agent: *
+Disallow: /

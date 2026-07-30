@@ -1,0 +1,85 @@
+---
+/**
+ * 오답노트 (UC-04).
+ *
+ * P1 은 영역별 집계 구조만 정적으로 보여준다. 실제 오답 데이터는 P3 에서
+ * `dimigo-prep:progress.examResults` 를 읽어 채운다 — 여기서 localStorage 를 읽지 않는다.
+ * 동작하지 않는 필터 셀렉트/버튼은 렌더하지 않는다.
+ */
+import CardLink from '@components/astro/CardLink.astro';
+import PageHeader from '@components/astro/PageHeader.astro';
+import PlaceholderCard from '@components/astro/PlaceholderCard.astro';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import type { Crumb } from '@lib/navigation';
+import { listExamSets } from '@lib/taxonomy';
+
+const breadcrumbs: Crumb[] = [{ label: '홈', href: '/' }, { label: '오답노트' }];
+
+/** P2/P3: getCollection('exams') 로 교체되는 지점. 시그니처는 유지된다. */
+const examSets = await listExamSets();
+
+/**
+ * 오답 집계 영역 4종 — 종합 모의고사(mock-full)는 다른 영역의 문항을 섞어 출제하므로
+ * 별도 집계 영역으로 세지 않는다.
+ */
+const areas = examSets
+	.filter((set) => set.area !== 'mock-full')
+	.reduce<{ area: string; areaTitle: string; setCount: number }[]>((acc, set) => {
+		const found = acc.find((a) => a.area === set.area);
+		if (found) {
+			found.setCount += 1;
+		} else {
+			acc.push({ area: set.area, areaTitle: set.areaTitle, setCount: 1 });
+		}
+		return acc;
+	}, []);
+---
+
+<BaseLayout
+	title="오답노트"
+	description="모의고사에서 틀린 문항을 영역별로 모아 다시 풀어봅니다."
+	breadcrumbs={breadcrumbs}
+>
+	<PageHeader title="오답노트" description="모의고사에서 틀린 문항을 모아 다시 풀어봅니다." />
+
+	<section aria-labelledby="summary-heading">
+		<h2 id="summary-heading" class="text-lg font-semibold text-slate-900">영역별 오답 수</h2>
+		<p class="mt-1 text-sm text-slate-600">
+			모의고사를 채점하면 틀린 문항이 영역별로 자동 분류됩니다.
+		</p>
+		<ul class="mt-4 grid list-none gap-4 sm:grid-cols-2 lg:grid-cols-4">
+			{
+				areas.map((area) => (
+					<li class="rounded-lg border border-slate-200 bg-white p-4">
+						<span class="block text-sm font-semibold text-slate-900">{area.areaTitle}</span>
+						<span class="mt-2 block text-2xl font-bold tabular-nums text-slate-900">0</span>
+						<span class="mt-1 block text-xs text-slate-500">모의고사 {area.setCount}세트 기준</span>
+					</li>
+				))
+			}
+		</ul>
+	</section>
+
+	<section aria-labelledby="empty-heading" class="mt-10">
+		<h2 id="empty-heading" class="text-lg font-semibold text-slate-900">오답 목록</h2>
+		<p class="mt-1 text-sm text-slate-600">아직 응시한 모의고사가 없습니다.</p>
+		<div class="mt-4">
+			<CardLink
+				href="/exam"
+				title="모의고사 시작하기"
+				description="영역별 9세트 중 하나를 골라 응시하면 틀린 문항이 이곳에 모입니다."
+				meta="UC-03 모의고사 응시"
+			/>
+		</div>
+	</section>
+
+	<div class="mt-10">
+		<PlaceholderCard phase="P3" title="오답 수집·복습" uc="UC-04" fr="FR-4.1 ~ FR-4.3">
+			<p>
+				P3에서 채점 결과를 <code>dimigo-prep:progress.examResults</code> 에 저장하고, 틀린 문항을 영역·세트별로
+				모아 보여줍니다.
+			</p>
+			<p>영역 필터, 해설 다시보기, 복습 완료 표시(<code>wrongNoteReviewed</code>)가 함께 추가됩니다.</p>
+		</PlaceholderCard>
+	</div>
+</BaseLayout>

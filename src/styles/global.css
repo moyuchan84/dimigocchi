@@ -1,1 +1,54 @@
 @import "tailwindcss";
+
+@theme {
+	/* 브랜드 컬러 램프 — Tailwind v4 stock sky 램프의 oklch 값을 그대로 별칭했다. */
+	--color-brand-50: oklch(97.7% 0.013 236.62);
+	--color-brand-100: oklch(95.1% 0.026 236.824);
+	--color-brand-200: oklch(90.1% 0.058 230.902);
+	--color-brand-300: oklch(82.8% 0.111 230.318);
+	--color-brand-400: oklch(74.6% 0.16 232.661);
+	--color-brand-500: oklch(68.5% 0.169 237.323);
+	--color-brand-600: oklch(58.8% 0.158 241.966); /* 흰 배경 대비 4.5:1 — 큰 텍스트/아이콘/포커스 링 전용 */
+	--color-brand-700: oklch(50% 0.134 242.749); /* 흰 배경 대비 6.4:1 — 본문 링크/버튼 배경 */
+	--color-brand-800: oklch(44.3% 0.11 240.79);
+	--color-brand-900: oklch(39.1% 0.09 240.876);
+
+	/* 본문 서체 — 웹폰트를 내려받지 않는다(@font-face 선언 없음). Pretendard 는 로컬에 설치된 경우에만 적용된다. */
+	--font-sans: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', 'Malgun Gothic', 'Noto Sans KR', system-ui, sans-serif;
+
+	/* 코드/숫자용 고정폭 서체 — 역시 로컬 설치된 폰트만 사용한다. */
+	--font-mono: 'JetBrains Mono', D2Coding, ui-monospace, SFMono-Regular, Consolas, 'Liberation Mono', monospace;
+}
+
+@layer base {
+	/* 한글 어절이 줄바꿈으로 중간에서 끊기지 않게 하고, 긴 URL 등 예외는 강제 줄바꿈 허용 */
+	:lang(ko) {
+		word-break: keep-all;
+		overflow-wrap: break-word;
+	}
+
+	/* NFR-4 접근성: 키보드 포커스 위치를 항상 또렷하게 표시 */
+	:focus-visible {
+		outline: 2px solid var(--color-brand-600);
+		outline-offset: 2px;
+		border-radius: 2px;
+	}
+
+	/* 모바일 내비게이션 드로어가 열려 있는 동안 뒤쪽 본문 스크롤을 잠근다 (JS 없이 CSS만으로) */
+	body:has(#site-nav-drawer[open]) {
+		overflow: hidden;
+	}
+
+	/* 스티키 헤더 높이(4.5rem)만큼 앵커 이동 위치를 아래로 밀어 제목이 가려지지 않게 한다 */
+	html {
+		scroll-behavior: smooth;
+		scroll-padding-top: 4.5rem;
+	}
+
+	/* 모션 최소화를 선호하는 사용자에게는 부드러운 스크롤을 끈다 */
+	@media (prefers-reduced-motion: reduce) {
+		html {
+			scroll-behavior: auto;
+		}
+	}
+}

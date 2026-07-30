@@ -16,7 +16,13 @@
   - 배포 URL: **https://dimigocchi.vercel.app** (Vercel 프로젝트 `thegada/dimigocchi`)
   - GitHub `moyuchan84/dimigocchi` 연결됨 → `main` push 시 자동 재배포, PR 시 Preview 배포
   - Astro 7 (static) + React 19 아일랜드 + Tailwind v4 스캐폴딩 완료, 홈은 P1까지 플레이스홀더
-- **다음 작업: P1 라우팅/레이아웃** — 나머지 Phase(P1~P8)는 아래 "개발 로드맵" 참고
+- [x] **P1 라우팅/레이아웃 — 완료 (2026-07-30)**
+  - 사이트맵 14개 라우트 + 404 전부 구현 → 빌드 산출 HTML **47개**(홈 1, 404 1, guide 2, theory 1 + 챕터 13, exam 1 + 세트 9 + 결과 9, wrongnote 1, interview 1 + 카테고리 5 + timeattack 1, checklist 1, search 1)
+  - 공통 레이아웃 완성: `BaseLayout` + sticky `Header`(주 내비 6개, 모바일은 네이티브 `<details>` 드로어) + `Footer`(4그룹 사이트맵) + `Breadcrumb` + skip link(`#main`). 전 페이지 h1 정확히 1개, `aria-current="page"`는 breadcrumb 마지막 항목에만
+  - 각 페이지는 빈 껍데기가 아니라 `src/lib/taxonomy.ts` 데이터로 실제 정보 구조(목록/카드)를 렌더하고, 미구현 영역은 `PlaceholderCard`(Phase/UC/FR 표기)로 안내한다. 동작하지 않는 폼/입력/버튼은 노출하지 않음
+  - **React 아일랜드 0개 — 페이지가 로드하는 JS 0 bytes**(P3 모의고사 엔진에서 첫 사용 예정). 모바일 내비는 React 대신 네이티브 `<details>` + ESC 닫기용 `is:inline` 스크립트 8줄로 구현
+  - 참고: `@astrojs/react` 6.x는 아일랜드가 없어도 `dist/_astro/client.*.js`(약 188KB)를 방출한다. 단 **이를 참조하는 HTML이 0개**라 브라우저가 요청하지 않으므로 초기 로딩·Lighthouse에 영향이 없다. 스택을 임의 변경하지 않기 위해 `integrations: [react()]`는 그대로 유지한다 (상세는 `astro.config.mjs` 주석)
+- **다음 작업: P2 콘텐츠 스키마 + 입시 가이드 이식** — 나머지 Phase(P2~P8)는 아래 "개발 로드맵" 참고
 - 작업을 시작하거나 재개할 때는 이 섹션의 체크박스 상태를 확인하고, Phase를 완료하면 이 파일의 체크박스도 함께 갱신할 것
 
 ## 참고 문서 (반드시 확인)
@@ -37,7 +43,7 @@
 | 프레임워크 | **Astro 7** — static output(기본값이므로 `astro.config.mjs`에 `output`을 명시하지 않는다). **Vercel 어댑터는 사용하지 않는다**: 순수 static 사이트에는 불필요하며 Vercel이 Astro를 자동 감지해 zero-config로 배포한다. Web Analytics / Image Optimization이 필요해지면 그때 `astro add vercel` |
 | 인터랙티브 컴포넌트 | React 19, Astro Islands (`client:load`) — 모의고사 엔진, 타이머, 대시보드 위젯 등 상태가 필요한 부분에만 사용. 그 외는 순수 Astro 컴포넌트로 |
 | 스타일 | **Tailwind CSS v4** (`@tailwindcss/vite` 플러그인). `@astrojs/tailwind`는 Tailwind 3 레거시 호환용이므로 사용하지 않는다. 전역 스타일은 `src/styles/global.css`이며 **자동 import되지 않으므로** 레이아웃에서 직접 `import '../styles/global.css'` 할 것 (현재 `src/layouts/BaseLayout.astro`가 담당) |
-| 콘텐츠 관리 | Astro Content Collections (`src/content/config.ts`, zod 스키마) — Markdown(이론) + JSON(문제/면접질문/일정) |
+| 콘텐츠 관리 | Astro Content Collections (**`src/content.config.ts`** — Astro 7 기준 위치, zod 스키마) — Markdown(이론) + JSON(문제/면접질문/일정). P2에서 도입 |
 | 로컬 저장 | 커스텀 훅 `useLocalStorage` (직접 구현, 외부 상태관리 라이브러리 불필요) |
 | 검색 | 클라이언트 사이드 인덱스 (Pagefind 또는 Fuse.js + 자체 JSON 인덱스) |
 | 배포 | Vercel (GitHub push 시 자동 배포) |
@@ -71,8 +77,8 @@ vercel --prod                     # 최초 배포 시딩
 
 ```
 src/
+├─ content.config.ts          # ⚠️ Astro 7 기준 위치는 src/ 바로 아래(src/content/config.ts 는 deprecated 경고). P2에서 여기에 zod 스키마 작성
 ├─ content/
-│  ├─ config.ts              # zod 스키마 정의 (아래 "콘텐츠 스키마" 참고)
 │  ├─ theory/aptitude/        # 적성검사 공통 이론 (md)
 │  ├─ theory/hacking-defense/ # 해킹방어과 특화 이론 (md)
 │  ├─ exams/                  # 문제은행 (json, 세트별)
@@ -85,12 +91,25 @@ src/
 │  └─ astro/                  # 정적 UI 컴포넌트
 ├─ pages/                      # 아래 "사이트맵" 그대로 라우팅
 ├─ lib/
-│  ├─ storage.ts               # localStorage 유틸
-│  └─ grading.ts               # 채점 로직
+│  ├─ navigation.ts            # 내비/브레드크럼 정의, Crumb 타입 (P1)
+│  ├─ taxonomy.ts              # 이론/모의고사/면접/가이드 택소노미 조회 API (P1 임시 — 아래 "콘텐츠 스키마" 참고)
+│  ├─ storage.ts               # localStorage 유틸 (P5에서 생성)
+│  └─ grading.ts               # 채점 로직 (P3에서 생성)
 └─ styles/
 ```
 
-새 콘텐츠(이론/문제/질문)는 **코드를 건드리지 않고 파일 추가만으로 반영**되어야 한다(FR-10.2). 새 카테고리를 추가할 때만 `config.ts` 스키마 수정이 필요하다.
+새 콘텐츠(이론/문제/질문)는 **코드를 건드리지 않고 파일 추가만으로 반영**되어야 한다(FR-10.2). 새 카테고리를 추가할 때만 `content.config.ts` 스키마 수정이 필요하다.
+
+### 경로 별칭 (P1에서 `tsconfig.json`에 추가 — 새 파일은 상대경로 대신 반드시 별칭 사용)
+
+| 별칭 | 실제 경로 |
+|---|---|
+| `@/*` | `./src/*` |
+| `@layouts/*` | `./src/layouts/*` |
+| `@components/*` | `./src/components/*` |
+| `@lib/*` | `./src/lib/*` |
+
+예: `import BaseLayout from '@layouts/BaseLayout.astro';`, `import { listExamSets } from '@lib/taxonomy';`
 
 ## 사이트맵 (요구사양서 5장 요약)
 
@@ -107,13 +126,37 @@ src/
 
 ## 콘텐츠 스키마 (요약 — 전체 예시는 `02_요구사양서.md` 7장)
 
+> ⚠️ **P2 진입 시 정정 필요**: Astro 7의 콘텐츠 설정 파일 경로는 **`src/content.config.ts`** 다. 기존 문서·예제에 흔히 보이는 `src/content/config.ts`는 deprecated 경고를 낸다. P2에서 스키마 파일을 만들 때는 `src/content.config.ts`로 만들고, 위 폴더 구조 표기와 아래 문장들의 파일명도 함께 정정할 것.
+
 - **이론 챕터**(md frontmatter): `id, category(aptitude|hacking-defense), subcategory, title, order, tags[], estMinutes`
 - **문제**(json): `id, setId, category, subcategory, type(single-choice|multi-choice|short-answer), question, choices[], answer, explanation, difficulty`
 - **면접 질문**(json): `id, category, question, intent, answerGuide`
 - **전형 일정**(json): `year, confirmed(bool), events[{label, date, status}]`
 - **localStorage 키**: `dimigo-prep:progress` → `{ theory, checklist, examResults[], wrongNoteReviewed, interviewAnswers }`
 
-콘텐츠 파일을 추가/수정할 때는 반드시 `config.ts`의 zod 스키마를 통과하는지 빌드로 확인할 것.
+콘텐츠 파일을 추가/수정할 때는 반드시 `content.config.ts`의 zod 스키마를 통과하는지 빌드로 확인할 것.
+
+### `src/lib/taxonomy.ts` — P1 임시 택소노미와 P2 교체 규약
+
+P1의 모든 페이지(`getStaticPaths` 포함)는 `@lib/taxonomy`의 조회 함수만 바라본다. 조회 함수(`listTheoryChapters`, `listTheoryChaptersBySubcategory`, `listExamSets`, `getExamSet`, `listInterviewCategories`, `getInterviewCategory`)는 P1에서 불필요함에도 **전부 `async`로 선언돼 있다** — P2에서 Content Collections를 도입할 때를 위한 것이다.
+
+**P2 교체 규약**: 위 함수들의 **본문만** `getCollection()` 기반으로 교체하고, **반환 타입과 시그니처는 그대로 유지**한다 → 페이지의 `getStaticPaths`는 한 줄도 수정하지 않아도 된다. 파일 안의 리터럴 상수 `THEORY_CHAPTERS` / `EXAM_SETS` / `INTERVIEW_CATEGORIES`는 P2에서 **삭제**한다(실제 콘텐츠 파일이 소스가 되므로). `THEORY_CATEGORIES`와 `GUIDE_SECTIONS`는 카테고리/앵커 정의이므로 판단해서 유지 가능.
+
+확정 슬러그(라우트에 그대로 노출되므로 P2에서 콘텐츠 파일을 만들 때 반드시 일치시킬 것):
+
+- **이론 카테고리 2 / 소분류 13** (소분류 slug는 `/theory#{slug}` 앵커로도 쓰인다). 괄호 안은 P1 시드 챕터 id = `/theory/{category}/{id}` 라우트
+  - `aptitude` 적성검사 공통: `info-basics`(info-basics-01) · `math-reasoning`(math-reasoning-01) · `problem-solving`(problem-solving-01) · `creative-math`(creative-math-01) · `it-trend`(it-trend-01)
+  - `hacking-defense` 해킹방어과 특화 입문: `infosec`(infosec-01) · `network`(**network-basics-01**) · `linux`(**linux-cli-01**) · `c-ds`(c-ds-01) · `web-hacking`(web-hacking-01) · `reversing`(reversing-01) · `pwnable`(pwnable-01) · `crypto`(crypto-01)
+  - ※ `network` / `linux`는 소분류 slug와 챕터 id의 접두어가 다르다(network-basics-, linux-cli-)
+- **모의고사 세트 9** (`setId` = `/exam/{setId}` 라우트, 문항수/제한시간은 요구사양서 6.3 기준)
+  - `math-reasoning-set1`, `math-reasoning-set2` — 수리추론 1·2회, area `math-reasoning`, 15문항 25분
+  - `problem-solving-set1`, `problem-solving-set2` — 문제해결·알고리즘 1·2회, area `problem-solving`, 15문항 25분
+  - `it-trend-set1`, `it-trend-set2` — IT 상식 1·2회, area `it-trend`, 20문항 20분
+  - `hd-concept-set1`, `hd-concept-set2` — 해킹방어 개념 종합 1·2회, area `hd-concept`, 20문항 25분
+  - `mock-full-set1` — 종합 모의고사 1회, area `mock-full`, 40문항 60분
+- **면접 카테고리 5** (`/interview/{slug}`): `motivation` 지원동기·학교 이해(8) · `portfolio` 실적물·포트폴리오 설명(6) · `career` 진로계획·직무이해(10) · `personality` 인성·태도(8) · `security-news` 보안 시사이슈 견해(6)
+  - ⚠️ `timeattack`은 **카테고리가 아니다**. `/interview/timeattack`은 별도 정적 라우트이므로 `INTERVIEW_CATEGORIES`(및 P2의 컬렉션 집계 결과)에 절대 넣지 말 것 — `[category].astro`의 `getStaticPaths`와 충돌한다.
+- **입시 가이드 9섹션** (`/guide` 내 앵커, `디미고_입시_준비_가이드.md`의 실제 헤딩): `school-character`, `departments`, `admission-types`, `evaluation`, `aptitude-test`, `interview`, `special-admission`, `timeline`, `checklist`
 
 ## 핵심 원칙 (반드시 지킬 것 — 위반 시 콘텐츠/코드 재작업)
 

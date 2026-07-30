@@ -1,0 +1,25 @@
+---
+/**
+ * 페이지 상단 제목 블록.
+ *
+ * ── 문서 개요(NFR-4) 규칙 ──
+ * **사이트 전체에서 `<h1>` 을 렌더하는 유일한 컴포넌트다.**
+ * 페이지 본문의 섹션 제목은 `<h2>` 부터 시작한다. 다른 컴포넌트나 페이지에서
+ * `<h1>` 을 추가하면 페이지당 h1 이 2개가 되어 스크린리더의 문서 개요가 깨진다.
+ */
+interface Props {
+	eyebrow?: string;
+	title: string;
+	description?: string;
+}
+
+const { eyebrow, title, description } = Astro.props;
+---
+
+<div class="mb-8">
+	{eyebrow && <p class="text-sm font-semibold text-brand-700">{eyebrow}</p>}
+	<h1 class:list={['text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl', eyebrow && 'mt-1']}>
+		{title}
+	</h1>
+	{description && <p class="mt-3 max-w-2xl leading-relaxed text-slate-600">{description}</p>}
+</div>

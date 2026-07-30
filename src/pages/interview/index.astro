@@ -1,0 +1,79 @@
+---
+/**
+ * 면접 준비 허브 (UC-05).
+ *
+ * 카테고리 5개 목록 + 타임어택 진입점. `timeattack` 은 택소노미의 카테고리가 아니라
+ * 별도 정적 라우트이므로, 카테고리 그리드가 아닌 상단 CTA 로 분리해 렌더한다.
+ */
+import Badge from '@components/astro/Badge.astro';
+import CardLink from '@components/astro/CardLink.astro';
+import PageHeader from '@components/astro/PageHeader.astro';
+import PlaceholderCard from '@components/astro/PlaceholderCard.astro';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import type { Crumb } from '@lib/navigation';
+import { listInterviewCategories } from '@lib/taxonomy';
+
+const categories = await listInterviewCategories();
+/** 요구사양서 6.4 목표 문항 합계(8+6+10+8+6=38). 하드코딩하지 않고 택소노미에서 집계한다. */
+const totalTarget = categories.reduce((sum, category) => sum + category.targetCount, 0);
+
+const breadcrumbs: Crumb[] = [{ label: '홈', href: '/' }, { label: '면접 준비' }];
+---
+
+<BaseLayout
+	title="면접 준비"
+	description="디미고 해킹방어과 면접을 카테고리별 예상 질문과 타임어택으로 준비합니다."
+	breadcrumbs={breadcrumbs}
+>
+	<PageHeader
+		eyebrow="UC-05"
+		title="면접 준비"
+		description="카테고리별 예상 질문에 답변을 정리하고, 타임어택으로 실전 감각을 기릅니다."
+	/>
+
+	<section aria-labelledby="timeattack-heading" class="mb-10">
+		<h2 id="timeattack-heading" class="mb-3 text-lg font-semibold text-slate-900">실전 연습</h2>
+		<CardLink
+			href="/interview/timeattack"
+			title="타임어택 모드: 60~90초 안에 답변하는 연습"
+			description="무작위로 뽑힌 질문 하나에 제한시간 안에 소리 내어 답해 봅니다. 머릿속으로만 정리한 답변을 실제 말로 옮기는 훈련이에요."
+			meta="제한시간 60초 또는 90초 · 5개 카테고리 전체 대상"
+			badge="실전"
+		/>
+	</section>
+
+	<section aria-labelledby="categories-heading" class="mb-10">
+		<div class="mb-3 flex flex-wrap items-center gap-x-3 gap-y-2">
+			<h2 id="categories-heading" class="text-lg font-semibold text-slate-900">질문 카테고리</h2>
+			<Badge variant="neutral">{categories.length}개 카테고리</Badge>
+			<p class="w-full text-sm text-slate-600 sm:ml-auto sm:w-auto">
+				목표 질문 수 합계 <span class="font-semibold text-slate-900">{totalTarget}문항</span> · 현재 0문항 등록
+			</p>
+		</div>
+		<ul class="grid list-none gap-3 sm:grid-cols-2">
+			{
+				categories.map((category) => (
+					<li>
+						<CardLink
+							href={`/interview/${category.slug}`}
+							title={category.title}
+							description={category.description}
+							meta={`목표 ${category.targetCount}문항`}
+						/>
+					</li>
+				))
+			}
+		</ul>
+	</section>
+
+	<PlaceholderCard phase="P4" uc="UC-05" fr="FR-5.1 ~ FR-5.4">
+		<p>
+			P4 에서 <code>src/content/interview/</code> 의 카테고리별 JSON 을 읽어 예상 질문과 답변 가이드를
+			렌더합니다. 질문마다 내 답변 초안을 작성해 두면 브라우저 안에만 저장되고 서버로는 전송되지 않습니다.
+		</p>
+		<p>
+			타임어택 모드는 React 아일랜드로 구현되어 무작위 질문 출제와 카운트다운 타이머를 제공합니다. 질문
+			데이터 자체는 P7 콘텐츠 채우기 단계에서 목표 {totalTarget}문항까지 늘려 갑니다.
+		</p>
+	</PlaceholderCard>
+</BaseLayout>

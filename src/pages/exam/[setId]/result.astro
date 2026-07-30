@@ -1,0 +1,154 @@
+---
+/**
+ * /exam/[setId]/result — 모의고사 결과·해설 화면 (UC-03).
+ *
+ * P1 은 결과가 들어설 자리의 구조만 정적으로 렌더한다.
+ * localStorage 를 읽지 않으므로 점수/정답률은 전부 빈 상태(—) 플레이스홀더다.
+ */
+import type { GetStaticPaths } from 'astro';
+
+import CardLink from '@components/astro/CardLink.astro';
+import PageHeader from '@components/astro/PageHeader.astro';
+import PlaceholderCard from '@components/astro/PlaceholderCard.astro';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import type { Crumb } from '@lib/navigation';
+import { listExamSets } from '@lib/taxonomy';
+
+export const getStaticPaths = (async () => {
+	// ★ P2 교체 지점: listExamSets() 본문이 getCollection('exams') 로 바뀐다.
+	//   반환 타입(ExamSetRef[])이 유지되므로 이 아래 코드는 수정하지 않는다.
+	const sets = await listExamSets();
+	return sets.map((set) => ({
+		params: { setId: set.setId },
+		props: { set },
+	}));
+}) satisfies GetStaticPaths;
+
+const { set } = Astro.props;
+
+const breadcrumbs: Crumb[] = [
+	{ label: '홈', href: '/' },
+	{ label: '모의고사', href: '/exam' },
+	{ label: set.title, href: `/exam/${set.setId}` },
+	{ label: '결과' },
+];
+
+/** 문항별 해설 목록의 자리(구조 확인용). 실제 문항 데이터는 P3 에서 채워진다. */
+const questionSlots = Array.from({ length: Math.min(set.questionCount, 5) }, (_, i) => i + 1);
+---
+
+<BaseLayout
+	title={`${set.title} 결과`}
+	description={`${set.title} 모의고사의 채점 결과와 문항별 해설이 표시되는 화면입니다.`}
+	breadcrumbs={breadcrumbs}
+	wide
+>
+	<PageHeader eyebrow={set.title} title="응시 결과" />
+
+	<section aria-labelledby="score-summary">
+		<h2 id="score-summary" class="text-lg font-bold text-slate-900">점수 요약</h2>
+		<div class="mt-4 rounded-lg border border-slate-200 bg-white p-5 sm:p-6">
+			<p class="text-3xl font-bold tracking-tight text-slate-400 sm:text-4xl">
+				—점 <span class="text-xl font-semibold text-slate-400 sm:text-2xl">/ 100점</span>
+			</p>
+			<dl class="mt-6 grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-4">
+				<div>
+					<dt class="text-sm text-slate-500">정답</dt>
+					<dd class="mt-1 text-xl font-bold text-slate-400">—</dd>
+				</div>
+				<div>
+					<dt class="text-sm text-slate-500">오답</dt>
+					<dd class="mt-1 text-xl font-bold text-slate-400">—</dd>
+				</div>
+				<div>
+					<dt class="text-sm text-slate-500">총 문항</dt>
+					<dd class="mt-1 text-xl font-bold text-slate-900">{set.questionCount}</dd>
+				</div>
+				<div>
+					<dt class="text-sm text-slate-500">소요 시간</dt>
+					<dd class="mt-1 text-xl font-bold text-slate-400">—</dd>
+				</div>
+			</dl>
+			<p class="mt-5 text-sm text-slate-500">
+				P3에서 실제 채점 결과가 표시됩니다. 제한시간은 {set.limitMinutes}분입니다.
+			</p>
+		</div>
+	</section>
+
+	<section aria-labelledby="area-accuracy" class="mt-10">
+		<h2 id="area-accuracy" class="text-lg font-bold text-slate-900">영역별 정답률</h2>
+		<div class="mt-4 rounded-lg border border-slate-200 bg-white p-5">
+			<dl class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+				<div class="flex items-baseline justify-between gap-4 border-b border-slate-100 pb-3">
+					<dt class="text-sm font-semibold text-slate-900">{set.areaTitle}</dt>
+					<dd class="text-sm text-slate-400">— %</dd>
+				</div>
+				<div class="flex items-baseline justify-between gap-4 border-b border-slate-100 pb-3">
+					<dt class="text-sm font-semibold text-slate-900">소분류별 세부 정답률</dt>
+					<dd class="text-sm text-slate-400">— %</dd>
+				</div>
+			</dl>
+			<p class="mt-4 text-sm text-slate-500">
+				P3에서 실제 채점 결과가 표시됩니다. 소분류는 문제 데이터의 subcategory 를 기준으로 자동
+				집계됩니다.
+			</p>
+		</div>
+	</section>
+
+	<section aria-labelledby="explanations" class="mt-10">
+		<h2 id="explanations" class="text-lg font-bold text-slate-900">문항별 해설</h2>
+		<ol class="mt-4 list-none space-y-3 p-0">
+			{
+				questionSlots.map((n) => (
+					<li class="rounded-lg border border-slate-200 bg-white p-4">
+						<div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+							<span class="font-mono text-sm font-semibold text-slate-500">Q{n}</span>
+							<span class="text-sm text-slate-400">문항 내용 자리</span>
+						</div>
+						<p class="mt-2 text-sm text-slate-400">내 답 — · 정답 — · 해설 —</p>
+					</li>
+				))
+			}
+		</ol>
+		<p class="mt-4 text-sm text-slate-500">
+			P3에서 실제 채점 결과가 표시됩니다. 위 5개는 구조 확인용 자리이며, 실제로는 {
+				set.questionCount
+			}문항 전체가 정답/오답 표시와 함께 나열됩니다.
+		</p>
+	</section>
+
+	<section aria-labelledby="next-actions" class="mt-10">
+		<h2 id="next-actions" class="text-lg font-bold text-slate-900">다음 단계</h2>
+		<ul class="mt-4 grid list-none grid-cols-1 gap-4 p-0 sm:grid-cols-2">
+			<li>
+				<CardLink
+					href="/wrongnote"
+					title="오답노트로 이동"
+					description="틀린 문항만 모아 다시 풀고 복습 체크를 남길 수 있어요."
+					meta="UC-04"
+				/>
+			</li>
+			<li>
+				<CardLink
+					href="/exam"
+					title="모의고사 목록으로"
+					description="다른 영역의 예상문제 세트에 도전해 보세요."
+					meta="9세트 · 5개 영역"
+				/>
+			</li>
+		</ul>
+	</section>
+
+	<div class="mt-10">
+		<PlaceholderCard phase="P3" uc="UC-03" fr="FR-3.4 ~ FR-3.6">
+			<p>
+				P3 에서 채점 결과가 <code>dimigo-prep:progress.examResults</code> 에 누적 저장되고, 이
+				화면이 그 값을 읽어 점수·영역별 정답률·문항별 해설을 렌더링합니다.
+			</p>
+			<p>
+				틀린 문항은 자동으로 오답노트(<code>/wrongnote</code>)로 연동되며, P5 의 홈 대시보드는 이
+				결과를 최근 성적 추이로 요약합니다. 모든 데이터는 이 브라우저에만 남습니다.
+			</p>
+		</PlaceholderCard>
+	</div>
+</BaseLayout>

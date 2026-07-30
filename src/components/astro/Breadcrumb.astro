@@ -1,0 +1,46 @@
+---
+/**
+ * 현재 위치 경로 표시(빵부스러기).
+ *
+ * ── 접근성 규칙 (NFR-4) ──
+ *  - `href` 가 없는 항목(= 마지막 항목)만 `aria-current="page"` 를 갖는다.
+ *  - 구분자 "/" 는 장식이므로 `aria-hidden="true"` 로 감싸 스크린리더가 읽지 않게 한다.
+ *    구분자를 `<li>` 밖에 두면 `<ol>` 의 직계 자식이 `<li>` 가 아니게 되어 마크업이 깨지므로
+ *    반드시 `<li>` **안**에 넣는다.
+ *  - 360px 모바일에서 4단계 경로가 두 줄로 접혀도 깨지지 않도록 `flex-wrap` 을 쓴다.
+ */
+import type { Crumb } from '@lib/navigation';
+
+interface Props {
+	items: Crumb[];
+}
+
+const { items } = Astro.props;
+---
+
+{
+	items.length > 0 && (
+		<nav aria-label="현재 위치" class="mb-6">
+			<ol class="flex flex-wrap items-center gap-1 text-sm text-slate-500">
+				{items.map((item, index) => (
+					<li class="flex min-w-0 items-center gap-1">
+						{index > 0 && (
+							<span aria-hidden="true" class="text-slate-300 select-none">
+								/
+							</span>
+						)}
+						{item.href ? (
+							<a href={item.href} class="rounded-sm hover:text-brand-700 hover:underline">
+								{item.label}
+							</a>
+						) : (
+							<span aria-current="page" class="font-medium text-slate-700">
+								{item.label}
+							</span>
+						)}
+					</li>
+				))}
+			</ol>
+		</nav>
+	)
+}

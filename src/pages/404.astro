@@ -1,0 +1,59 @@
+---
+/**
+ * 404 페이지.
+ *
+ * ── 배포 메모 ──
+ * Astro 는 이 파일을 `dist/404.html` 로 출력하고, Vercel 의 정적 배포는 존재하지 않는 경로 요청에
+ * 이 파일을 **HTTP 404 상태와 함께** 자동으로 서빙한다. 따라서 `vercel.json` 의 라우팅/리라이트
+ * 설정이 필요 없다 (어댑터 없이 순수 static 을 유지하기 위한 조건이기도 하다).
+ *
+ * 이 페이지는 플레이스홀더가 아니라 **완성된 페이지**이므로 PlaceholderCard 를 넣지 않는다.
+ */
+import CardLink from '@components/astro/CardLink.astro';
+import PageHeader from '@components/astro/PageHeader.astro';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { PRIMARY_NAV } from '@lib/navigation';
+
+/** 주 내비 6개에 붙일 짧은 설명 — 길을 잃은 사용자가 목적지를 고르는 데 쓰인다. */
+const NAV_DESCRIPTION: Record<string, string> = {
+	'/theory': '적성검사 공통과 해킹방어과 특화 이론을 챕터별로 학습합니다.',
+	'/exam': '영역별 모의고사 9세트를 시간을 재며 풀어봅니다.',
+	'/wrongnote': '모의고사에서 틀린 문항을 모아 다시 확인합니다.',
+	'/interview': '카테고리별 예상 질문으로 면접 답변을 준비합니다.',
+	'/guide': '전형 종류, 평가 항목, 준비 시기를 한 번에 정리했습니다.',
+	'/checklist': '원서 접수부터 면접까지 단계별로 점검합니다.',
+};
+---
+
+<BaseLayout
+	title="페이지를 찾을 수 없습니다"
+	description="요청한 주소에 해당하는 페이지가 없습니다."
+>
+	<PageHeader
+		eyebrow="404"
+		title="페이지를 찾을 수 없습니다"
+		description="주소가 바뀌었거나 아직 준비되지 않은 페이지입니다."
+	/>
+
+	<p>
+		<a
+			href="/"
+			class="inline-flex items-center rounded-md bg-brand-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-800"
+		>
+			홈으로 돌아가기
+		</a>
+	</p>
+
+	<section aria-labelledby="nav-heading" class="mt-10">
+		<h2 id="nav-heading" class="text-lg font-semibold text-slate-900">이런 페이지를 찾으셨나요?</h2>
+		<ul class="mt-4 grid list-none gap-4 sm:grid-cols-2 lg:grid-cols-3">
+			{
+				PRIMARY_NAV.map((item) => (
+					<li>
+						<CardLink href={item.href} title={item.label} description={NAV_DESCRIPTION[item.href]} />
+					</li>
+				))
+			}
+		</ul>
+	</section>
+</BaseLayout>

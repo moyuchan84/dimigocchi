@@ -1,0 +1,99 @@
+---
+/**
+ * 이론 학습 목록 (UC-02).
+ *
+ * 사이트맵에 `/theory/[category]` 라우트가 없으므로, 카테고리 단위의 "목적지"는
+ * 이 페이지 안의 섹션 앵커(`/theory#aptitude`, `/theory#hacking-defense`)다.
+ * 챕터 상세 페이지의 breadcrumb 3번째 항목이 이 앵커를 가리키므로,
+ * 각 <section> 의 id 는 카테고리 slug 와 반드시 일치해야 한다(변경 시 챕터 페이지도 함께 수정).
+ */
+import CardLink from '@components/astro/CardLink.astro';
+import PageHeader from '@components/astro/PageHeader.astro';
+import PlaceholderCard from '@components/astro/PlaceholderCard.astro';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import type { Crumb } from '@lib/navigation';
+import { THEORY_CATEGORIES, listTheoryChapters } from '@lib/taxonomy';
+
+// P2: 이 호출이 getCollection('theory') 로 바뀌는 지점이다(taxonomy 내부 본문만 교체).
+const chapters = await listTheoryChapters();
+
+/** 카테고리 → 소분류별 카드 데이터로 미리 가공한다(템플릿에서 필터 로직을 반복하지 않기 위함). */
+const sections = THEORY_CATEGORIES.map((category) => ({
+	category,
+	items: category.subcategories.map((subcategory) => {
+		const own = chapters.filter(
+			(chapter) => chapter.category === category.slug && chapter.subcategory === subcategory.slug,
+		);
+		const totalMinutes = own.reduce((sum, chapter) => sum + chapter.estMinutes, 0);
+		return {
+			subcategory,
+			first: own[0],
+			count: own.length,
+			totalMinutes,
+		};
+	}),
+}));
+
+const totalChapters = chapters.length;
+
+const breadcrumbs: Crumb[] = [
+	{ label: '홈', href: '/' },
+	{ label: '이론 학습' },
+];
+---
+
+<BaseLayout
+	title="이론 학습"
+	description="적성검사 공통 이론과 해킹방어과 특화 입문 이론을 소분류별로 학습합니다."
+	breadcrumbs={breadcrumbs}
+	wide
+>
+	<PageHeader
+		eyebrow="UC-02"
+		title="이론 학습"
+		description="적성검사 공통 5개 대분류와 해킹방어과 특화 8개 대분류로 구성됩니다."
+	/>
+
+	<PlaceholderCard phase="P2" uc="UC-02" fr="FR-2.1 ~ FR-2.4">
+		<p>
+			P2 에서 <code>src/content/theory/</code> 의 Content Collections 를 연결해 마크다운 본문이
+			그대로 렌더링됩니다.
+		</p>
+		<p>
+			지금은 소분류마다 대표 챕터 1개씩, 총 {totalChapters}개 챕터만 라우팅 확인용으로 노출되어 있어요.
+			나머지 챕터는 P2 이후 파일 추가만으로 이 목록에 자동 반영됩니다.
+		</p>
+	</PlaceholderCard>
+
+	<div class="mt-10 space-y-12">
+		{
+			sections.map(({ category, items }) => (
+				/* id 는 챕터 페이지 breadcrumb 의 /theory#{slug} 앵커 대상. scroll-mt-24 로 스티키 헤더 가림 방지. */
+				<section id={category.slug} class="scroll-mt-24">
+					<h2 class="text-xl font-bold tracking-tight text-slate-900">{category.title}</h2>
+					<p class="mt-2 max-w-2xl leading-relaxed text-slate-600">{category.description}</p>
+
+					<ul class="mt-5 grid list-none gap-3 sm:grid-cols-2 lg:grid-cols-3">
+						{items.map(({ subcategory, first, count, totalMinutes }) => (
+							<li>
+								{first ? (
+									<CardLink
+										href={`/theory/${category.slug}/${first.id}`}
+										title={subcategory.title}
+										description={first.title}
+										meta={`${count}개 챕터 · 약 ${totalMinutes}분`}
+									/>
+								) : (
+									<div class="flex h-full flex-col rounded-lg border border-dashed border-slate-300 bg-white p-4">
+										<span class="font-semibold text-slate-500">{subcategory.title}</span>
+										<p class="mt-auto pt-3 text-xs text-slate-500">준비 중인 소분류</p>
+									</div>
+								)}
+							</li>
+						))}
+					</ul>
+				</section>
+			))
+		}
+	</div>
+</BaseLayout>

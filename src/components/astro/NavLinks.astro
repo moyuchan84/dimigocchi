@@ -1,0 +1,71 @@
+---
+/**
+ * 주 내비게이션 링크 목록 — **마크업의 단일 출처(single source)**.
+ *
+ * Header 가 이 컴포넌트를 desktop / mobile 두 벌 렌더한다. 링크 배열을 두 군데에
+ * 복사해두면 한쪽만 갱신되는 사고가 나므로, 마크업 차이는 `variant` 로만 흡수한다.
+ *
+ * ── 접근성 (NFR-4) ──
+ * `aria-current="page"` 는 `isCurrentPage()`(정확 일치)일 때만 출력한다.
+ * `/theory/aptitude/info-basics-01` 같은 하위 경로에서 "이론 학습"(`/theory`) 링크에
+ * aria-current 를 붙이면 스크린리더에 거짓 정보를 주게 되므로, 조상 섹션은
+ * `data-active` 로 **시각 강조만** 한다.
+ */
+import { PRIMARY_NAV, isActiveSection, isCurrentPage, type NavItem } from '@lib/navigation';
+
+interface Props {
+	variant: 'desktop' | 'mobile';
+	pathname: string;
+}
+
+const { variant, pathname } = Astro.props;
+
+/**
+ * 모바일 드로어에만 '홈' 을 맨 앞에 끼워 넣는다.
+ * 데스크톱은 헤더 왼쪽의 브랜드 로고가 홈 링크 역할을 하므로 중복시키지 않는다.
+ */
+const items: NavItem[] =
+	variant === 'mobile' ? [{ label: '홈', href: '/' }, ...PRIMARY_NAV] : [...PRIMARY_NAV];
+
+const listClass = variant === 'desktop' ? 'flex items-center gap-1' : 'flex flex-col gap-1';
+
+/**
+ * 모바일 링크는 세로 패딩을 키워 터치 타깃 44px 이상을 확보한다.
+ *
+ * 데스크톱 링크에 `whitespace-nowrap` 이 반드시 필요하다. 이것이 없으면
+ * "이론 학습"·"면접 준비"·"입시 가이드" 처럼 **공백이 들어간 라벨만** 어절 단위로
+ * 줄바꿈되어 링크 높이가 36px → 56px 로 튀고 헤더(h-16)가 무너진다.
+ * (global.css 의 `word-break: keep-all` 은 어절 중간 끊김만 막을 뿐,
+ *  공백에서의 줄바꿈은 막지 못한다.)
+ */
+const baseLinkClass =
+	variant === 'desktop'
+		? 'block rounded-md px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors'
+		: 'block rounded-md px-3 py-3 text-base font-medium transition-colors';
+
+const idleLinkClass = 'text-slate-700 hover:bg-slate-100 hover:text-brand-700';
+const activeLinkClass = 'bg-brand-50 text-brand-700';
+---
+
+<ul class={listClass}>
+	{
+		items.map((item) => {
+			const current = isCurrentPage(pathname, item.href);
+			/* 홈('/')은 isActiveSection 이 항상 false 이므로, 홈에 있을 때는 current 로만 강조된다. */
+			const active = current || isActiveSection(pathname, item.href);
+
+			return (
+				<li>
+					<a
+						href={item.href}
+						aria-current={current ? 'page' : undefined}
+						data-active={active ? '' : undefined}
+						class:list={[baseLinkClass, active ? activeLinkClass : idleLinkClass]}
+					>
+						{item.label}
+					</a>
+				</li>
+			);
+		})
+	}
+</ul>
