@@ -12,8 +12,11 @@
 
 ## 현재 상태
 
-- [ ] P0 저장소/Vercel 연결 — **아직 시작 전**
-- 나머지 Phase(P1~P8)는 아래 "개발 로드맵" 참고
+- [x] **P0 저장소/Vercel 연결 — 완료 (2026-07-30)**
+  - 배포 URL: **https://dimigocchi.vercel.app** (Vercel 프로젝트 `thegada/dimigocchi`)
+  - GitHub `moyuchan84/dimigocchi` 연결됨 → `main` push 시 자동 재배포, PR 시 Preview 배포
+  - Astro 7 (static) + React 19 아일랜드 + Tailwind v4 스캐폴딩 완료, 홈은 P1까지 플레이스홀더
+- **다음 작업: P1 라우팅/레이아웃** — 나머지 Phase(P1~P8)는 아래 "개발 로드맵" 참고
 - 작업을 시작하거나 재개할 때는 이 섹션의 체크박스 상태를 확인하고, Phase를 완료하면 이 파일의 체크박스도 함께 갱신할 것
 
 ## 참고 문서 (반드시 확인)
@@ -23,7 +26,7 @@
 | `docs/01_유즈케이스명세서.md` | 액터, 10개 유즈케이스(UC-01~UC-10), 흐름, 우선순위 |
 | `docs/02_요구사양서.md` | 기능/비기능 요구사항(FR/NFR), 사이트맵, 콘텐츠 상세 목차, **데이터 모델(7장) — 콘텐츠 스키마 작업 시 필수 참고** |
 | `docs/03_개발계획서.md` | 기술스택 근거, 폴더 구조, Phase별 일정, Vercel 배포 절차, QA 체크리스트 |
-| `00_디미고_입시_준비_가이드.md` | 디미고 전형 구조 조사 결과(전형 종류/평가항목/적성검사/면접) — `/guide` 페이지 콘텐츠 원본 |
+| `디미고_입시_준비_가이드.md` (저장소 루트) | 디미고 전형 구조 조사 결과(전형 종류/평가항목/적성검사/면접) — `/guide` 페이지 콘텐츠 원본 |
 
 기능을 구현하기 전에 관련 UC/FR 번호를 확인하고 구현할 것 (예: 모의고사 기능 작업 시 `02_요구사양서.md`의 FR-3 전체를 먼저 읽기).
 
@@ -31,9 +34,9 @@
 
 | 영역 | 선택 |
 |---|---|
-| 프레임워크 | **Astro** (static output, `@astrojs/vercel` 어댑터) |
-| 인터랙티브 컴포넌트 | React, Astro Islands (`client:load`) — 모의고사 엔진, 타이머, 대시보드 위젯 등 상태가 필요한 부분에만 사용. 그 외는 순수 Astro 컴포넌트로 |
-| 스타일 | Tailwind CSS (`@astrojs/tailwind`) |
+| 프레임워크 | **Astro 7** — static output(기본값이므로 `astro.config.mjs`에 `output`을 명시하지 않는다). **Vercel 어댑터는 사용하지 않는다**: 순수 static 사이트에는 불필요하며 Vercel이 Astro를 자동 감지해 zero-config로 배포한다. Web Analytics / Image Optimization이 필요해지면 그때 `astro add vercel` |
+| 인터랙티브 컴포넌트 | React 19, Astro Islands (`client:load`) — 모의고사 엔진, 타이머, 대시보드 위젯 등 상태가 필요한 부분에만 사용. 그 외는 순수 Astro 컴포넌트로 |
+| 스타일 | **Tailwind CSS v4** (`@tailwindcss/vite` 플러그인). `@astrojs/tailwind`는 Tailwind 3 레거시 호환용이므로 사용하지 않는다. 전역 스타일은 `src/styles/global.css`이며 **자동 import되지 않으므로** 레이아웃에서 직접 `import '../styles/global.css'` 할 것 (현재 `src/layouts/BaseLayout.astro`가 담당) |
 | 콘텐츠 관리 | Astro Content Collections (`src/content/config.ts`, zod 스키마) — Markdown(이론) + JSON(문제/면접질문/일정) |
 | 로컬 저장 | 커스텀 훅 `useLocalStorage` (직접 구현, 외부 상태관리 라이브러리 불필요) |
 | 검색 | 클라이언트 사이드 인덱스 (Pagefind 또는 Fuse.js + 자체 JSON 인덱스) |
@@ -41,16 +44,28 @@
 
 > Next.js static export로 전환 가능성을 열어두기 위해, 콘텐츠(Markdown/JSON) 스키마는 프레임워크에 종속되지 않게 설계한다. 프레임워크 자체를 바꾸는 결정은 반드시 먼저 논의 후 진행할 것 — 임의로 스택을 변경하지 말 것.
 
-## 시작하기 (P0 초기 셋업 — 아직 실행 전이라면 이 순서로)
+## 개발 환경 주의사항 (Windows)
+
+- **`node`/`npm`/`git`/`vercel`이 PowerShell PATH에 없다. 모든 명령은 Bash(Git Bash) 툴로 실행할 것.**
+- Bash에서 `npm`/`npx`가 내부적으로 `cmd.exe`를 spawn하는데 PATH에 없어 실패한다(`spawn cmd.exe ENOENT`). 명령 앞에 `export PATH="$PATH:/c/Windows/System32";`를 붙일 것. `astro add`, 의존성 설치가 여기에 해당한다.
+- `vercel` CLI는 Bash PATH에도 없다 → `"$APPDATA/npm/vercel.cmd"`로 호출. URL 인자를 넘길 때는 Git Bash의 경로 변환을 막기 위해 `MSYS_NO_PATHCONV=1`을 앞에 붙인다.
+
+## P0 셋업 (완료 — 기록용)
 
 ```bash
-npm create astro@latest . -- --template minimal --install --no-git
-npx astro add react tailwind vercel
+# create-astro는 비어있지 않은 디렉터리를 거부한다(--force 없음, --yes는 랜덤 하위 디렉터리에 스캐폴딩해버림).
+# .git/docs/.gitignore는 safelist이므로, 루트의 .md 파일만 docs/로 잠시 옮긴 뒤 실행했다.
+npm create astro@latest . -- --template minimal --install --no-git --no-ai --skip-houston
+npm install
+npx astro add react tailwind --yes
+
+vercel link --yes                 # Astro 자동 감지 + GitHub 저장소 자동 연결
+vercel git connect <repo-url> --yes   # 멱등 — 연결 성공 여부 재확인용
+vercel --prod                     # 최초 배포 시딩
 ```
 
-- `astro.config.mjs`에 `output: 'static'`(기본값) 유지, `adapter: vercel()` 확인
-- GitHub 저장소 생성 후 push → Vercel에서 Import (Framework Preset: Astro 자동 인식, 별도 환경변수 불필요)
-- 배포 URL이 정상적으로 뜨는지 확인 후 P1로 진행
+- `.gitignore`에 `.vercel`, `.env*` 포함 필수 (`.vercel/project.json`에 orgId/projectId가 들어 있음)
+- 이후에는 `main`에 push하면 Vercel이 자동 재배포한다 — 배포용으로 `vercel --prod`를 다시 실행할 필요 없음
 
 ## 폴더 구조 컨벤션
 

@@ -1,43 +1,41 @@
-# Astro Starter Kit: Minimal
+# DIMIGO PREP
 
-```sh
-npm create astro@latest -- --template minimal
+2027학년도 한국디지털미디어고등학교 **해킹방어과** 진학을 목표로 하는 중3 수험생을 위한 학습 사이트입니다.
+소질·적성검사 대비, 해킹방어과 특화 기초 이론, 면접 준비, 입시 가이드를 한 곳에서 제공합니다.
+
+- 배포: https://dimigocchi.vercel.app
+- 기술 스택: Astro 7 (static) · React 19 (Astro Islands) · Tailwind CSS v4 · Vercel
+
+## 서버 없음 / 개인정보 비전송
+
+로그인·서버 API·DB가 없습니다. 학습 진도, 모의고사 결과, 오답노트, 면접 답변 초안 등 모든 개인 학습 데이터는
+브라우저 `localStorage`에만 저장되며 외부로 전송되지 않습니다.
+
+## 개발
+
+```bash
+npm install
+npm run dev       # 로컬 개발 서버
+npm run build     # 프로덕션 빌드 (콘텐츠 스키마 검증 포함)
+npm run preview   # 빌드 결과 미리보기
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+`main` 브랜치에 push하면 Vercel이 자동 재배포합니다.
 
-## 🚀 Project Structure
+> Windows/Git Bash에서는 `export PATH="$PATH:/c/Windows/System32";`를 앞에 붙여야 npm이 정상 동작합니다. 자세한 내용은 `CLAUDE.md` 참고.
 
-Inside of your Astro project, you'll see the following folders and files:
+## 문서
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
+| 문서 | 내용 |
+|---|---|
+| [`CLAUDE.md`](./CLAUDE.md) | 프로젝트 가이드 · 개발 원칙 · 현재 진행 상태 |
+| [`docs/01_유즈케이스명세서.md`](./docs/01_유즈케이스명세서.md) | 유즈케이스 UC-01~UC-10 |
+| [`docs/02_요구사양서.md`](./docs/02_요구사양서.md) | 기능/비기능 요구사항, 사이트맵, 데이터 모델 |
+| [`docs/03_개발계획서.md`](./docs/03_개발계획서.md) | 기술스택 근거, Phase별 일정, QA 체크리스트 |
+| [`디미고_입시_준비_가이드.md`](./디미고_입시_준비_가이드.md) | 디미고 전형 구조 조사 결과 |
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+## 콘텐츠 원칙
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+- 디미고 실제 기출문제·대회 문제 원문을 게재하지 않으며, 문제은행은 **자체 제작 예상문제**만 사용합니다.
+- 보안 콘텐츠는 중학생 눈높이의 **개념 이해·방어적 관점** 중심으로 작성하며, 실행 가능한 공격 코드는 다루지 않습니다.
+- 2027학년도 전형 요강은 미확정이므로 일정·배점 관련 콘텐츠에는 "예정(가안)" 표기를 유지합니다.

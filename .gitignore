@@ -6,9 +6,6 @@ dist/
 # dependencies
 node_modules/
 
-# vercel (contains orgId/projectId — must not be committed)
-.vercel
-
 # logs
 npm-debug.log*
 yarn-debug.log*
@@ -25,3 +22,7 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# vercel (.vercel/project.json에 orgId/projectId 포함 — 커밋 금지)
+.vercel
+.env*
