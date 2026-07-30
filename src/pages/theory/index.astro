@@ -9,12 +9,12 @@
  */
 import CardLink from '@components/astro/CardLink.astro';
 import PageHeader from '@components/astro/PageHeader.astro';
-import PlaceholderCard from '@components/astro/PlaceholderCard.astro';
 import BaseLayout from '@layouts/BaseLayout.astro';
 import type { Crumb } from '@lib/navigation';
 import { THEORY_CATEGORIES, listTheoryChapters } from '@lib/taxonomy';
 
-// P2: 이 호출이 getCollection('theory') 로 바뀌는 지점이다(taxonomy 내부 본문만 교체).
+// P2 이관 완료: listTheoryChapters() 는 내부적으로 getCollection('theory') 를 읽는다.
+// 챕터 md 파일을 추가하면 이 목록에 자동 반영된다(FR-10.2).
 const chapters = await listTheoryChapters();
 
 /** 카테고리 → 소분류별 카드 데이터로 미리 가공한다(템플릿에서 필터 로직을 반복하지 않기 위함). */
@@ -54,16 +54,10 @@ const breadcrumbs: Crumb[] = [
 		description="적성검사 공통 5개 대분류와 해킹방어과 특화 8개 대분류로 구성됩니다."
 	/>
 
-	<PlaceholderCard phase="P2" uc="UC-02" fr="FR-2.1 ~ FR-2.4">
-		<p>
-			P2 에서 <code>src/content/theory/</code> 의 Content Collections 를 연결해 마크다운 본문이
-			그대로 렌더링됩니다.
-		</p>
-		<p>
-			지금은 소분류마다 대표 챕터 1개씩, 총 {totalChapters}개 챕터만 라우팅 확인용으로 노출되어 있어요.
-			나머지 챕터는 P2 이후 파일 추가만으로 이 목록에 자동 반영됩니다.
-		</p>
-	</PlaceholderCard>
+	<p class="mt-6 max-w-3xl leading-relaxed text-slate-600">
+		지금은 소분류마다 챕터 1개씩, 총 {totalChapters}개 챕터의 본문을 읽을 수 있어요. 추가 챕터는 P7
+		콘텐츠 채우기 단계에서 파일을 더하기만 하면 이 목록에 자동으로 나타납니다.
+	</p>
 
 	<div class="mt-10 space-y-12">
 		{

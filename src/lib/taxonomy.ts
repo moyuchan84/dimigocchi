@@ -1,12 +1,28 @@
 /**
- * P1 임시 택소노미 소스.
+ * 택소노미 — Content Collections 와 UI 사이의 매핑 계층.
  *
- * ── P2 교체 규약 ──
- * 이 파일의 list* / get* 함수는 전부 async 다(P1 에선 불필요해 보여도 의도적).
- * P2 에서 Content Collections 도입 시 **함수 본문만** getCollection() 으로 교체한다.
- * 반환 타입과 시그니처는 유지 → 페이지의 getStaticPaths 는 수정 불필요.
- * 아래 리터럴 상수(THEORY_CHAPTERS 등)는 P2 에서 통째로 삭제한다.
+ * 페이지(`getStaticPaths` 포함)는 콘텐츠 컬렉션을 직접 부르지 않고 이 파일의
+ * list* / get* 함수만 바라본다. 모든 조회 함수가 async 인 이유가 이것이며,
+ * 덕분에 각 Phase 에서 리터럴 → 컬렉션 전환을 **함수 본문만 바꿔서** 끝낼 수 있다.
+ *
+ * ── 현재 이관 상태 (P2 완료) ──
+ * - `theory` : ✅ Content Collections 이관 완료. `src/content/theory/{category}/{id}.md`
+ *              의 frontmatter 가 유일한 소스다(리터럴 THEORY_CHAPTERS 는 삭제됨).
+ * - `guide`  : ✅ 이관 완료. `src/content/guide/{id}.md` → `listGuideSections()`
+ *              (하드코딩 상수 GUIDE_SECTIONS 는 삭제됨).
+ * - `exams`  : ⏳ 아직 아래 리터럴(EXAM_SETS). **P3** 에서 `getCollection('exams')` 로
+ *              같은 방식(시그니처 고정, 본문만 교체) 전환 + 리터럴 삭제.
+ * - `interview` : ⏳ 아직 리터럴(INTERVIEW_CATEGORIES). **P4** 에서 동일하게 전환.
+ *
+ * ── THEORY_CATEGORIES 를 상수로 남긴 이유 (삭제 금지) ──
+ * 카테고리 2개 / 소분류 13개는 챕터 파일에서 파생되는 데이터가 아니라 **사이트 IA** 다.
+ * 1) 소분류 slug 는 `/theory#{slug}` 앵커의 소유자다 — 챕터 파일이 바뀌어도 앵커는 불변이어야 한다.
+ * 2) 표시 순서와 카테고리/소분류의 한국어 제목·설명은 콘텐츠가 아니라 내비게이션 문구다.
+ * 3) 아직 챕터가 0개인 소분류도 목록에 노출해야 한다(P7 콘텐츠 채우기 전까지의 로드맵 역할).
+ *    컬렉션에서 집계하면 빈 소분류가 통째로 사라진다.
  */
+
+import { getCollection } from 'astro:content';
 
 /* ------------------------------------------------------------------ *
  * 타입
@@ -32,6 +48,8 @@ export interface TheoryChapterRef {
 	subcategory: string;
 	title: string;
 	order: number;
+	/** 검색 키워드(요구사양서 7.1). P6 통합 검색 인덱스에서 사용한다. */
+	tags: string[];
 	estMinutes: number;
 }
 
@@ -66,8 +84,13 @@ export interface InterviewCategoryRef {
 }
 
 export interface GuideSectionRef {
+	/** `/guide#{slug}` 앵커. 콘텐츠 파일의 frontmatter `id` 와 같은 값이다. */
 	slug: string;
 	title: string;
+	/** 페이지 내 섹션 순서(1부터). */
+	order: number;
+	/** 목차 카드에 노출되는 한 줄 요약. */
+	summary: string;
 }
 
 /* ------------------------------------------------------------------ *
@@ -102,123 +125,6 @@ export const THEORY_CATEGORIES: readonly TheoryCategoryRef[] = [
 			{ slug: 'pwnable', title: '포너블 입문' },
 			{ slug: 'crypto', title: '암호학 기초' },
 		],
-	},
-] as const;
-
-/**
- * 시드 챕터 13개 — 소분류당 1개.
- * order 는 카테고리 내 1부터의 연번(aptitude 1~5, hacking-defense 1~8).
- * 보안 소분류(web-hacking / reversing / pwnable / crypto)의 제목은 반드시
- * 개념·방어 관점으로 유지한다(핵심 원칙 3).
- * P2 에서 실제 Markdown frontmatter 로 대체된다.
- */
-const THEORY_CHAPTERS: readonly TheoryChapterRef[] = [
-	// category=aptitude
-	{
-		id: 'info-basics-01',
-		category: 'aptitude',
-		subcategory: 'info-basics',
-		title: '컴퓨터는 정보를 어떻게 표현할까 — 2진수와 자료의 단위',
-		order: 1,
-		estMinutes: 15,
-	},
-	{
-		id: 'math-reasoning-01',
-		category: 'aptitude',
-		subcategory: 'math-reasoning',
-		title: '규칙 찾기와 수열 추론',
-		order: 2,
-		estMinutes: 18,
-	},
-	{
-		id: 'problem-solving-01',
-		category: 'aptitude',
-		subcategory: 'problem-solving',
-		title: '알고리즘이란 무엇인가 — 순서도로 생각 정리하기',
-		order: 3,
-		estMinutes: 16,
-	},
-	{
-		id: 'creative-math-01',
-		category: 'aptitude',
-		subcategory: 'creative-math',
-		title: '경우의 수와 논리 퍼즐 접근법',
-		order: 4,
-		estMinutes: 20,
-	},
-	{
-		id: 'it-trend-01',
-		category: 'aptitude',
-		subcategory: 'it-trend',
-		title: 'AI·클라우드·개인정보 — 요즘 IT 뉴스 읽는 법',
-		order: 5,
-		estMinutes: 14,
-	},
-
-	// category=hacking-defense
-	{
-		id: 'infosec-01',
-		category: 'hacking-defense',
-		subcategory: 'infosec',
-		title: '정보보호의 3요소 — 기밀성·무결성·가용성',
-		order: 1,
-		estMinutes: 15,
-	},
-	{
-		id: 'network-basics-01',
-		category: 'hacking-defense',
-		subcategory: 'network',
-		title: 'OSI 7계층과 TCP/IP',
-		order: 2,
-		estMinutes: 20,
-	},
-	{
-		id: 'linux-cli-01',
-		category: 'hacking-defense',
-		subcategory: 'linux',
-		title: '터미널 첫걸음 — 디렉터리 이동과 파일 권한',
-		order: 3,
-		estMinutes: 18,
-	},
-	{
-		id: 'c-ds-01',
-		category: 'hacking-defense',
-		subcategory: 'c-ds',
-		title: '변수와 메모리 — C언어로 보는 자료의 크기',
-		order: 4,
-		estMinutes: 20,
-	},
-	{
-		id: 'web-hacking-01',
-		category: 'hacking-defense',
-		subcategory: 'web-hacking',
-		title: '웹 취약점은 왜 생기고 어떻게 막나',
-		order: 5,
-		estMinutes: 17,
-	},
-	{
-		id: 'reversing-01',
-		category: 'hacking-defense',
-		subcategory: 'reversing',
-		title: '프로그램이 실행되는 과정을 이해하면 보이는 것들',
-		order: 6,
-		estMinutes: 16,
-	},
-	{
-		id: 'pwnable-01',
-		category: 'hacking-defense',
-		subcategory: 'pwnable',
-		title: '메모리를 지키는 안전한 코딩 습관',
-		order: 7,
-		estMinutes: 16,
-	},
-	{
-		id: 'crypto-01',
-		category: 'hacking-defense',
-		subcategory: 'crypto',
-		title: '암호는 무엇을 지켜주나 — 대칭키와 공개키',
-		order: 8,
-		estMinutes: 18,
 	},
 ] as const;
 
@@ -350,28 +256,29 @@ const INTERVIEW_CATEGORIES: readonly InterviewCategoryRef[] = [
  * 입시 가이드 (UC-09)
  * ------------------------------------------------------------------ */
 
-/** `디미고_입시_준비_가이드.md` 의 실제 헤딩 9개. slug 는 /guide 내 앵커로 사용. */
-export const GUIDE_SECTIONS: readonly GuideSectionRef[] = [
-	{ slug: 'school-character', title: '학교 성격' },
-	{ slug: 'departments', title: '모집 학과 (4개과)' },
-	{ slug: 'admission-types', title: '전형 종류' },
-	{ slug: 'evaluation', title: '평가 항목' },
-	{ slug: 'aptitude-test', title: '적성검사 — 무엇을 공부해야 하나' },
-	{ slug: 'interview', title: '면접 — 무엇을 준비해야 하나' },
-	{ slug: 'special-admission', title: '특별전형 준비' },
-	{ slug: 'timeline', title: '전반적인 준비 시기와 포인트' },
-	{ slug: 'checklist', title: '체크리스트' },
-] as const;
+/*
+ * 가이드 섹션 목록은 상수가 아니라 `listGuideSections()` 로 조회한다.
+ * 소스는 `src/content/guide/{id}.md` 의 frontmatter(id/title/order/summary).
+ */
 
 /* ------------------------------------------------------------------ *
- * 조회 API — 시그니처 고정. P2 에서 본문만 교체한다.
+ * 조회 API — 시그니처 고정. 컬렉션 이관 시 본문만 교체한다.
  * ------------------------------------------------------------------ */
 
 /** 전체 이론 챕터를 order 오름차순으로 반환한다. */
 export async function listTheoryChapters(): Promise<TheoryChapterRef[]> {
-	// P2: getCollection('theory') 로 교체하고 data.{id,category,subcategory,title,order,estMinutes} 를 매핑한다.
-	// P2: 반환 타입(TheoryChapterRef[])과 order 정렬은 그대로 유지할 것.
-	return [...THEORY_CHAPTERS].sort((a, b) => a.order - b.order);
+	const entries = await getCollection('theory');
+	return entries
+		.map((e) => ({
+			id: e.data.id,
+			category: e.data.category,
+			subcategory: e.data.subcategory,
+			title: e.data.title,
+			order: e.data.order,
+			tags: e.data.tags,
+			estMinutes: e.data.estMinutes,
+		}))
+		.sort((a, b) => a.order - b.order);
 }
 
 /** 특정 카테고리·소분류에 속한 이론 챕터를 order 오름차순으로 반환한다. */
@@ -379,34 +286,46 @@ export async function listTheoryChaptersBySubcategory(
 	category: TheoryCategory,
 	subcategory: string,
 ): Promise<TheoryChapterRef[]> {
-	// P2: getCollection('theory', ({ data }) => data.category === category && data.subcategory === subcategory)
 	const all = await listTheoryChapters();
 	return all.filter((c) => c.category === category && c.subcategory === subcategory);
 }
 
+/** 입시 가이드 섹션을 order 오름차순으로 반환한다. slug 는 `/guide#{slug}` 앵커. */
+export async function listGuideSections(): Promise<GuideSectionRef[]> {
+	const entries = await getCollection('guide');
+	return entries
+		.map((e) => ({
+			slug: e.data.id,
+			title: e.data.title,
+			order: e.data.order,
+			summary: e.data.summary,
+		}))
+		.sort((a, b) => a.order - b.order);
+}
+
 /** 전체 모의고사 세트를 정의 순서대로 반환한다. */
 export async function listExamSets(): Promise<ExamSetRef[]> {
-	// P2: getCollection('exams') 로 교체. 세트별 JSON 에서 setId/title/area/questionCount/limitMinutes 를 읽는다.
+	// P3: getCollection('exams') 로 교체. 세트별 JSON 에서 setId/title/area/questionCount/limitMinutes 를 읽는다.
 	return [...EXAM_SETS];
 }
 
 /** setId 로 모의고사 세트 1개를 찾는다. 없으면 undefined. */
 export async function getExamSet(setId: string): Promise<ExamSetRef | undefined> {
-	// P2: listExamSets() 결과에서 찾는 방식 그대로 유지 — 컬렉션 교체 시 자동으로 따라온다.
+	// P3: listExamSets() 결과에서 찾는 방식 그대로 유지 — 컬렉션 교체 시 자동으로 따라온다.
 	const all = await listExamSets();
 	return all.find((s) => s.setId === setId);
 }
 
 /** 면접 카테고리 5개를 정의 순서대로 반환한다(timeattack 미포함). */
 export async function listInterviewCategories(): Promise<InterviewCategoryRef[]> {
-	// P2: getCollection('interview') 의 카테고리별 JSON 에서 집계한다.
-	// P2: 이때도 timeattack 은 카테고리가 아니므로 결과에 포함시키지 말 것.
+	// P4: getCollection('interview') 의 카테고리별 JSON 에서 집계한다.
+	// P4: 이때도 timeattack 은 카테고리가 아니므로 결과에 포함시키지 말 것.
 	return [...INTERVIEW_CATEGORIES];
 }
 
 /** slug 로 면접 카테고리 1개를 찾는다. 없으면 undefined. */
 export async function getInterviewCategory(slug: string): Promise<InterviewCategoryRef | undefined> {
-	// P2: listInterviewCategories() 결과에서 찾는 방식 그대로 유지.
+	// P4: listInterviewCategories() 결과에서 찾는 방식 그대로 유지.
 	const all = await listInterviewCategories();
 	return all.find((c) => c.slug === slug);
 }

@@ -2,10 +2,15 @@
 /**
  * 전형 일정 · D-day (UC-06 / FR-6.1 ~ FR-6.3).
  *
- * P1 은 일정 표의 **정보 구조만** 만든다.
- * 2027학년도 요강이 미확정이므로 모든 날짜는 "미정" 이며, 구체적인 날짜를 추측해 적지 않는다(핵심 원칙 4).
+ * P2: 일정 데이터를 코드에서 분리했다. 소스는 `src/content/schedule/2027.json` 하나뿐이며
+ * (`year, confirmed, checkedAt, events[{label, date, status, note?}]`),
+ * 확정 요강이 발표되면 **JSON 만 교체**하면 이 페이지는 그대로 따라간다(FR-10.1 / NFR-7).
+ * `confirmed: true` 로 바뀌면 "예정(가안)" 배지가 확정 표기로 자동 전환된다.
+ *
  * D-day 계산(Date 연산)과 localStorage 접근은 P5 영역이므로 이 페이지에서 하지 않는다.
  */
+import { getEntry } from 'astro:content';
+
 import Badge from '@components/astro/Badge.astro';
 import PageHeader from '@components/astro/PageHeader.astro';
 import PlaceholderCard from '@components/astro/PlaceholderCard.astro';
@@ -18,90 +23,62 @@ const breadcrumbs: Crumb[] = [
 	{ label: '전형 일정' },
 ];
 
-/** 조사 시점 — 확정 요강이 나오면 이 값과 아래 일정을 함께 갱신한다. */
-const CHECKED_AT = '2026년 7월';
+/** 대상 학년도. 다음 학년도 일정을 추가할 때는 JSON 파일과 이 상수만 바꾼다. */
+const SCHEDULE_YEAR = '2027';
 
-/**
- * 전형 단계 8개.
- *
- * P5 교체 지점: `src/content/schedule/` 의 JSON
- * `{ year: 2027, confirmed: false, events: [{ label, date, status }] }` 을 읽어 이 배열을 대체한다.
- * 확정 발표 시 코드를 고치지 않고 JSON 만 교체하면 되도록 형태를 미리 맞춰 두었다.
- */
-const SCHEDULE_EVENTS: readonly { label: string; note: string; date: string; status: string }[] = [
-	{
-		label: '입학설명회 · 학과체험교실',
-		note: '학교 알림마당에서 신청 공지를 확인합니다.',
-		date: '미정',
-		status: '예정',
-	},
-	{
-		label: '원서 접수',
-		note: '지원 학과(해킹방어과)와 전형 유형을 선택해 접수합니다.',
-		date: '미정',
-		status: '예정',
-	},
-	{
-		label: '서류 제출',
-		note: '자기소개서, 실적물(특별전형 해당자) 등을 제출합니다.',
-		date: '미정',
-		status: '예정',
-	},
-	{
-		label: '1단계 합격자 발표',
-		note: '내신 등 정량 평가로 모집정원의 배수를 선발합니다.',
-		date: '미정',
-		status: '예정',
-	},
-	{
-		label: '소질·적성검사',
-		note: '정보 교과, 수리추론, 문제해결, 창의융합 사고력 영역을 봅니다.',
-		date: '미정',
-		status: '예정',
-	},
-	{
-		label: '면접',
-		note: '지원동기, 실적물 설명, 진로계획 등을 묻습니다. 대기 시간이 긴 편입니다.',
-		date: '미정',
-		status: '예정',
-	},
-	{
-		label: '최종 합격자 발표',
-		note: '1단계 점수와 적성검사·면접 결과를 합산해 최종 선발합니다.',
-		date: '미정',
-		status: '예정',
-	},
-	{
-		label: '입학 등록',
-		note: '합격 후 정해진 기간 안에 등록 절차를 마쳐야 합니다.',
-		date: '미정',
-		status: '예정',
-	},
-];
+const schedule = await getEntry('schedule', SCHEDULE_YEAR);
+if (!schedule) {
+	throw new Error(`전형 일정 데이터를 찾을 수 없습니다: src/content/schedule/${SCHEDULE_YEAR}.json`);
+}
+
+const { year, confirmed, checkedAt, events } = schedule.data;
+
+/** 아직 날짜가 확정되지 않은 단계 수 — 안내 문구를 데이터에 맞춰 쓰기 위한 값이다. */
+const pendingCount = events.filter((event) => event.status === '예정').length;
 ---
 
 <BaseLayout
 	title="전형 일정 · D-day"
-	description="2027학년도 한국디지털미디어고 입학 전형 일정과 남은 기간을 확인합니다."
+	description={`${year}학년도 한국디지털미디어고 입학 전형 일정과 남은 기간을 확인합니다.`}
 	breadcrumbs={breadcrumbs}
 >
 	<PageHeader
 		eyebrow="UC-06"
 		title="전형 일정 · D-day"
-		description="2027학년도 한국디지털미디어고 입학 전형 일정입니다."
+		description={`${year}학년도 한국디지털미디어고 입학 전형 일정입니다.`}
 	/>
 
-	<div class="mb-8 rounded-lg border-2 border-amber-300 bg-amber-50 p-4 sm:p-5">
-		<Badge variant="tentative" size="md">예정(가안)</Badge>
-		<p class="mt-2 text-sm leading-relaxed font-semibold text-amber-900 sm:text-base">
-			2027학년도 요강은 아직 발표되지 않았습니다. 아래 일정은 최근 연도 기준 추정이며 확정 시 전면
-			갱신됩니다.
-		</p>
-		<p class="mt-2 text-sm text-amber-900">
-			확인 시점: {CHECKED_AT} · 확정 요강은 학교 공식 사이트의 &ldquo;신입생전형요항&rdquo; 에서
-			확인하세요.
-		</p>
-	</div>
+	{/* 핵심 원칙 4 — 요강이 확정되기 전에는 반드시 "예정(가안)" 을 명시한다. */}
+	{
+		confirmed ? (
+			<div class="mb-8 rounded-lg border-2 border-emerald-300 bg-emerald-50 p-4 sm:p-5">
+				<Badge variant="confirmed" size="md">
+					확정
+				</Badge>
+				<p class="mt-2 text-sm leading-relaxed font-semibold text-emerald-900 sm:text-base">
+					{year}학년도 신입생전형요항으로 확정된 일정입니다.
+				</p>
+				<p class="mt-2 text-sm text-emerald-900">
+					확인 시점: {checkedAt} · 세부 사항은 학교 공식 사이트의 &ldquo;신입생전형요항&rdquo; 에서 다시
+					확인하세요.
+				</p>
+			</div>
+		) : (
+			<div class="mb-8 rounded-lg border-2 border-amber-300 bg-amber-50 p-4 sm:p-5">
+				<Badge variant="tentative" size="md">
+					예정(가안)
+				</Badge>
+				<p class="mt-2 text-sm leading-relaxed font-semibold text-amber-900 sm:text-base">
+					{year}학년도 요강은 아직 발표되지 않았습니다. 아래 일정은 최근 연도 기준 추정이며 확정 시 전면
+					갱신됩니다.
+				</p>
+				<p class="mt-2 text-sm text-amber-900">
+					확인 시점: {checkedAt} · 확정 요강은 학교 공식 사이트의 &ldquo;신입생전형요항&rdquo; 에서
+					확인하세요.
+				</p>
+			</div>
+		)
+	}
 
 	<section aria-labelledby="dday-heading" class="mb-10">
 		<h2 id="dday-heading" class="text-lg font-bold text-slate-900 sm:text-xl">D-day</h2>
@@ -121,14 +98,15 @@ const SCHEDULE_EVENTS: readonly { label: string; note: string; date: string; sta
 	<section aria-labelledby="schedule-heading" class="mb-10">
 		<h2 id="schedule-heading" class="text-lg font-bold text-slate-900 sm:text-xl">전형 단계별 일정</h2>
 		<p class="mt-2 text-sm leading-relaxed text-slate-600">
-			총 {SCHEDULE_EVENTS.length}개 단계입니다. 날짜가 확정되지 않았으므로 모두 &ldquo;미정&rdquo; 으로
-			표시됩니다.
+			총 {events.length}개 단계입니다.{
+				pendingCount > 0 && ` 이 중 ${pendingCount}개 단계는 날짜가 확정되지 않아 “미정” 으로 표시됩니다.`
+			}
 		</p>
 
 		<div class="mt-4 overflow-x-auto rounded-lg border border-slate-200 bg-white">
 			<table class="w-full min-w-[36rem] border-collapse text-left text-sm">
 				<caption class="sr-only">
-					2027학년도 한국디지털미디어고 전형 단계별 일정 (전 항목 미확정)
+					{year}학년도 한국디지털미디어고 전형 단계별 일정
 				</caption>
 				<thead class="bg-slate-100 text-slate-700">
 					<tr>
@@ -139,17 +117,21 @@ const SCHEDULE_EVENTS: readonly { label: string; note: string; date: string; sta
 				</thead>
 				<tbody>
 					{
-						SCHEDULE_EVENTS.map((event) => (
+						events.map((event) => (
 							<tr class="border-t border-slate-200 align-top">
 								<th scope="row" class="px-4 py-3 font-semibold text-slate-900">
 									{event.label}
-									<span class="mt-1 block text-xs leading-relaxed font-normal text-slate-600">
-										{event.note}
-									</span>
+									{event.note && (
+										<span class="mt-1 block text-xs leading-relaxed font-normal text-slate-600">
+											{event.note}
+										</span>
+									)}
 								</th>
 								<td class="px-4 py-3 whitespace-nowrap text-slate-600">{event.date}</td>
 								<td class="px-4 py-3">
-									<Badge variant="tentative">{event.status}</Badge>
+									<Badge variant={event.status === '확정' ? 'confirmed' : 'tentative'}>
+										{event.status}
+									</Badge>
 								</td>
 							</tr>
 						))
@@ -161,15 +143,14 @@ const SCHEDULE_EVENTS: readonly { label: string; note: string; date: string; sta
 
 	<PlaceholderCard phase="P5" uc="UC-06" fr="FR-6.1 ~ FR-6.3">
 		<p>
-			P5 에서 <code>src/content/schedule/</code> 의 JSON(<code
-				>year, confirmed, events[&#123;label, date, status&#125;]</code
-			>)을 읽어 표를 렌더하고, 가장 가까운 일정까지 남은 D-day 를 계산해 표시합니다.
+			위 표는 P2 에서 이미 <code>src/content/schedule/{SCHEDULE_YEAR}.json</code> 을 읽어 렌더하고 있습니다.
+			남은 작업은 <strong>D-day 계산</strong> — 가장 가까운 일정까지 남은 날짜를 구해 위 D-day 자리와 헤더의
+			D-day 칩에 표시하는 부분입니다.
 		</p>
 		<p>
-			일정 데이터는 코드와 분리되어 있으므로, 확정 요강이 발표되면 JSON 파일의 날짜와 <code
-				>confirmed</code
-			> 값만 교체하면 됩니다. <code>confirmed: true</code> 가 되면 &ldquo;예정(가안)&rdquo; 배지가 확정
-			배지로 바뀝니다.
+			일정 데이터는 코드와 분리되어 있으므로, 확정 요강이 발표되면 JSON 의 <code>date</code> ·
+			<code>status</code> · <code>confirmed</code> 값만 교체하면 됩니다. <code>confirmed: true</code> 가
+			되면 &ldquo;예정(가안)&rdquo; 안내가 확정 안내로 바뀝니다.
 		</p>
 	</PlaceholderCard>
 </BaseLayout>

@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 @theme {
 	/* 브랜드 컬러 램프 — Tailwind v4 stock sky 램프의 oklch 값을 그대로 별칭했다. */
@@ -51,4 +52,42 @@
 			scroll-behavior: auto;
 		}
 	}
+}
+
+/*
+ * @tailwindcss/typography(prose) 색상 오버라이드 — 이론/가이드 본문(md 렌더 결과)용.
+ *
+ * ⚠️ 일부러 @layer 밖에 둔다. typography 플러그인은 .prose 규칙을 utilities 레이어에 넣기 때문에,
+ *    같은 특이도(.prose)로 @layer base 안에 쓰면 레이어 순서상 플러그인 기본값이 이긴다.
+ *    레이어에 속하지 않은 규칙은 모든 레이어보다 우선하므로 여기서 확실히 덮어쓴다.
+ *
+ * ⚠️ Tailwind v4 는 **유틸리티로 실제 사용된 테마 변수만** CSS 로 내보낸다.
+ *    slate 계열은 마크업에서 안 쓰인 단계가 있을 수 있어 var() 두 번째 인자로 실제 색상값을 폴백으로 함께 적는다.
+ *    (P1 PlaceholderCard.astro 에 같은 선례 주석이 있다)
+ */
+.prose {
+	/* 본문 링크 = brand-700 (흰 배경 대비 6.4:1) — 디자인 토큰의 본문 링크 색과 일치시킨다 */
+	--tw-prose-links: var(--color-brand-700, oklch(50% 0.134 242.749));
+	--tw-prose-headings: var(--color-slate-900, #0f172a);
+	--tw-prose-body: var(--color-slate-700, #334155);
+	--tw-prose-lead: var(--color-slate-600, #475569);
+	--tw-prose-bold: var(--color-slate-900, #0f172a);
+	--tw-prose-counters: var(--color-slate-500, #64748b);
+	--tw-prose-bullets: var(--color-slate-300, #cbd5e1);
+	--tw-prose-hr: var(--color-slate-200, #e2e8f0);
+	--tw-prose-quotes: var(--color-slate-900, #0f172a);
+	--tw-prose-quote-borders: var(--color-slate-200, #e2e8f0);
+	--tw-prose-captions: var(--color-slate-600, #475569);
+	--tw-prose-kbd: var(--color-slate-900, #0f172a);
+	--tw-prose-code: var(--color-slate-800, #1e293b);
+	--tw-prose-pre-code: var(--color-slate-800, #1e293b);
+	/* Shiki(github-light)가 <pre> 에 배경을 인라인으로 넣으므로 여기서는 투명하게 둔다 */
+	--tw-prose-pre-bg: transparent;
+	--tw-prose-th-borders: var(--color-slate-300, #cbd5e1);
+	--tw-prose-td-borders: var(--color-slate-200, #e2e8f0);
+}
+
+/* 표는 컨테이너 폭을 꽉 채우기만 한다. 가로 스크롤 래핑(overflow-x-auto)은 페이지 쪽 책임이다. */
+.prose :where(table) {
+	width: 100%;
 }
