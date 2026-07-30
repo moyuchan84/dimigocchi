@@ -1,0 +1,33 @@
+---
+/**
+ * 목록/그리드에서 쓰는 링크 카드.
+ *
+ * ── 마크업 규칙 ──
+ * 카드 전체가 하나의 `<a>` 다. 내부에 버튼·링크 등 **중첩 인터랙티브 요소를 넣지 않는다**
+ * (중첩되면 키보드 탭 순서와 스크린리더 읽기가 깨진다). 배지는 순수 텍스트라 안전하다.
+ * 그리드에서 카드 높이가 들쭉날쭉하지 않도록 `h-full flex flex-col` 로 늘린다.
+ */
+import Badge from '@components/astro/Badge.astro';
+
+interface Props {
+	href: string;
+	title: string;
+	description?: string;
+	meta?: string;
+	badge?: string;
+}
+
+const { href, title, description, meta, badge } = Astro.props;
+---
+
+<a
+	href={href}
+	class="group flex h-full flex-col rounded-lg border border-slate-200 bg-white p-4 transition hover:border-brand-300 hover:shadow-sm"
+>
+	<div class="flex flex-wrap items-start gap-x-2 gap-y-1">
+		<span class="font-semibold text-slate-900 group-hover:text-brand-700">{title}</span>
+		{badge && <Badge variant="neutral" size="sm">{badge}</Badge>}
+	</div>
+	{description && <p class="mt-2 text-sm leading-relaxed text-slate-600">{description}</p>}
+	{meta && <p class="mt-auto pt-3 text-xs text-slate-500">{meta}</p>}
+</a>

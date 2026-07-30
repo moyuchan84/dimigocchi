@@ -1,0 +1,143 @@
+---
+/**
+ * 준비 체크리스트 (UC-07).
+ *
+ * 항목 출처: `디미고_입시_준비_가이드.md` 8장(준비 시기와 포인트) · 9장(체크리스트).
+ *
+ * ── P1 마크업 규칙 ──
+ * 체크박스 `<input>` 을 렌더하지 않는다. P1 에는 상태 저장 수단이 없어(localStorage 미사용)
+ * 체크해도 새로고침하면 사라지는 "동작하지 않는 입력" 이 되기 때문이다.
+ * 대신 각 항목 앞에 `aria-hidden` 인 빈 사각형 표식을 두고 텍스트만 보여준다.
+ * 실제 체크 상태는 P5 에서 `dimigo-prep:progress.checklist` 에 저장된다.
+ */
+import Badge from '@components/astro/Badge.astro';
+import PageHeader from '@components/astro/PageHeader.astro';
+import PlaceholderCard from '@components/astro/PlaceholderCard.astro';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import type { Crumb } from '@lib/navigation';
+
+const breadcrumbs: Crumb[] = [{ label: '홈', href: '/' }, { label: '준비 체크리스트' }];
+
+interface ChecklistItem {
+	label: string;
+	/** 2027학년도 미확정 일정에 의존하는 항목이면 true → "예정(가안)" 배지 (핵심 원칙 4) */
+	tentative?: boolean;
+}
+
+interface ChecklistStage {
+	id: string;
+	title: string;
+	summary: string;
+	items: readonly ChecklistItem[];
+}
+
+const STAGES: readonly ChecklistStage[] = [
+	{
+		id: 'now',
+		title: '지금부터 — 방향 정하기',
+		summary: '무엇을 준비할지 정하고 기초 학습 습관을 만드는 단계예요.',
+		items: [
+			{ label: '지망 학과(웹프로그래밍 / e-비즈니스 / 디지털콘텐츠 / 해킹방어) 결정하기' },
+			{ label: '일반전형과 진로적성특별전형 중 어느 쪽으로 지원할지 정하기' },
+			{ label: '중2·3학년 국·영·수 내신 관리 계획 세우기' },
+			{ label: '학교 공식 사이트에서 최신 신입생전형요항 PDF 내려받아 정독하기', tentative: true },
+			{ label: '기초 코딩(파이썬 등) 학습 시작하기' },
+		],
+	},
+	{
+		id: 'summer',
+		title: '여름방학 — 실력 쌓기',
+		summary: '적성검사 대비 학습과 활동 기록을 집중적으로 쌓는 단계예요.',
+		items: [
+			{ label: 'IT 상식·시사 스크랩 노트 만들기 (AI, 빅데이터, IoT, 개인정보 등)' },
+			{ label: '창의사고력 수학·수리추론 문제 꾸준히 풀기' },
+			{ label: '해킹방어 기초 이론(정보보호 3요소, 네트워크, 리눅스) 훑어보기' },
+			{ label: '입학설명회·학교투어·학과체험교실 참가 신청하기', tentative: true },
+		],
+	},
+	{
+		id: 'before-apply',
+		title: '원서 접수 전 — 서류 정리',
+		summary: '제출 서류를 빠짐없이 확인하고 실적물을 정리하는 단계예요.',
+		items: [
+			{ label: '확정 전형요항에서 제출 서류와 마감 시각 다시 확인하기', tentative: true },
+			{ label: '교과점수계산기로 예상 교과 점수 확인하기' },
+			{ label: '자기소개서 초안 쓰고 여러 번 고쳐 쓰기' },
+			{ label: '실적물·포트폴리오(대회, 프로젝트, 활동 기록) 정리하기' },
+			{ label: '원서 접수 기간·방법 달력에 표시하기', tentative: true },
+		],
+	},
+	{
+		id: 'before-interview',
+		title: '면접 직전 — 마무리 점검',
+		summary: '말로 설명하는 연습과 당일 준비물을 점검하는 단계예요.',
+		items: [
+			{ label: '지원동기·진로계획 답변을 소리 내어 말해보기' },
+			{ label: '실적물에 대해 "무엇을, 왜, 어떻게 만들었는지" 설명 연습하기' },
+			{ label: '최근 보안 시사 이슈 2~3개에 대한 내 생각 정리하기' },
+			{ label: '면접 일시·장소·준비물 확인하기', tentative: true },
+		],
+	},
+] as const;
+
+const totalItems = STAGES.reduce((sum, stage) => sum + stage.items.length, 0);
+---
+
+<BaseLayout
+	title="준비 체크리스트"
+	description="디미고 입시 준비를 단계별로 점검하는 체크리스트입니다."
+	breadcrumbs={breadcrumbs}
+>
+	<PageHeader
+		title="준비 체크리스트"
+		description="원서 접수부터 면접까지 빠뜨리기 쉬운 항목을 단계별로 점검합니다."
+	/>
+
+	<div class="rounded-lg border border-slate-200 bg-white p-4 sm:p-5">
+		<p class="text-sm leading-relaxed text-slate-600">
+			전체 <strong class="font-semibold text-slate-900">{totalItems}개</strong> 항목을 {STAGES.length}단계로
+			나눴습니다. <Badge variant="tentative">예정(가안)</Badge> 배지가 붙은 항목은 2027학년도 전형요항이
+			확정되면 내용이 바뀔 수 있어요.
+		</p>
+	</div>
+
+	<ol class="mt-8 list-none space-y-8">
+		{
+			STAGES.map((stage, index) => (
+				<li>
+					<section aria-labelledby={`stage-${stage.id}`}>
+						<h2 id={`stage-${stage.id}`} class="text-lg font-semibold text-slate-900">
+							<span class="mr-2 font-mono text-sm text-brand-700">{index + 1}단계</span>
+							{stage.title}
+						</h2>
+						<p class="mt-1 text-sm text-slate-600">{stage.summary}</p>
+						<ul class="mt-4 list-none divide-y divide-slate-200 rounded-lg border border-slate-200 bg-white">
+							{stage.items.map((item) => (
+								<li class="flex flex-wrap items-start gap-x-2 gap-y-1 p-4">
+									<span
+										aria-hidden="true"
+										class="mt-0.5 h-4 w-4 shrink-0 rounded-sm border-2 border-slate-300"
+									/>
+									<span class="min-w-0 flex-1 text-sm leading-relaxed text-slate-700">
+										{item.label}
+									</span>
+									{item.tentative && <Badge variant="tentative">예정(가안)</Badge>}
+								</li>
+							))}
+						</ul>
+					</section>
+				</li>
+			))
+		}
+	</ol>
+
+	<div class="mt-10">
+		<PlaceholderCard phase="P5" title="체크 상태 저장" uc="UC-07" fr="FR-7.1 ~ FR-7.2">
+			<p>
+				P5에서 각 항목이 실제 체크박스가 되고, 체크 상태는 <code>dimigo-prep:progress.checklist</code> 에
+				저장되어 다음 방문 때 그대로 복원됩니다.
+			</p>
+			<p>단계별 완료율이 홈 대시보드의 진행률에도 반영됩니다.</p>
+		</PlaceholderCard>
+	</div>
+</BaseLayout>

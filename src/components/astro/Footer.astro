@@ -1,0 +1,53 @@
+---
+/**
+ * 사이트 공통 푸터.
+ *
+ * FOOTER_NAV 는 정적 라우트 10개를 4그룹으로 전부 나열한다. 헤더(PRIMARY_NAV)에 없는
+ * `/guide/schedule` · `/interview/timeattack` · `/search` 도 여기서 항상 도달 가능하다(고아 페이지 방지).
+ *
+ * 하단 고지 2줄은 이 프로젝트의 핵심 원칙을 사용자(수험생·학부모)에게 명시하는 역할이다.
+ *   1. 서버 없음 — 학습 기록은 브라우저에만 저장된다.
+ *   2. 2027학년도 전형 요강 미확정 — 일정·배점은 "예정(가안)".
+ */
+import Badge from '@components/astro/Badge.astro';
+import { FOOTER_NAV, SITE_NAME } from '@lib/navigation';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="border-t border-slate-200 bg-white">
+	<div class="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 lg:px-8 lg:py-12">
+		{/* 360px 모바일에서 2열, 640px 이상에서 4열 */}
+		<nav aria-label="사이트맵" class="grid grid-cols-2 gap-8 sm:grid-cols-4">
+			{
+				FOOTER_NAV.map((group) => (
+					<section>
+						<h2 class="text-sm font-semibold text-slate-900">{group.title}</h2>
+						<ul class="mt-3 flex flex-col gap-2">
+							{group.items.map((item) => (
+								<li>
+									<a href={item.href} class="text-sm text-slate-600 hover:text-brand-700">
+										{item.label}
+									</a>
+								</li>
+							))}
+						</ul>
+					</section>
+				))
+			}
+		</nav>
+
+		<div class="mt-10 flex flex-col gap-2 border-t border-slate-200 pt-6">
+			<p class="text-xs text-slate-500">
+				학습 기록(진도·모의고사 결과·면접 답변)은 서버로 전송되지 않고 이 브라우저에만 저장됩니다.
+			</p>
+			<p class="flex flex-wrap items-center gap-2 text-xs text-slate-500">
+				<Badge variant="tentative" size="sm">예정(가안)</Badge>
+				<span>2027학년도 전형 요강은 미확정입니다. 일정·배점 정보는 확정 발표 후 갱신됩니다.</span>
+			</p>
+			<p class="mt-2 text-xs text-slate-500">
+				{year} {SITE_NAME} — 개인 학습용 비공개 사이트
+			</p>
+		</div>
+	</div>
+</footer>

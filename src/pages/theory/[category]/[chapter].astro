@@ -1,0 +1,162 @@
+---
+/**
+ * 이론 챕터 상세 (UC-02).
+ *
+ * P1 에서는 본문 대신 챕터 메타 정보와 앞뒤 이동만 제공한다.
+ * 소분류가 13개이고 소분류당 시드 챕터가 1개이므로 정적 경로 13개가 생성된다.
+ */
+import type { GetStaticPaths } from 'astro';
+
+import PageHeader from '@components/astro/PageHeader.astro';
+import PlaceholderCard from '@components/astro/PlaceholderCard.astro';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import type { Crumb } from '@lib/navigation';
+import { THEORY_CATEGORIES, listTheoryChapters } from '@lib/taxonomy';
+
+export const getStaticPaths = (async () => {
+	// P2: 이 호출이 getCollection('theory') 로 바뀌는 유일한 지점이다.
+	// listTheoryChapters() 의 시그니처/반환 타입은 그대로이므로 아래 매핑은 수정 불필요.
+	const chapters = await listTheoryChapters();
+
+	return chapters.map((chapter) => ({
+		params: { category: chapter.category, chapter: chapter.id },
+		props: { chapter },
+	}));
+}) satisfies GetStaticPaths;
+
+const { chapter } = Astro.props;
+
+const category = THEORY_CATEGORIES.find((c) => c.slug === chapter.category);
+if (!category) {
+	throw new Error(`알 수 없는 이론 카테고리: ${chapter.category}`);
+}
+
+const subcategory = category.subcategories.find((s) => s.slug === chapter.subcategory);
+if (!subcategory) {
+	throw new Error(`알 수 없는 이론 소분류: ${chapter.subcategory}`);
+}
+
+/** 같은 카테고리 안에서 order 오름차순으로 세운 뒤 현재 위치의 앞/뒤를 집는다. */
+const allChapters = await listTheoryChapters();
+const siblings = allChapters
+	.filter((c) => c.category === chapter.category)
+	.sort((a, b) => a.order - b.order);
+const currentIndex = siblings.findIndex((c) => c.id === chapter.id);
+const prevChapter = currentIndex > 0 ? siblings[currentIndex - 1] : undefined;
+const nextChapter = currentIndex >= 0 ? siblings[currentIndex + 1] : undefined;
+
+/** 같은 소분류의 형제 챕터(현재 챕터 제외). P1 시드 데이터에서는 항상 비어 있다. */
+const sameSubcategory = allChapters.filter(
+	(c) => c.category === chapter.category && c.subcategory === chapter.subcategory && c.id !== chapter.id,
+);
+
+const breadcrumbs: Crumb[] = [
+	{ label: '홈', href: '/' },
+	{ label: '이론 학습', href: '/theory' },
+	// /theory/[category] 라우트는 사이트맵에 없다 → 목록 페이지의 카테고리 섹션 앵커로 보낸다.
+	{ label: category.title, href: `/theory#${category.slug}` },
+	{ label: chapter.title },
+];
+---
+
+<BaseLayout
+	title={chapter.title}
+	description={`${category.title} · ${subcategory.title} 이론 챕터입니다.`}
+	breadcrumbs={breadcrumbs}
+>
+	<PageHeader eyebrow={subcategory.title} title={chapter.title} />
+
+	<section aria-labelledby="chapter-meta-heading">
+		<h2 id="chapter-meta-heading" class="text-lg font-bold tracking-tight text-slate-900">
+			챕터 정보
+		</h2>
+		<dl class="mt-3 grid gap-3 rounded-lg border border-slate-200 bg-white p-4 sm:grid-cols-3">
+			<div>
+				<dt class="text-xs font-semibold text-slate-500">예상 학습 시간</dt>
+				<dd class="mt-1 text-sm text-slate-900">{chapter.estMinutes}분</dd>
+			</div>
+			<div>
+				<dt class="text-xs font-semibold text-slate-500">소분류</dt>
+				<dd class="mt-1 text-sm text-slate-900">{subcategory.title}</dd>
+			</div>
+			<div>
+				<dt class="text-xs font-semibold text-slate-500">챕터 ID</dt>
+				<dd class="mt-1 font-mono text-sm break-all text-slate-900">{chapter.id}</dd>
+			</div>
+		</dl>
+	</section>
+
+	<section class="mt-8" aria-labelledby="sibling-heading">
+		<h2 id="sibling-heading" class="text-lg font-bold tracking-tight text-slate-900">
+			{subcategory.title}의 다른 챕터
+		</h2>
+		{
+			sameSubcategory.length > 0 ? (
+				<ul class="mt-3 space-y-2">
+					{sameSubcategory.map((sibling) => (
+						<li>
+							<a
+								href={`/theory/${sibling.category}/${sibling.id}`}
+								class="block rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 transition hover:border-brand-300 hover:text-brand-700"
+							>
+								{sibling.title}
+							</a>
+						</li>
+					))}
+				</ul>
+			) : (
+				<p class="mt-3 rounded-lg border border-slate-200 bg-white p-4 text-sm leading-relaxed text-slate-600">
+					이 소분류의 챕터는 아직 1개뿐입니다. 나머지 챕터는 P2 · P7 에서 순차적으로 추가됩니다.
+				</p>
+			)
+		}
+	</section>
+
+	<div class="mt-8">
+		<PlaceholderCard phase="P2" uc="UC-02" fr="FR-2.1 ~ FR-2.4">
+			<p>
+				P2 에서 <code>src/content/theory/</code> 의 마크다운 본문이 이 자리에 렌더링됩니다.
+				구성은 <strong>핵심 개념 → 예시 → 확인 문제 → 요약</strong> 순서입니다.
+			</p>
+			<p>
+				본문 하단의 "학습 완료" 체크는 P5 에서 <code>dimigo-prep:progress.theory</code> 에 연결되어
+				브라우저에만 저장됩니다. 아직 동작하지 않으므로 P1 에서는 표시하지 않습니다.
+			</p>
+		</PlaceholderCard>
+	</div>
+
+	{
+		(prevChapter || nextChapter) && (
+			<nav class="mt-10 border-t border-slate-200 pt-6" aria-label="챕터 이동">
+				<ul class="grid list-none gap-3 sm:grid-cols-2">
+					{prevChapter && (
+						<li>
+							<a
+								href={`/theory/${prevChapter.category}/${prevChapter.id}`}
+								class="group flex h-full flex-col rounded-lg border border-slate-200 bg-white p-4 transition hover:border-brand-300 hover:shadow-sm"
+							>
+								<span class="text-xs font-semibold text-brand-700">← 이전 챕터</span>
+								<span class="mt-1 font-medium text-slate-900 group-hover:text-brand-700">
+									{prevChapter.title}
+								</span>
+							</a>
+						</li>
+					)}
+					{nextChapter && (
+						<li class="sm:col-start-2">
+							<a
+								href={`/theory/${nextChapter.category}/${nextChapter.id}`}
+								class="group flex h-full flex-col rounded-lg border border-slate-200 bg-white p-4 text-right transition hover:border-brand-300 hover:shadow-sm"
+							>
+								<span class="text-xs font-semibold text-brand-700">다음 챕터 →</span>
+								<span class="mt-1 font-medium text-slate-900 group-hover:text-brand-700">
+									{nextChapter.title}
+								</span>
+							</a>
+						</li>
+					)}
+				</ul>
+			</nav>
+		)
+	}
+</BaseLayout>

@@ -1,0 +1,138 @@
+---
+/**
+ * 면접 타임어택 모드 (UC-05 / FR-5.4).
+ *
+ * `/interview/[category]` 보다 앞서 매칭되는 **정적 라우트**다.
+ * `timeattack` 은 INTERVIEW_CATEGORIES 에 들어 있지 않으므로 동적 라우트와 충돌하지 않는다.
+ * P1 에서는 제한시간 선택·카운트다운이 동작하지 않으므로 라디오/버튼을 렌더하지 않고
+ * 설명 텍스트와 배지, 회색 스켈레톤으로만 화면 구조를 보여준다.
+ */
+import Badge from '@components/astro/Badge.astro';
+import CardLink from '@components/astro/CardLink.astro';
+import PageHeader from '@components/astro/PageHeader.astro';
+import PlaceholderCard from '@components/astro/PlaceholderCard.astro';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import type { Crumb } from '@lib/navigation';
+import { listInterviewCategories } from '@lib/taxonomy';
+
+const categories = await listInterviewCategories();
+
+/** 진행 방식 3단계 — P4 에서 구현될 흐름을 순서 그대로 보여준다. */
+const STEPS: readonly { title: string; detail: string }[] = [
+	{ title: '질문 1개 제시', detail: '선택한 범위에서 질문 하나를 무작위로 뽑아 화면에 보여줍니다.' },
+	{ title: '제한시간 카운트다운', detail: '남은 시간이 줄어드는 동안 소리 내어 답변합니다.' },
+	{ title: '다음 질문', detail: '시간이 끝나면 다음 질문으로 넘어가고, 답변한 질문 수가 쌓입니다.' },
+];
+
+const breadcrumbs: Crumb[] = [
+	{ label: '홈', href: '/' },
+	{ label: '면접 준비', href: '/interview' },
+	{ label: '타임어택' },
+];
+---
+
+<BaseLayout
+	title="타임어택 모드"
+	description="무작위 면접 질문에 60~90초 안에 답변하는 실전 연습 모드입니다."
+	breadcrumbs={breadcrumbs}
+>
+	<PageHeader
+		eyebrow="면접 준비"
+		title="타임어택 모드"
+		description="무작위 질문에 60~90초 안에 답변하는 연습입니다."
+	/>
+
+	<section aria-labelledby="how-heading" class="mb-10">
+		<h2 id="how-heading" class="mb-3 text-lg font-semibold text-slate-900">진행 방식</h2>
+		<div class="rounded-lg border border-slate-200 bg-white p-4 sm:p-5">
+			<ol class="list-none space-y-4">
+				{
+					STEPS.map((step, index) => (
+						<li class="flex gap-3">
+							<span class="flex size-7 shrink-0 items-center justify-center rounded-full bg-brand-50 text-sm font-semibold text-brand-800">
+								{index + 1}
+							</span>
+							<div>
+								<p class="font-semibold text-slate-900">{step.title}</p>
+								<p class="mt-1 text-sm leading-relaxed text-slate-600">{step.detail}</p>
+							</div>
+						</li>
+					))
+				}
+			</ol>
+
+			<dl class="mt-6 grid gap-4 border-t border-slate-200 pt-5 sm:grid-cols-2">
+				<div>
+					<dt class="text-sm font-semibold text-slate-900">제한시간</dt>
+					<dd class="mt-2 flex flex-wrap items-center gap-2">
+						<Badge variant="neutral">60초</Badge>
+						<Badge variant="neutral">90초</Badge>
+						<span class="text-sm text-slate-600">중에서 고릅니다</span>
+					</dd>
+				</div>
+				<div>
+					<dt class="text-sm font-semibold text-slate-900">출제 범위</dt>
+					<dd class="mt-2 text-sm leading-relaxed text-slate-600">
+						면접 카테고리 {categories.length}개 전체, 또는 그중 원하는 카테고리만 골라서 출제합니다.
+					</dd>
+				</div>
+			</dl>
+			<p class="mt-4 text-sm text-slate-500">
+				선택 화면과 카운트다운은 P4 에서 동작합니다. 지금은 어떤 화면이 될지 미리 보여주는 단계입니다.
+			</p>
+		</div>
+	</section>
+
+	<section aria-labelledby="timer-heading" class="mb-10">
+		<h2 id="timer-heading" class="mb-3 text-lg font-semibold text-slate-900">연습 화면 미리보기</h2>
+		<div class="rounded-lg border border-dashed border-slate-300 bg-white p-6 sm:p-8">
+			<div class="flex flex-col items-center gap-6">
+				<div
+					class="flex size-36 items-center justify-center rounded-full border-8 border-slate-200 bg-slate-100 sm:size-44"
+					aria-hidden="true"
+				>
+					<div class="h-8 w-20 rounded-md bg-slate-200 sm:h-10 sm:w-24"></div>
+				</div>
+				<p class="text-sm text-slate-500">남은 시간이 표시될 자리입니다.</p>
+				<div class="w-full max-w-xl rounded-md bg-slate-100 px-4 py-4" aria-hidden="true">
+					<div class="h-3 w-11/12 rounded-full bg-slate-200"></div>
+					<div class="mt-2.5 h-3 w-3/4 rounded-full bg-slate-200"></div>
+				</div>
+				<p class="text-sm text-slate-500">무작위로 뽑힌 질문이 표시될 자리입니다.</p>
+			</div>
+		</div>
+	</section>
+
+	<section aria-labelledby="scope-heading" class="mb-10">
+		<h2 id="scope-heading" class="mb-3 text-lg font-semibold text-slate-900">카테고리별로 먼저 정리하기</h2>
+		<p class="mb-4 max-w-2xl text-sm leading-relaxed text-slate-600">
+			타임어택은 이미 정리해 둔 답변을 실전 속도로 꺼내는 연습이에요. 먼저 카테고리별로 답변 초안을 써 두면
+			훨씬 수월합니다.
+		</p>
+		<ul class="grid list-none gap-3 sm:grid-cols-2">
+			{
+				categories.map((category) => (
+					<li>
+						<CardLink
+							href={`/interview/${category.slug}`}
+							title={category.title}
+							description={category.description}
+							meta={`목표 ${category.targetCount}문항`}
+						/>
+					</li>
+				))
+			}
+		</ul>
+	</section>
+
+	<PlaceholderCard phase="P4" uc="UC-05" fr="FR-5.4">
+		<p>
+			P4 에서 이 화면은 React 아일랜드로 구현됩니다. 선택한 카테고리 범위에서 질문을 무작위로 뽑고,
+			60초 또는 90초 카운트다운 타이머를 돌린 뒤 자동으로 다음 질문으로 넘어갑니다.
+		</p>
+		<p>
+			질문 데이터는 <code>src/content/interview/</code> 의 JSON 을 그대로 사용하므로, 새 질문을 추가하면
+			타임어택 출제 범위에도 코드 수정 없이 반영됩니다.
+		</p>
+	</PlaceholderCard>
+</BaseLayout>

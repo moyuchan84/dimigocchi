@@ -1,12 +1,30 @@
 ---
+/**
+ * 모든 페이지의 공통 셸 — head 메타 / 스킵 링크 / Header / main / Footer.
+ *
+ * ── 설계 메모 ──
+ * `activeNav` 같은 prop 을 두지 않는다. 헤더의 활성 내비 표시는 Header 가
+ * `Astro.url.pathname` 을 직접 읽어 자동 판정하므로, 페이지에서 prop 을 빠뜨려
+ * 활성 표시가 사라지는 종류의 버그가 원천적으로 발생하지 않는다.
+ */
 import '../styles/global.css';
+
+import Breadcrumb from '@components/astro/Breadcrumb.astro';
+import Footer from '@components/astro/Footer.astro';
+import Header from '@components/astro/Header.astro';
+import { SITE_DESCRIPTION, SITE_NAME, type Crumb } from '@lib/navigation';
 
 interface Props {
 	title: string;
 	description?: string;
+	breadcrumbs?: Crumb[];
+	wide?: boolean;
 }
 
-const { title, description = '2027학년도 한국디지털미디어고 해킹방어과 입시 준비 사이트' } = Astro.props;
+const { title, description = SITE_DESCRIPTION, breadcrumbs, wide = false } = Astro.props;
+
+/** 홈에서 "DIMIGO PREP · DIMIGO PREP" 이 되지 않도록 사이트명과 같으면 그대로 쓴다. */
+const fullTitle = title === SITE_NAME ? title : `${title} · ${SITE_NAME}`;
 ---
 
 <html lang="ko">
@@ -17,10 +35,34 @@ const { title, description = '2027학년도 한국디지털미디어고 해킹�
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="generator" content={Astro.generator} />
 		<meta name="description" content={description} />
-		<title>{title}</title>
+		<!-- NFR-9: 개인 학습용 비공개 사이트이므로 검색엔진 색인을 막는다. public/robots.txt 와 함께 동작한다. -->
+		<meta name="robots" content="noindex, nofollow" />
+		<title>{fullTitle}</title>
 	</head>
-	<body class="min-h-screen bg-slate-50 text-slate-900 antialiased">
-		<!-- P1에서 Header / Nav / Footer 추가 예정 -->
-		<slot />
+	<body class="flex min-h-screen flex-col bg-slate-50 font-sans text-slate-900 antialiased">
+		<!--
+			Skip link. `focus:absolute!` 의 `!`(important)가 필요하다 — `not-sr-only` 가
+			position:static 을 설정하는데 Tailwind 생성 CSS 에서 `absolute` 보다 뒤에 오기 때문에,
+			important 없이 두면 포커스 시 skip link 가 static 으로 잡혀 헤더를 아래로 밀어낸다(레이아웃 점프).
+		-->
+		<a
+			href="#main"
+			class="sr-only focus:not-sr-only focus:absolute! focus:top-2 focus:left-2 focus:z-50 focus:rounded-md focus:bg-brand-700 focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white"
+		>
+			본문 바로가기
+		</a>
+		<Header />
+		<main
+			id="main"
+			tabindex="-1"
+			class:list={[
+				'mx-auto w-full flex-1 px-4 py-8 sm:px-6 lg:px-8 lg:py-12',
+				wide ? 'max-w-6xl' : 'max-w-4xl',
+			]}
+		>
+			{breadcrumbs && breadcrumbs.length > 0 && <Breadcrumb items={breadcrumbs} />}
+			<slot />
+		</main>
+		<Footer />
 	</body>
 </html>

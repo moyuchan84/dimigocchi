@@ -1,0 +1,103 @@
+---
+/**
+ * 통합 검색 (UC-08).
+ *
+ * ── P1 마크업 규칙 ──
+ * 검색 입력창을 렌더하지 않는다. P1 에는 인덱스도 검색 로직도 없어서, 입력창을 두면
+ * 타이핑해도 아무 일이 없는 "동작하지 않는 폼" 이 된다.
+ * 대신 앞으로 무엇이 검색되는지 범위를 택소노미에서 실제로 집계해 보여준다.
+ * P6 에서 빌드 시 생성한 정적 인덱스와 GET 폼이 이 자리를 대체한다.
+ */
+import CardLink from '@components/astro/CardLink.astro';
+import PageHeader from '@components/astro/PageHeader.astro';
+import PlaceholderCard from '@components/astro/PlaceholderCard.astro';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import type { Crumb } from '@lib/navigation';
+import {
+	THEORY_CATEGORIES,
+	listExamSets,
+	listInterviewCategories,
+	listTheoryChapters,
+} from '@lib/taxonomy';
+
+const breadcrumbs: Crumb[] = [{ label: '홈', href: '/' }, { label: '검색' }];
+
+/** P2/P6: 아래 3개 호출이 getCollection() 기반으로 바뀌면 집계 수치도 자동으로 따라온다. */
+const chapters = await listTheoryChapters();
+const examSets = await listExamSets();
+const interviewCategories = await listInterviewCategories();
+
+const subcategoryCount = THEORY_CATEGORIES.reduce((sum, c) => sum + c.subcategories.length, 0);
+const questionCount = examSets.reduce((sum, s) => sum + s.questionCount, 0);
+const interviewQuestionCount = interviewCategories.reduce((sum, c) => sum + c.targetCount, 0);
+
+const scopes = [
+	{
+		href: '/theory',
+		title: '이론 챕터',
+		description: `적성검사 공통과 해킹방어과 특화를 합쳐 ${subcategoryCount}개 소분류의 본문과 제목을 검색합니다.`,
+		meta: `소분류 ${subcategoryCount}개 · 챕터 ${chapters.length}개`,
+		badge: `${subcategoryCount}개 소분류`,
+	},
+	{
+		href: '/exam',
+		title: '모의고사 문항',
+		description: '문제 지문과 해설을 검색해 관련 문항을 바로 찾아갑니다.',
+		meta: `세트 ${examSets.length}개 · 목표 문항 ${questionCount}개`,
+		badge: `${examSets.length}세트`,
+	},
+	{
+		href: '/interview',
+		title: '면접 질문',
+		description: '질문과 답변 가이드를 검색해 비슷한 유형의 질문을 모아 봅니다.',
+		meta: `카테고리 ${interviewCategories.length}개 · 목표 질문 ${interviewQuestionCount}개`,
+		badge: `${interviewCategories.length}개 카테고리`,
+	},
+];
+---
+
+<BaseLayout
+	title="통합 검색"
+	description="이론 챕터, 모의고사 문항, 면접 질문을 한 번에 찾습니다."
+	breadcrumbs={breadcrumbs}
+>
+	<PageHeader
+		title="통합 검색"
+		description="이론 챕터, 모의고사 문항, 면접 질문을 한 번에 찾습니다."
+	/>
+
+	<section aria-labelledby="scope-heading">
+		<h2 id="scope-heading" class="text-lg font-semibold text-slate-900">검색 대상</h2>
+		<p class="mt-1 text-sm text-slate-600">
+			아직 검색 기능이 켜지지 않았습니다. 지금은 아래 허브에서 직접 찾아보세요.
+		</p>
+		<ul class="mt-4 grid list-none gap-4 sm:grid-cols-2 lg:grid-cols-3">
+			{
+				scopes.map((scope) => (
+					<li>
+						<CardLink
+							href={scope.href}
+							title={scope.title}
+							description={scope.description}
+							meta={scope.meta}
+							badge={scope.badge}
+						/>
+					</li>
+				))
+			}
+		</ul>
+	</section>
+
+	<div class="mt-10">
+		<PlaceholderCard phase="P6" title="클라이언트 사이드 검색" uc="UC-08" fr="FR-8.1 ~ FR-8.2">
+			<p>
+				P6에서 빌드 시 콘텐츠 전체를 훑어 정적 검색 인덱스(JSON)를 생성하고, 브라우저에서만 동작하는
+				검색을 붙입니다. 검색어는 서버로 전송되지 않습니다.
+			</p>
+			<p>
+				이 페이지 상단에는 <code>GET</code> 폼 검색창이 생기고, 헤더의 검색 링크도 같은 폼으로 교체되어
+				결과가 유형별(이론 / 문항 / 면접)로 묶여 표시됩니다.
+			</p>
+		</PlaceholderCard>
+	</div>
+</BaseLayout>

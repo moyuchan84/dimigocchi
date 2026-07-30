@@ -1,0 +1,122 @@
+---
+/**
+ * /exam/[setId] — 모의고사 응시 화면 (UC-03).
+ *
+ * P1 은 라우팅과 응시 안내 정보만 렌더한다.
+ * 동작하지 않는 "응시 시작" 버튼은 렌더하지 않는다(P1 규칙).
+ */
+import type { GetStaticPaths } from 'astro';
+
+import Badge from '@components/astro/Badge.astro';
+import CardLink from '@components/astro/CardLink.astro';
+import PageHeader from '@components/astro/PageHeader.astro';
+import PlaceholderCard from '@components/astro/PlaceholderCard.astro';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import type { Crumb } from '@lib/navigation';
+import { listExamSets } from '@lib/taxonomy';
+
+export const getStaticPaths = (async () => {
+	// ★ P2 교체 지점: listExamSets() 본문이 getCollection('exams') 로 바뀐다.
+	//   반환 타입(ExamSetRef[])이 유지되므로 이 아래 코드는 수정하지 않는다.
+	const sets = await listExamSets();
+	return sets.map((set) => ({
+		params: { setId: set.setId },
+		props: { set },
+	}));
+}) satisfies GetStaticPaths;
+
+const { set } = Astro.props;
+
+const breadcrumbs: Crumb[] = [
+	{ label: '홈', href: '/' },
+	{ label: '모의고사', href: '/exam' },
+	{ label: set.title },
+];
+---
+
+<BaseLayout
+	title={set.title}
+	description={`${set.areaTitle} 영역 예상문제 ${set.questionCount}문항, 제한시간 ${set.limitMinutes}분 모의고사 세트입니다.`}
+	breadcrumbs={breadcrumbs}
+	wide
+>
+	<PageHeader eyebrow={set.areaTitle} title={set.title} />
+
+	<p class="mb-8 text-xs leading-relaxed text-slate-500">
+		모든 문항은 자체 제작한 예상문제입니다. 실제 기출문제 원문은 게재하지 않습니다.
+	</p>
+
+	<section aria-labelledby="exam-brief">
+		<h2 id="exam-brief" class="text-lg font-bold text-slate-900">응시 안내</h2>
+		<div class="mt-4 rounded-lg border border-slate-200 bg-white p-5">
+			<dl class="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2">
+				<div>
+					<dt class="text-sm text-slate-500">문항 수</dt>
+					<dd class="mt-1 font-semibold text-slate-900">{set.questionCount}문항</dd>
+				</div>
+				<div>
+					<dt class="text-sm text-slate-500">제한 시간</dt>
+					<dd class="mt-1 font-semibold text-slate-900">{set.limitMinutes}분</dd>
+				</div>
+				<div>
+					<dt class="text-sm text-slate-500">채점 방식</dt>
+					<dd class="mt-1 font-semibold text-slate-900">제출 즉시 자동채점</dd>
+				</div>
+				<div>
+					<dt class="text-sm text-slate-500">저장 위치</dt>
+					<dd class="mt-1 font-semibold text-slate-900">이 브라우저에만 저장</dd>
+				</div>
+				<div class="sm:col-span-2">
+					<dt class="text-sm text-slate-500">출제 영역</dt>
+					<dd class="mt-1 font-semibold text-slate-900">{set.areaTitle}</dd>
+				</div>
+			</dl>
+		</div>
+	</section>
+
+	<section aria-labelledby="exam-status" class="mt-10">
+		<h2 id="exam-status" class="text-lg font-bold text-slate-900">현재 상태</h2>
+		<div class="mt-4 rounded-lg border border-slate-200 bg-white p-5">
+			<Badge variant="phase">P3</Badge>
+			<p class="mt-3 text-sm leading-relaxed text-slate-600">
+				P3에서 응시가 가능해집니다. 지금은 화면 구조와 세트 정보만 준비된 상태이며, 문항과 타이머는
+				아직 제공되지 않습니다.
+			</p>
+		</div>
+	</section>
+
+	<section aria-labelledby="exam-links" class="mt-10">
+		<h2 id="exam-links" class="text-lg font-bold text-slate-900">관련 화면</h2>
+		<ul class="mt-4 grid list-none grid-cols-1 gap-4 p-0 sm:grid-cols-2">
+			<li>
+				<CardLink
+					href={`/exam/${set.setId}/result`}
+					title="결과 화면 미리보기"
+					description="채점 결과와 문항별 해설이 표시될 화면의 구조를 미리 볼 수 있어요."
+					meta="라우팅 확인용"
+				/>
+			</li>
+			<li>
+				<CardLink
+					href="/exam"
+					title="모의고사 목록으로"
+					description="다른 영역의 예상문제 세트를 둘러봅니다."
+					meta="9세트 · 5개 영역"
+				/>
+			</li>
+		</ul>
+	</section>
+
+	<div class="mt-10">
+		<PlaceholderCard phase="P3" uc="UC-03" fr="FR-3.1 ~ FR-3.6">
+			<p>
+				P3 에서 이 화면에 React 아일랜드가 붙습니다. 문제은행 JSON 을 읽어 문항을 렌더링하고,
+				남은 시간을 보여주는 타이머가 동작하며, 제한 시간이 끝나면 자동 제출됩니다.
+			</p>
+			<p>
+				제출하면 <code>src/lib/grading.ts</code> 가 자동 채점하고, 결과는 이 브라우저의
+				<code>localStorage</code> 에만 저장된 뒤 결과 화면으로 이동합니다.
+			</p>
+		</PlaceholderCard>
+	</div>
+</BaseLayout>
