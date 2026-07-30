@@ -1,0 +1,26 @@
+---
+import '../styles/global.css';
+
+interface Props {
+	title: string;
+	description?: string;
+}
+
+const { title, description = '2027학년도 한국디지털미디어고 해킹방어과 입시 준비 사이트' } = Astro.props;
+---
+
+<html lang="ko">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" href="/favicon.ico" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="generator" content={Astro.generator} />
+		<meta name="description" content={description} />
+		<title>{title}</title>
+	</head>
+	<body class="min-h-screen bg-slate-50 text-slate-900 antialiased">
+		<!-- P1에서 Header / Nav / Footer 추가 예정 -->
+		<slot />
+	</body>
+</html>
