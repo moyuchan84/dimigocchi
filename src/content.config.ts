@@ -211,9 +211,58 @@ const exams = defineCollection({
 		}),
 });
 
-export const collections = { theory, guide, schedule, exams };
+/**
+ * 면접 질문 (UC-05 / FR-5, 요구사양서 7.3). 파일 경로: `src/content/interview/{category}.json`
+ *
+ * `exams` 와 같은 "파일 1개 = 엔티티 1개" 패턴이다. 다만 엔티티가 개별 질문이 아니라
+ * **카테고리**다 — `listInterviewCategories()`/`getInterviewCategory()` 가 요구하는
+ * title/description 은 카테고리 단위 정보라 질문 배열만으로는 만들 수 없기 때문이다
+ * (exams 의 setId/title/area/areaTitle 과 동일한 이유).
+ */
+const interviewQuestionSchema = z.object({
+	/** 문항 고유 id. 카테고리 안에서 유일해야 하며 관례상 `iv-{category}-{NN}` 형태를 쓴다. */
+	id: z.string(),
+	question: z.string(),
+	/** 출제 의도/평가 포인트. */
+	intent: z.string(),
+	/** 결론 → 근거 → 경험사례 구조의 답변 작성 가이드. */
+	answerGuide: z.string(),
+});
 
-// ── 이후 Phase 에서 추가할 컬렉션 ────────────────────────────────────────────
-// P4 에서 등록: interview — 7.3 스키마
-//   id, category, question, intent, answerGuide
-// 지금 등록하면 콘텐츠가 없어 매 빌드마다 빈 컬렉션 경고가 뜨므로 해당 Phase 에서 함께 추가한다.
+const interview = defineCollection({
+	loader: glob({ pattern: '*.json', base: './src/content/interview' }),
+	schema: z
+		.object({
+			/** 파일명과 같아야 한다. `/interview/{category}` 라우트로 쓰인다. */
+			category: z.enum(['motivation', 'portfolio', 'career', 'personality', 'security-news']),
+			/** 카테고리 표시 제목(한국어). */
+			title: z.string(),
+			/** 카테고리 한 줄 설명. */
+			description: z.string(),
+			questions: z.array(interviewQuestionSchema).min(1),
+		})
+		.superRefine((cat, ctx) => {
+			// 문항 id 전역 고유성은 "iv-{category}-" 접두어 컨벤션으로 보장한다(exams 의 {setId}- 와 동일한 이유).
+			const seenIds = new Set<string>();
+			const prefix = `iv-${cat.category}-`;
+			cat.questions.forEach((q, i) => {
+				if (!q.id.startsWith(prefix)) {
+					ctx.addIssue({
+						code: z.ZodIssueCode.custom,
+						path: ['questions', i, 'id'],
+						message: `문항 id는 "${prefix}"로 시작해야 합니다(실제: ${q.id}).`,
+					});
+				}
+				if (seenIds.has(q.id)) {
+					ctx.addIssue({
+						code: z.ZodIssueCode.custom,
+						path: ['questions', i, 'id'],
+						message: `카테고리 내 중복된 문항 id: ${q.id}`,
+					});
+				}
+				seenIds.add(q.id);
+			});
+		}),
+});
+
+export const collections = { theory, guide, schedule, exams, interview };

@@ -79,3 +79,15 @@ export function setWrongNoteReviewed(questionId: string, reviewed: boolean): voi
 	data.wrongNoteReviewed = { ...data.wrongNoteReviewed, [questionId]: reviewed };
 	writeProgress(data);
 }
+
+/** 문항 id → 답변 초안 맵 전체를 반환한다. */
+export function getInterviewAnswers(): Record<string, string> {
+	return readProgress().interviewAnswers;
+}
+
+/** 면접 질문 1개의 답변 초안을 저장한다(FR-5.3). */
+export function setInterviewAnswer(questionId: string, text: string): void {
+	const data = readProgress();
+	data.interviewAnswers = { ...data.interviewAnswers, [questionId]: text };
+	writeProgress(data);
+}

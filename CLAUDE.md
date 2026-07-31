@@ -39,7 +39,16 @@
   - 문제은행 9세트 180문항 전량 작성(수리추론 15×2, 문제해결·알고리즘 15×2, IT상식 20×2, 해킹방어개념종합 20×2, 종합모의고사 40×1) — 세트별 유형 배분(단일/복수/단답)까지 목표대로 채움. `math-reasoning-set1`/`hd-concept-set1`은 엔진 검증용으로 직접 작성, 나머지 7세트는 병렬 에이전트로 배치 작성
   - 브라우저에서 타이머 자동제출, 3종 문항 채점(단일/복수/단답), 결과 화면 재채점, 오답노트 누적·재풀이·복습완료 유지를 실제 응시로 end-to-end 검증 완료
   - `npm run build` 47페이지 유지, 경고/에러 0건("빈 컬렉션" 경고 소멸 확인). 문항 180개 구조 검증(id 접두어/중복, 인덱스 범위, 타입별 필드 형태) 스크립트 통과, 해킹방어 카테고리 문항 전량 공격 코드 유출 여부 감사(자동 패턴 스캔 + 수동 재검토) 완료 — 실행 가능한 공격 코드 0건
-- **다음 작업: P4 면접 준비 모듈** — 나머지 Phase(P4~P8)는 아래 "개발 로드맵" 참고
+- [x] **P4 면접 준비 모듈 — 완료 (2026-07-31)**
+  - `src/content.config.ts`에 `interview` 컬렉션 등록: 카테고리 1파일(`src/content/interview/{category}.json`)에 `category/title/description/questions[]`. `superRefine`으로 문항 id 접두어(`iv-{category}-`)와 카테고리 내 중복 검증(exams의 `{setId}-` 패턴과 동일)
+  - `src/lib/taxonomy.ts`: 리터럴 `INTERVIEW_CATEGORIES` 삭제, `listInterviewCategories`/`getInterviewCategory`를 `getCollection('interview')` 기반으로 교체(시그니처 불변, targetCount는 questions.length로 파생), `getInterviewQuestions`/`listAllInterviewQuestions` 신설
+  - `src/lib/storage.ts`: `getInterviewAnswers`/`setInterviewAnswer` 추가(기존 `wrongNoteReviewed` 헬퍼와 동일한 read-modify-write 패턴). `ProgressData.interviewAnswers` 필드는 P3에서 이미 스캐폴딩돼 있어 스키마 변경 없음
+  - React 아일랜드 2개 신규 도입: `InterviewAnswerEditor`(카테고리별 질문 목록 + 답변 초안 작성, 매 keystroke마다 즉시 저장 — 디바운스 없음), `TimeAttack`(setup/running/ended 상태머신, `ExamRunner`와 동일한 `Date.now()` 기반 카운트다운, 시간 종료 시 자동으로 다음 질문). `InterviewQuestionCard`는 `QuestionCard`와 같은 역할의 순수 표시 컴포넌트(글자수 카운터 포함, FR-5.5)
+  - `interview/index.astro`, `[category].astro`, `timeattack.astro`의 `PlaceholderCard`/스켈레톤 전부 제거하고 실제 기능으로 교체
+  - 면접 질문 5카테고리 38문항 전량 자체 작성(지원동기 8·포트폴리오 6·진로계획 10·인성 8·보안시사 6 — 요구사양서 6.4 목표치와 정확히 일치). `security-news` 카테고리는 사건의 원인/피해/대응에 대한 견해를 묻는 질문만 작성(공격 기법 설명 요구 없음, 핵심 원칙 3 준수)
+  - 브라우저에서 답변 작성 후 새로고침 시 유지, 타임어택 카운트다운 자동/수동 진행(다음 질문·종료) 실제 조작으로 end-to-end 검증 완료. Network 탭에서 답변 텍스트를 포함한 요청 없음(서버 미전송) 확인
+  - `npm run build` 47페이지 유지, 경고/에러 0건. 카테고리별 문항 수 8/6/10/8/6=38 확인
+- **다음 작업: P5 대시보드/D-day/체크리스트** — 나머지 Phase(P5~P8)는 아래 "개발 로드맵" 참고
 - 작업을 시작하거나 재개할 때는 이 섹션의 체크박스 상태를 확인하고, Phase를 완료하면 이 파일의 체크박스도 함께 갱신할 것
 
 ## 참고 문서 (반드시 확인)
@@ -155,11 +164,9 @@ src/
 
 콘텐츠 파일을 추가/수정할 때는 반드시 `content.config.ts`의 zod 스키마를 통과하는지 빌드로 확인할 것.
 
-### `src/lib/taxonomy.ts` — 조회 API와 P4 교체 규약
+### `src/lib/taxonomy.ts` — 조회 API
 
-모든 페이지(`getStaticPaths` 포함)는 `@lib/taxonomy`의 조회 함수만 바라본다. 조회 함수는 전부 `async`로 선언돼 있어, 리터럴 → Content Collections 전환을 **본문만 바꿔서** 끝낼 수 있다. `theory`/`guide`/`exams`는 이미 전환 완료(P2, P3); `interview`는 아직 리터럴(`INTERVIEW_CATEGORIES`)이며 P4에서 같은 방식으로 전환한다.
-
-**P4 교체 규약**: `listInterviewCategories`/`getInterviewCategory`의 **본문만** `getCollection()` 기반으로 교체하고, **반환 타입과 시그니처는 그대로 유지**한다 → 페이지의 `getStaticPaths`는 한 줄도 수정하지 않아도 된다. 리터럴 상수 `INTERVIEW_CATEGORIES`는 P4에서 **삭제**한다. `THEORY_CATEGORIES`와 `GUIDE_SECTIONS`는 카테고리/앵커 정의이므로 유지, `EXAM_SETS`는 P3에서 이미 삭제됨(모의고사 세트의 title/area/areaTitle/limitMinutes는 이제 `src/content/exams/*.json` 파일이 유일한 소스).
+모든 페이지(`getStaticPaths` 포함)는 `@lib/taxonomy`의 조회 함수만 바라본다. 조회 함수는 전부 `async`로 선언돼 있어, 리터럴 → Content Collections 전환을 **본문만 바꿔서** 끝낼 수 있다. `theory`/`guide`/`exams`/`interview`는 이미 전환 완료(P2, P3, P4). 리터럴 상수 `EXAM_SETS`(P3)/`INTERVIEW_CATEGORIES`(P4)는 삭제됨(세트/카테고리의 title/area 등은 이제 각 `src/content/{exams,interview}/*.json` 파일이 유일한 소스). `THEORY_CATEGORIES`와 `GUIDE_SECTIONS`는 카테고리/앵커 정의이므로 유지.
 
 확정 슬러그(라우트에 그대로 노출되므로 콘텐츠 파일을 만들 때 반드시 일치시킬 것):
 
@@ -174,7 +181,7 @@ src/
   - `hd-concept-set1`, `hd-concept-set2` — 해킹방어 개념 종합 1·2회, area `hd-concept`, 20문항 25분
   - `mock-full-set1` — 종합 모의고사 1회, area `mock-full`, 40문항 60분
 - **면접 카테고리 5** (`/interview/{slug}`): `motivation` 지원동기·학교 이해(8) · `portfolio` 실적물·포트폴리오 설명(6) · `career` 진로계획·직무이해(10) · `personality` 인성·태도(8) · `security-news` 보안 시사이슈 견해(6)
-  - ⚠️ `timeattack`은 **카테고리가 아니다**. `/interview/timeattack`은 별도 정적 라우트이므로 `INTERVIEW_CATEGORIES`(및 P2의 컬렉션 집계 결과)에 절대 넣지 말 것 — `[category].astro`의 `getStaticPaths`와 충돌한다.
+  - ⚠️ `timeattack`은 **카테고리가 아니다**. `/interview/timeattack`은 별도 정적 라우트이므로 `src/content/interview/`에 `timeattack.json` 같은 파일을 만들지 말 것 — `[category].astro`의 `getStaticPaths`와 충돌한다.
 - **입시 가이드 9섹션** (`/guide` 내 앵커, `디미고_입시_준비_가이드.md`의 실제 헤딩): `school-character`, `departments`, `admission-types`, `evaluation`, `aptitude-test`, `interview`, `special-admission`, `timeline`, `checklist`
 
 ## 핵심 원칙 (반드시 지킬 것 — 위반 시 콘텐츠/코드 재작업)

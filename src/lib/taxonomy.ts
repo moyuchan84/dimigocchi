@@ -13,7 +13,9 @@
  * - `exams`  : ✅ P3 완료. `src/content/exams/{setId}.json`(세트 1파일)의
  *              setId/title/area/areaTitle/limitMinutes/questions 가 유일한 소스다
  *              (리터럴 EXAM_SETS 는 삭제됨). questionCount 는 questions.length 로 파생한다.
- * - `interview` : ⏳ 아직 리터럴(INTERVIEW_CATEGORIES). **P4** 에서 동일하게 전환.
+ * - `interview` : ✅ P4 완료. `src/content/interview/{category}.json`(카테고리 1파일)의
+ *              category/title/description/questions 가 유일한 소스다(리터럴 INTERVIEW_CATEGORIES 는
+ *              삭제됨). targetCount 는 questions.length 로 파생한다.
  *
  * ── THEORY_CATEGORIES 를 상수로 남긴 이유 (삭제 금지) ──
  * 카테고리 2개 / 소분류 13개는 챕터 파일에서 파생되는 데이터가 아니라 **사이트 IA** 다.
@@ -116,6 +118,14 @@ export interface InterviewCategoryRef {
 	targetCount: number;
 }
 
+export interface InterviewQuestionRef {
+	id: string;
+	category: InterviewCategorySlug;
+	question: string;
+	intent: string;
+	answerGuide: string;
+}
+
 export interface GuideSectionRef {
 	/** `/guide#{slug}` 앵커. 콘텐츠 파일의 frontmatter `id` 와 같은 값이다. */
 	slug: string;
@@ -182,44 +192,20 @@ const AREA_ORDER: readonly ExamArea[] = [
  * ------------------------------------------------------------------ */
 
 /**
- * 면접 카테고리 5개. targetCount 는 요구사양서 6.4 목표 문항 수.
+ * 카테고리 표시 순서. 콘텐츠(`src/content/interview/*.json`)에는 순서 필드가 없으므로,
+ * `listInterviewCategories()` 가 이 순서로 정의 순서를 재구성한다(AREA_ORDER 와 동일한 이유).
  *
  * ⚠️ `timeattack` 을 이 배열에 절대 넣지 말 것 —
  * `/interview/timeattack` 은 별도 정적 라우트(pages/interview/timeattack.astro)이며,
  * 여기에 들어가면 `[category].astro` 의 getStaticPaths 와 충돌해 빌드 경고가 난다.
  */
-const INTERVIEW_CATEGORIES: readonly InterviewCategoryRef[] = [
-	{
-		slug: 'motivation',
-		title: '지원동기·학교 이해',
-		description: '왜 디미고 해킹방어과인지를 자기 경험과 연결해 설명하는 연습이에요.',
-		targetCount: 8,
-	},
-	{
-		slug: 'portfolio',
-		title: '실적물·포트폴리오 설명',
-		description: '내가 만들고 참여한 결과물을 처음 듣는 사람에게 쉽게 설명하는 연습이에요.',
-		targetCount: 6,
-	},
-	{
-		slug: 'career',
-		title: '진로계획·직무이해',
-		description: '보안 분야에는 어떤 일이 있고 나는 어디로 가고 싶은지 정리해요.',
-		targetCount: 10,
-	},
-	{
-		slug: 'personality',
-		title: '인성·태도',
-		description: '협업·갈등·실패 경험을 솔직하고 성숙하게 말하는 연습이에요.',
-		targetCount: 8,
-	},
-	{
-		slug: 'security-news',
-		title: '보안 시사이슈 견해',
-		description: '최근 보안 사건을 이해하고 자기 생각을 근거와 함께 말하는 연습이에요.',
-		targetCount: 6,
-	},
-] as const;
+const INTERVIEW_CATEGORY_ORDER: readonly InterviewCategorySlug[] = [
+	'motivation',
+	'portfolio',
+	'career',
+	'personality',
+	'security-news',
+];
 
 /* ------------------------------------------------------------------ *
  * 입시 가이드 (UC-09)
@@ -317,14 +303,47 @@ export async function listAllExamQuestions(): Promise<
 
 /** 면접 카테고리 5개를 정의 순서대로 반환한다(timeattack 미포함). */
 export async function listInterviewCategories(): Promise<InterviewCategoryRef[]> {
-	// P4: getCollection('interview') 의 카테고리별 JSON 에서 집계한다.
-	// P4: 이때도 timeattack 은 카테고리가 아니므로 결과에 포함시키지 말 것.
-	return [...INTERVIEW_CATEGORIES];
+	const entries = await getCollection('interview');
+	return entries
+		.map((e) => ({
+			slug: e.data.category,
+			title: e.data.title,
+			description: e.data.description,
+			targetCount: e.data.questions.length,
+		}))
+		.sort(
+			(a, b) => INTERVIEW_CATEGORY_ORDER.indexOf(a.slug) - INTERVIEW_CATEGORY_ORDER.indexOf(b.slug),
+		);
 }
 
 /** slug 로 면접 카테고리 1개를 찾는다. 없으면 undefined. */
 export async function getInterviewCategory(slug: string): Promise<InterviewCategoryRef | undefined> {
-	// P4: listInterviewCategories() 결과에서 찾는 방식 그대로 유지.
 	const all = await listInterviewCategories();
 	return all.find((c) => c.slug === slug);
+}
+
+/** 카테고리 1개의 전체 질문을 반환한다. 없으면 undefined. */
+export async function getInterviewQuestions(
+	categorySlug: string,
+): Promise<InterviewQuestionRef[] | undefined> {
+	const entries = await getCollection('interview');
+	const found = entries.find((e) => e.data.category === categorySlug);
+	return found?.data.questions.map((q) => ({ ...q, category: found.data.category }));
+}
+
+/**
+ * 전체 카테고리의 질문을 categoryTitle 을 붙여 평탄화한다.
+ * 타임어택 모드가 카테고리 범위를 넘나드는 무작위 출제 풀로 쓴다.
+ */
+export async function listAllInterviewQuestions(): Promise<
+	(InterviewQuestionRef & { categoryTitle: string })[]
+> {
+	const entries = await getCollection('interview');
+	return entries.flatMap((e) =>
+		e.data.questions.map((q) => ({
+			...q,
+			category: e.data.category,
+			categoryTitle: e.data.title,
+		})),
+	);
 }
