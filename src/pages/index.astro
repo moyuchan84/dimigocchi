@@ -1,37 +1,57 @@
 ---
 /**
- * 홈 대시보드 (UC-01).
+ * 홈 대시보드 (UC-01 / FR-1.1 ~ FR-1.4).
  *
- * ── P1 범위 ──
- * 진행률·D-day·추천 학습·오답 요약의 **정보 구조만** 정적으로 렌더한다.
- * localStorage(`dimigo-prep:progress`)는 읽지 않는다 — 진행률은 전부 0% 고정이며,
- * P5 에서 실제 값이 연결된다(FR-1.1 ~ FR-1.4).
+ * 진행률 4+1종(적성검사 이론/해킹방어 이론/모의고사/면접/체크리스트) · 추천 학습 ·
+ * 최근 오답 요약은 Dashboard(React 아일랜드)가 `dimigo-prep:progress` 를 읽어 채운다.
+ * D-day 는 DdayWidget(전형 일정 페이지와 공유)이 담당한다. 이 astro 페이지는 각 아일랜드에
+ * 필요한 정적 콘텐츠 목록(챕터/세트/문항/체크리스트 항목)만 조회해 props 로 넘긴다.
  */
+import Dashboard from '@components/react/Dashboard';
+import DdayWidget from '@components/react/DdayWidget';
 import Badge from '@components/astro/Badge.astro';
-import CardLink from '@components/astro/CardLink.astro';
 import PageHeader from '@components/astro/PageHeader.astro';
-import PlaceholderCard from '@components/astro/PlaceholderCard.astro';
 import BaseLayout from '@layouts/BaseLayout.astro';
+import { getEntry } from 'astro:content';
+import { listChecklistItemIds } from '@lib/checklist';
 import { SITE_NAME } from '@lib/navigation';
-import { THEORY_CATEGORIES, listTheoryChapters } from '@lib/taxonomy';
+import {
+	THEORY_CATEGORIES,
+	listAllExamQuestions,
+	listAllInterviewQuestions,
+	listExamSets,
+	listTheoryChapters,
+} from '@lib/taxonomy';
 
-/** P2: getCollection('theory') 기반으로 바뀌는 유일한 호출 지점. 시그니처는 그대로다. */
 const chapters = await listTheoryChapters();
-const recommended = chapters.slice(0, 3);
 
-/** 추천 카드의 배지/메타 문구용 라벨 조회표. */
+/** 추천 카드/진행률 카드에 쓸 카테고리·소분류 한글 라벨 조회표. */
 const categoryTitle = new Map(THEORY_CATEGORIES.map((c) => [c.slug, c.title] as const));
 const subcategoryTitle = new Map(
 	THEORY_CATEGORIES.flatMap((c) => c.subcategories.map((s) => [s.slug, s.title] as const)),
 );
 
-/** P5 에서 dimigo-prep:progress 를 읽어 percent 를 채운다. P1 은 전부 0. */
-const progressCards = [
-	{ label: '적성검사 이론', href: '/theory#aptitude', total: '13개 소분류 중 5개 영역' },
-	{ label: '해킹방어 이론', href: '/theory#hacking-defense', total: '13개 소분류 중 8개 영역' },
-	{ label: '모의고사', href: '/exam', total: '전체 9세트' },
-	{ label: '면접 준비', href: '/interview', total: '전체 5개 카테고리 38문항' },
-];
+/** Dashboard(React) 는 Map 을 props 로 받을 수 없으므로(직렬화 대상) 챕터별로 라벨을 미리 박아 넘긴다. */
+const dashboardChapters = chapters.map((c) => ({
+	id: c.id,
+	category: c.category,
+	title: c.title,
+	categoryTitle: categoryTitle.get(c.category) ?? c.category,
+	subcategoryTitle: subcategoryTitle.get(c.subcategory) ?? c.subcategory,
+	estMinutes: c.estMinutes,
+}));
+
+const examSets = await listExamSets();
+const allExamQuestions = await listAllExamQuestions();
+const interviewQuestionIds = (await listAllInterviewQuestions()).map((q) => q.id);
+const checklistItemIds = listChecklistItemIds();
+
+const SCHEDULE_YEAR = '2027';
+const schedule = await getEntry('schedule', SCHEDULE_YEAR);
+if (!schedule) {
+	throw new Error(`전형 일정 데이터를 찾을 수 없습니다: src/content/schedule/${SCHEDULE_YEAR}.json`);
+}
+const { confirmed, events } = schedule.data;
 ---
 
 <BaseLayout title={SITE_NAME} wide>
@@ -41,45 +61,26 @@ const progressCards = [
 		description="적성검사 대비 이론, 해킹방어과 특화 기초, 모의고사와 면접 준비를 한곳에 모았습니다. 오늘 할 일을 확인하고 이어서 학습하세요."
 	/>
 
-	<section aria-labelledby="progress-heading">
-		<h2 id="progress-heading" class="text-lg font-semibold text-slate-900">학습 진행률</h2>
-		<p class="mt-1 text-sm text-slate-600">P5에서 실제 진행률이 연결됩니다. 지금은 모두 0%로 표시돼요.</p>
-		<div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-			{
-				progressCards.map((card) => (
-					<a
-						href={card.href}
-						class="group flex h-full flex-col rounded-lg border border-slate-200 bg-white p-4 transition hover:border-brand-300 hover:shadow-sm"
-					>
-						<span class="text-sm font-semibold text-slate-900 group-hover:text-brand-700">
-							{card.label}
-						</span>
-						<span class="mt-2 text-2xl font-bold tabular-nums text-slate-900">0%</span>
-						<span
-							aria-hidden="true"
-							class="mt-2 block h-2 w-full overflow-hidden rounded-full bg-slate-200"
-						>
-							<span class="block h-full w-0 rounded-full bg-brand-600" />
-						</span>
-						<span class="mt-auto pt-3 text-xs text-slate-500">{card.total}</span>
-					</a>
-				))
-			}
-		</div>
-	</section>
+	<Dashboard
+		client:load
+		chapters={dashboardChapters}
+		examSetCount={examSets.length}
+		allExamQuestions={allExamQuestions}
+		interviewQuestionIds={interviewQuestionIds}
+		checklistItemIds={checklistItemIds}
+	/>
 
 	<section aria-labelledby="dday-heading" class="mt-10">
 		<h2 id="dday-heading" class="text-lg font-semibold text-slate-900">전형 일정 D-day</h2>
-		<div class="mt-4 rounded-lg border border-slate-200 bg-white p-4 sm:p-5">
+		<div class="mt-4 space-y-3">
 			<div class="flex flex-wrap items-center gap-x-2 gap-y-1">
-				<Badge variant="tentative">예정(가안)</Badge>
-				<span class="font-semibold text-slate-900">2027학년도 전형 일정 미확정</span>
+				<Badge variant={confirmed ? 'confirmed' : 'tentative'}>{confirmed ? '확정' : '예정(가안)'}</Badge>
+				<span class="text-sm text-slate-600">
+					2027학년도 전형 일정{!confirmed && ' — 아직 확정 요강이 발표되지 않았습니다'}
+				</span>
 			</div>
-			<p class="mt-2 text-sm leading-relaxed text-slate-600">
-				학교에서 확정 전형요항이 공개되기 전까지는 예년 일정을 기준으로 한 가안만 안내합니다. 확정
-				일정이 나오면 D-day가 여기에 표시됩니다.
-			</p>
-			<p class="mt-3">
+			<DdayWidget client:load events={events} />
+			<p>
 				<a
 					href="/guide/schedule"
 					class="text-sm font-semibold text-brand-700 underline underline-offset-4 hover:no-underline"
@@ -90,56 +91,5 @@ const progressCards = [
 		</div>
 	</section>
 
-	<section aria-labelledby="recommend-heading" class="mt-10">
-		<h2 id="recommend-heading" class="text-lg font-semibold text-slate-900">오늘의 추천 학습</h2>
-		<p class="mt-1 text-sm text-slate-600">
-			아직 학습 기록이 없어 처음 챕터부터 안내합니다. P5부터는 진도에 맞춰 바뀝니다.
-		</p>
-		<ul class="mt-4 grid list-none gap-4 sm:grid-cols-2 lg:grid-cols-3">
-			{
-				recommended.map((chapter) => (
-					<li>
-						<CardLink
-							href={`/theory/${chapter.category}/${chapter.id}`}
-							title={chapter.title}
-							badge={subcategoryTitle.get(chapter.subcategory)}
-							meta={`${categoryTitle.get(chapter.category)} · 약 ${chapter.estMinutes}분`}
-						/>
-					</li>
-				))
-			}
-		</ul>
-	</section>
-
-	<section aria-labelledby="wrongnote-heading" class="mt-10">
-		<h2 id="wrongnote-heading" class="text-lg font-semibold text-slate-900">최근 오답 요약</h2>
-		<div class="mt-4 rounded-lg border border-slate-200 bg-white p-4 sm:p-5">
-			<p class="text-sm leading-relaxed text-slate-600">
-				아직 응시한 모의고사가 없습니다. 모의고사를 풀면 틀린 문항이 자동으로 오답노트에 모이고, 최근
-				오답이 여기에 요약됩니다.
-			</p>
-			<p class="mt-3">
-				<a
-					href="/wrongnote"
-					class="text-sm font-semibold text-brand-700 underline underline-offset-4 hover:no-underline"
-				>
-					오답노트 열기
-				</a>
-			</p>
-		</div>
-	</section>
-
-	<div class="mt-10">
-		<PlaceholderCard phase="P5" title="대시보드 실데이터 연결" uc="UC-01" fr="FR-1.1 ~ FR-1.4">
-			<p>
-				P5에서 <code>dimigo-prep:progress</code> 를 읽어 영역별 진행률 4종, 확정 일정 기반 D-day, 진도에
-				맞춘 추천 학습, 최근 오답 요약을 실제 값으로 채웁니다.
-			</p>
-			<p>최초 방문자에게는 사용법을 짧게 안내하는 온보딩 카드가 함께 표시됩니다.</p>
-		</PlaceholderCard>
-	</div>
-
-	<p class="mt-8 text-xs text-slate-500">
-		학습 기록은 서버로 전송되지 않고 이 브라우저에만 저장됩니다.
-	</p>
+	<p class="mt-10 text-xs text-slate-500">학습 기록은 서버로 전송되지 않고 이 브라우저에만 저장됩니다.</p>
 </BaseLayout>

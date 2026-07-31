@@ -45,7 +45,7 @@ const breadcrumbs: Crumb[] = [
 	</p>
 
 	<section aria-labelledby="exam-brief">
-		<h2 id="exam-brief" class="text-lg font-bold text-slate-900">응시 안내</h2>
+		<h2 id="exam-brief" class="text-lg font-semibold text-slate-900">응시 안내</h2>
 		<div class="mt-4 rounded-lg border border-slate-200 bg-white p-5">
 			<dl class="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2">
 				<div>
@@ -73,14 +73,14 @@ const breadcrumbs: Crumb[] = [
 	</section>
 
 	<section aria-labelledby="exam-runner" class="mt-10">
-		<h2 id="exam-runner" class="text-lg font-bold text-slate-900">응시</h2>
+		<h2 id="exam-runner" class="text-lg font-semibold text-slate-900">응시</h2>
 		<div class="mt-4">
 			<ExamRunner client:load setId={set.setId} limitMinutes={set.limitMinutes} questions={questions} />
 		</div>
 	</section>
 
 	<section aria-labelledby="exam-links" class="mt-10">
-		<h2 id="exam-links" class="text-lg font-bold text-slate-900">관련 화면</h2>
+		<h2 id="exam-links" class="text-lg font-semibold text-slate-900">관련 화면</h2>
 		<ul class="mt-4 grid list-none grid-cols-1 gap-4 p-0 sm:grid-cols-2">
 			<li>
 				<CardLink

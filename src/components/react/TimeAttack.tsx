@@ -119,7 +119,7 @@ export default function TimeAttack({ categories, questions }: TimeAttackProps) {
 								key={preset}
 								type="button"
 								onClick={() => setSeconds(preset)}
-								className={`rounded-md border px-3 py-1.5 text-sm font-semibold ${
+								className={`rounded-md border px-3 py-2 text-sm font-semibold ${
 									seconds === preset
 										? 'border-brand-300 bg-brand-50 text-brand-700'
 										: 'border-slate-300 text-slate-600'

@@ -15,9 +15,11 @@ interface Props {
 	description?: string;
 	meta?: string;
 	badge?: string;
+	/** 핵심 원칙 4 — badge="예정(가안)" 을 넘길 때는 반드시 'tentative' 를 함께 지정할 것. */
+	badgeVariant?: 'neutral' | 'tentative' | 'confirmed' | 'accent';
 }
 
-const { href, title, description, meta, badge } = Astro.props;
+const { href, title, description, meta, badge, badgeVariant = 'neutral' } = Astro.props;
 ---
 
 <a
@@ -26,7 +28,7 @@ const { href, title, description, meta, badge } = Astro.props;
 >
 	<div class="flex flex-wrap items-start gap-x-2 gap-y-1">
 		<span class="font-semibold text-slate-900 group-hover:text-brand-700">{title}</span>
-		{badge && <Badge variant="neutral" size="sm">{badge}</Badge>}
+		{badge && <Badge variant={badgeVariant} size="sm">{badge}</Badge>}
 	</div>
 	{description && <p class="mt-2 text-sm leading-relaxed text-slate-600">{description}</p>}
 	{meta && <p class="mt-auto pt-3 text-xs text-slate-500">{meta}</p>}

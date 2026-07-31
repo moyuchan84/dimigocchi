@@ -6,11 +6,10 @@
  *  - `tentative` 는 **핵심 원칙 4 전용**이다. 2027학년도 전형 요강은 미확정이므로
  *    일정·배점처럼 확정되지 않은 정보 옆에는 반드시 `tentative` 배지("예정(가안)")를 붙인다.
  *    다른 용도(강조 등)로 amber 를 쓰지 말 것 — 색이 곧 "미확정" 신호여야 한다.
- *  - `phase` 는 아직 구현되지 않은 화면(PlaceholderCard)의 개발 단계 표시 전용.
  *  - 모든 변형은 배경 대비 4.5:1 이상(WCAG AA 본문)을 만족하도록 100 배경 + 800 글자로 맞췄다.
  */
 interface Props {
-	variant?: 'neutral' | 'phase' | 'tentative' | 'confirmed' | 'accent';
+	variant?: 'neutral' | 'tentative' | 'confirmed' | 'accent';
 	size?: 'sm' | 'md';
 	class?: string;
 }
@@ -19,7 +18,6 @@ const { variant = 'neutral', size = 'sm', class: className } = Astro.props;
 
 const VARIANT_CLASS: Record<NonNullable<Props['variant']>, string> = {
 	neutral: 'bg-slate-100 text-slate-700 ring-slate-200',
-	phase: 'bg-brand-50 text-brand-800 ring-brand-200',
 	tentative: 'bg-amber-100 text-amber-800 ring-amber-300',
 	confirmed: 'bg-emerald-100 text-emerald-800 ring-emerald-300',
 	accent: 'bg-brand-700 text-white ring-brand-700',
