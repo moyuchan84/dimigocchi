@@ -176,6 +176,41 @@ const scheduleEvents = schedule?.data.events ?? [];
 </script>
 
 {/*
+	검색 단축키(FR-8.4). Header 는 React 아일랜드가 없으므로(설계 메모 2번) is:inline 순수 JS로.
+	Ctrl/Cmd+K 는 포커스 위치와 무관하게 항상 가로챈다(커맨드 팔레트 관행). '/' 는 입력 요소에
+	포커스가 없고 다른 modifier 가 없을 때만 가로채(평소 '/' 입력을 방해하지 않기 위해).
+	xl 이상이면 헤더 검색폼(#header-search-input)에, /search 페이지면 SiteSearch 의
+	#search-input 에 포커스하고, 둘 다 없으면 /search 로 이동한다.
+*/}
+<script is:inline>
+	document.addEventListener('keydown', function (event) {
+		var isCommandK = (event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k';
+		var isSlash = event.key === '/' && !event.ctrlKey && !event.metaKey && !event.altKey;
+		if (!isCommandK && !isSlash) return;
+
+		var target = event.target;
+		var isEditing =
+			target &&
+			(target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable);
+		if (isSlash && isEditing) return;
+
+		event.preventDefault();
+
+		var headerInput = document.getElementById('header-search-input');
+		if (headerInput && headerInput.offsetParent !== null) {
+			headerInput.focus();
+			return;
+		}
+		var pageInput = document.getElementById('search-input');
+		if (pageInput) {
+			pageInput.focus();
+			return;
+		}
+		window.location.href = '/search';
+	});
+</script>
+
+{/*
 	D-day 칩 계산. `@lib/dday.ts` 의 computeNearestEvent 와 같은 로직을 손으로 다시 적었다 —
 	is:inline 스크립트는 번들러를 거치지 않아 모듈을 import 할 수 없기 때문이다(위 주석 참고).
 	이 파일을 고치면 `src/lib/dday.ts` 도 함께 고칠 것.
