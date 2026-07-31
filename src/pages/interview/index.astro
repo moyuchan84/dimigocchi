@@ -8,7 +8,6 @@
 import Badge from '@components/astro/Badge.astro';
 import CardLink from '@components/astro/CardLink.astro';
 import PageHeader from '@components/astro/PageHeader.astro';
-import PlaceholderCard from '@components/astro/PlaceholderCard.astro';
 import BaseLayout from '@layouts/BaseLayout.astro';
 import type { Crumb } from '@lib/navigation';
 import { listInterviewCategories } from '@lib/taxonomy';
@@ -47,7 +46,7 @@ const breadcrumbs: Crumb[] = [{ label: '홈', href: '/' }, { label: '면접 준�
 			<h2 id="categories-heading" class="text-lg font-semibold text-slate-900">질문 카테고리</h2>
 			<Badge variant="neutral">{categories.length}개 카테고리</Badge>
 			<p class="w-full text-sm text-slate-600 sm:ml-auto sm:w-auto">
-				목표 질문 수 합계 <span class="font-semibold text-slate-900">{totalTarget}문항</span> · 현재 0문항 등록
+				전체 질문 수 <span class="font-semibold text-slate-900">{totalTarget}문항</span>
 			</p>
 		</div>
 		<ul class="grid list-none gap-3 sm:grid-cols-2">
@@ -65,15 +64,4 @@ const breadcrumbs: Crumb[] = [{ label: '홈', href: '/' }, { label: '면접 준�
 			}
 		</ul>
 	</section>
-
-	<PlaceholderCard phase="P4" uc="UC-05" fr="FR-5.1 ~ FR-5.4">
-		<p>
-			P4 에서 <code>src/content/interview/</code> 의 카테고리별 JSON 을 읽어 예상 질문과 답변 가이드를
-			렌더합니다. 질문마다 내 답변 초안을 작성해 두면 브라우저 안에만 저장되고 서버로는 전송되지 않습니다.
-		</p>
-		<p>
-			타임어택 모드는 React 아일랜드로 구현되어 무작위 질문 출제와 카운트다운 타이머를 제공합니다. 질문
-			데이터 자체는 P7 콘텐츠 채우기 단계에서 목표 {totalTarget}문항까지 늘려 갑니다.
-		</p>
-	</PlaceholderCard>
 </BaseLayout>
