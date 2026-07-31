@@ -1,7 +1,7 @@
 ---
 id: "checklist"
 title: "체크리스트"
-order: 9
+order: 13
 summary: "지원 전까지 반드시 확인해야 할 준비 항목을 한눈에 모았어요."
 ---
 
