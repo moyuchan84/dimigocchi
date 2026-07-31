@@ -57,7 +57,7 @@ const totalQuestions = examSets.reduce((sum, set) => sum + set.questionCount, 0)
 			groups.map((group) => (
 				<section aria-labelledby={`area-${group.area}`}>
 					<div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-						<h2 id={`area-${group.area}`} class="text-lg font-bold text-slate-900">
+						<h2 id={`area-${group.area}`} class="text-lg font-semibold text-slate-900">
 							{group.areaTitle}
 						</h2>
 						<span class="text-sm text-slate-500">{group.sets.length}세트</span>
@@ -80,7 +80,7 @@ const totalQuestions = examSets.reduce((sum, set) => sum + set.questionCount, 0)
 	</div>
 
 	<section aria-labelledby="recent-results" class="mt-12">
-		<h2 id="recent-results" class="text-lg font-bold text-slate-900">최근 결과</h2>
+		<h2 id="recent-results" class="text-lg font-semibold text-slate-900">최근 결과</h2>
 		<div class="mt-4">
 			<RecentResults client:load sets={examSets} />
 		</div>

@@ -16,11 +16,20 @@
  * 5. 드로어가 열린 동안의 배경 스크롤 잠금은 `global.css` 의
  *    `body:has(#site-nav-drawer[open])` 규칙이 JS 없이 처리한다.
  */
+import { getEntry } from 'astro:content';
+
 import Badge from '@components/astro/Badge.astro';
 import NavLinks from '@components/astro/NavLinks.astro';
 import { SITE_NAME, SITE_TAGLINE } from '@lib/navigation';
 
 const pathname = Astro.url.pathname;
+
+/**
+ * D-day 칩용 일정 이벤트. 헤더는 모든 페이지에 렌더되므로 여기서 읽어도 페이지별 중복 fetch가
+ * 아니다(Astro 는 정적 빌드 시 각 페이지 렌더마다 한 번씩 호출하지만 콘텐츠 컬렉션 조회는 가볍다).
+ */
+const schedule = await getEntry('schedule', '2027');
+const scheduleEvents = schedule?.data.events ?? [];
 ---
 
 <header class="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur">
@@ -49,25 +58,61 @@ const pathname = Astro.url.pathname;
 		*/}
 		<div class="ml-auto flex shrink-0 items-center gap-1 lg:ml-0">
 			{/*
-				D-day 칩 — P5 에서 전형 일정 데이터를 읽어 실제 D-day 계산으로 교체한다.
-				지금부터 같은 크기의 슬롯을 확보해 두어야 나중에 레이아웃이 밀리지 않는다(CLS 방지).
+				D-day 칩 (UC-06 / FR-6.3). 헤더는 React 아일랜드를 쓰지 않으므로(설계 메모 2번)
+				아래 is:inline 스크립트가 순수 JS로 계산해 텍스트를 갈아끼운다.
+				서버 렌더 초기값은 "일정 미확정" 상태 — 지금은 모든 이벤트 date 가 "미정"이라
+				스크립트가 아무 것도 바꾸지 않고 이 값 그대로 남는다(CLS 없음).
 			*/}
 			<a
 				href="/guide/schedule"
+				id="dday-chip"
 				class="hidden items-center gap-2 rounded-full border border-slate-200 px-3 py-1.5 whitespace-nowrap hover:bg-slate-50 xl:flex"
 			>
-				<Badge variant="tentative" size="sm">예정(가안)</Badge>
-				<span class="text-xs text-slate-600">2027 전형 일정</span>
+				<Badge variant="tentative" size="sm" class="dday-chip-badge">예정(가안)</Badge>
+				<span class="dday-chip-label text-xs text-slate-600">2027 전형 일정</span>
 			</a>
+			<script
+				type="application/json"
+				id="dday-chip-events"
+				set:html={JSON.stringify(scheduleEvents)}
+			/>
 
 			{/*
-				검색 — P1 은 링크만 노출한다. 동작하지 않는 입력창을 두지 않는다는 원칙에 따라
-				검색창은 P6 에서 <form action="/search" method="get"> 로 교체한다.
+				검색 (UC-08). xl 이상은 실제 입력 가능한 GET 폼 — 제출 시 `/search?q=...` 로 이동하면
+				SiteSearch(React 아일랜드)가 그 쿼리로 즉시 검색을 시작한다(JS 없이도 결과 페이지까지는
+				도달하므로 점진적 향상). xl 미만은 폭이 부족해 기존처럼 아이콘 링크만 둔다.
+				D-day 칩과 같은 이유로 두 벌을 렌더하고 하나를 숨긴다(NavLinks 의 desktop/mobile 패턴).
 			*/}
+			<form action="/search" method="get" class="hidden items-center xl:flex">
+				<label for="header-search-input" class="sr-only">검색어</label>
+				<div class="flex items-center gap-1.5 rounded-md border border-slate-200 py-1 pr-1 pl-2.5 focus-within:border-brand-400">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						class="h-4 w-4 shrink-0 text-slate-400"
+						aria-hidden="true"
+					>
+						<circle cx="11" cy="11" r="7"></circle>
+						<path d="m20 20-3.6-3.6"></path>
+					</svg>
+					<input
+						id="header-search-input"
+						name="q"
+						type="search"
+						placeholder="검색"
+						class="w-28 border-0 bg-transparent p-0 text-sm text-slate-700 placeholder:text-slate-400 focus:ring-0 focus:outline-none"
+					/>
+				</div>
+			</form>
 			<a
 				href="/search"
 				aria-label="검색"
-				class="flex items-center gap-1.5 rounded-md px-2 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 hover:text-brand-700"
+				class="flex items-center gap-1.5 rounded-md px-2 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 hover:text-brand-700 xl:hidden"
 			>
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
@@ -128,4 +173,52 @@ const pathname = Astro.url.pathname;
 		var summary = drawer.querySelector('summary');
 		if (summary) summary.focus();
 	});
+</script>
+
+{/*
+	D-day 칩 계산. `@lib/dday.ts` 의 computeNearestEvent 와 같은 로직을 손으로 다시 적었다 —
+	is:inline 스크립트는 번들러를 거치지 않아 모듈을 import 할 수 없기 때문이다(위 주석 참고).
+	이 파일을 고치면 `src/lib/dday.ts` 도 함께 고칠 것.
+*/}
+<script is:inline>
+	(function () {
+		var dataEl = document.getElementById('dday-chip-events');
+		var chip = document.getElementById('dday-chip');
+		if (!dataEl || !chip) return;
+
+		var events;
+		try {
+			events = JSON.parse(dataEl.textContent || '[]');
+		} catch {
+			return;
+		}
+
+		var ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+		var today = new Date();
+		today.setHours(0, 0, 0, 0);
+
+		var nearest = null;
+		for (var i = 0; i < events.length; i++) {
+			var event = events[i];
+			if (!ISO_DATE_RE.test(event.date)) continue;
+			var eventDate = new Date(event.date + 'T00:00:00');
+			var diffDays = Math.round((eventDate.getTime() - today.getTime()) / 86400000);
+			if (diffDays < 0) continue;
+			if (nearest === null || diffDays < nearest.diffDays) {
+				nearest = { label: event.label, date: event.date, status: event.status, diffDays: diffDays };
+			}
+		}
+		if (!nearest) return;
+
+		var badge = chip.querySelector('.dday-chip-badge');
+		var label = chip.querySelector('.dday-chip-label');
+		if (badge) {
+			badge.textContent = nearest.diffDays === 0 ? 'D-DAY' : 'D-' + nearest.diffDays;
+			if (nearest.status === '확정') {
+				badge.classList.remove('bg-amber-100', 'text-amber-800', 'ring-amber-300');
+				badge.classList.add('bg-emerald-100', 'text-emerald-800', 'ring-emerald-300');
+			}
+		}
+		if (label) label.textContent = nearest.label;
+	})();
 </script>

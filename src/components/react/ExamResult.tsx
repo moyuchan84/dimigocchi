@@ -41,7 +41,7 @@ export default function ExamResult({ setId, questions }: ExamResultProps) {
 	}, [setId]);
 
 	if (record === undefined) {
-		return <p className="text-sm text-slate-500">결과를 불러오는 중입니다...</p>;
+		return <p className="text-sm text-slate-500">결과를 불러오는 중...</p>;
 	}
 
 	if (record === null) {
@@ -63,7 +63,7 @@ export default function ExamResult({ setId, questions }: ExamResultProps) {
 	return (
 		<div className="space-y-10">
 			<section aria-labelledby="score-summary">
-				<h2 id="score-summary" className="text-lg font-bold text-slate-900">
+				<h2 id="score-summary" className="text-lg font-semibold text-slate-900">
 					점수 요약
 				</h2>
 				<div className="mt-4 rounded-lg border border-slate-200 bg-white p-5 sm:p-6">
@@ -95,7 +95,7 @@ export default function ExamResult({ setId, questions }: ExamResultProps) {
 			</section>
 
 			<section aria-labelledby="area-accuracy">
-				<h2 id="area-accuracy" className="text-lg font-bold text-slate-900">
+				<h2 id="area-accuracy" className="text-lg font-semibold text-slate-900">
 					영역별 정답률
 				</h2>
 				<div className="mt-4 rounded-lg border border-slate-200 bg-white p-5">
@@ -116,7 +116,7 @@ export default function ExamResult({ setId, questions }: ExamResultProps) {
 			</section>
 
 			<section aria-labelledby="explanations">
-				<h2 id="explanations" className="text-lg font-bold text-slate-900">
+				<h2 id="explanations" className="text-lg font-semibold text-slate-900">
 					문항별 해설
 				</h2>
 				<ol className="mt-4 list-none space-y-4 p-0">

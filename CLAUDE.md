@@ -48,7 +48,26 @@
   - 면접 질문 5카테고리 38문항 전량 자체 작성(지원동기 8·포트폴리오 6·진로계획 10·인성 8·보안시사 6 — 요구사양서 6.4 목표치와 정확히 일치). `security-news` 카테고리는 사건의 원인/피해/대응에 대한 견해를 묻는 질문만 작성(공격 기법 설명 요구 없음, 핵심 원칙 3 준수)
   - 브라우저에서 답변 작성 후 새로고침 시 유지, 타임어택 카운트다운 자동/수동 진행(다음 질문·종료) 실제 조작으로 end-to-end 검증 완료. Network 탭에서 답변 텍스트를 포함한 요청 없음(서버 미전송) 확인
   - `npm run build` 47페이지 유지, 경고/에러 0건. 카테고리별 문항 수 8/6/10/8/6=38 확인
-- **다음 작업: P5 대시보드/D-day/체크리스트** — 나머지 Phase(P5~P8)는 아래 "개발 로드맵" 참고
+- [x] **P5 대시보드/D-day/체크리스트 — 완료 (2026-07-31)**
+  - `src/lib/storage.ts`: `getTheoryProgress`/`setTheoryComplete`, `getChecklist`/`setChecklistItem` 추가(기존 read-modify-write 패턴과 동일)
+  - `src/lib/checklist.ts`(신규): 체크리스트 4단계·18항목 데이터를 `checklist.astro`(P1)에서 이관. 항목마다 안정적인 `id`(`${stageId}-${n}`)를 부여해 `dimigo-prep:progress.checklist` 키로 쓴다 — 홈 대시보드도 같은 id 목록을 진행률 분모로 재사용하므로 두 화면이 항목 수·id 로 어긋나지 않는다
+  - `src/lib/dday.ts`(신규): `computeNearestEvent` 순수 함수(FR-6.3, 오늘 이후 날짜 중 가장 가까운 이벤트). `date` 가 `YYYY-MM-DD` 형식일 때만 계산 대상 — 지금은 전 이벤트가 "미정"이라 계산 결과가 항상 없음(null)이며, 확정 날짜가 JSON에 반영되면 코드 변경 없이 D-day가 뜬다
+  - **로드맵 이탈**: FR-2.3(이론 챕터 "학습 완료" 버튼)은 원래 P2/UC-02 범위였지만 이 값을 쓰는 화면이 없어 P2에서 만들지 않았다. 대시보드 이론 진행률의 유일한 데이터 소스가 이 버튼이라 P5에서 함께 추가했다(`ChapterCompleteToggle`, `theory/[category]/[chapter].astro` 하단)
+  - React 아일랜드 4개 신규 도입: `Dashboard`(홈 진행률 5종·온보딩·추천 학습·최근 오답 요약을 한 아일랜드가 소유 — WrongNoteList와 같은 이유로 스냅샷 분리 안 함), `DdayWidget`(홈+`/guide/schedule` 공유), `ChecklistBoard`(체크리스트 전체를 소유, `/checklist`), `ChapterCompleteToggle`(이론 챕터 하단)
+  - **헤더 D-day 칩은 React 를 쓰지 않는다**: `Header.astro`는 설계상 React 아일랜드가 없어(P1 설계 메모) 모든 페이지에 노출되는 D-day 칩은 `is:inline` 순수 JS로 구현했다 — `computeNearestEvent`와 동일한 로직을 번들러 없이 손으로 다시 적은 것(의도적 중복, 주석에 명시). 이 칩이 모든 페이지에 렌더되므로 P1의 "0 JS" 서술은 이제 홈/체크리스트/이론 챕터/전형일정 외의 순수 정적 페이지(guide, guide 섹션, 404 등)에만 해당한다
+  - 대시보드 진행률은 FR-1.1의 4영역(적성검사 이론/해킹방어 이론/모의고사/면접)에 **체크리스트**를 5번째 카드로 추가(FR-7.2가 명시적으로 요구). 모의고사 진행률은 "응시한 세트 수/전체 9세트", 면접은 "작성한 문항 수(공백 아님)/전체 38문항"으로 정의
+  - `index.astro`/`checklist.astro`/`guide/schedule.astro`/`theory/[category]/[chapter].astro`의 `PlaceholderCard` 전부 제거하고 실제 기능으로 교체
+  - 브라우저에서 체크리스트 체크·이론 학습완료 토글이 새로고침 후에도 유지되고 홈 대시보드 진행률·추천 학습(완료 챕터 자동 제외)에 즉시 반영됨을 실제 조작으로 end-to-end 검증. D-day 계산은 가짜 미래 날짜를 주입해 "D-N" 표시와 확정/예정 배지 전환을 검증(실제 콘텐츠는 여전히 전부 "미정" — 핵심 원칙 4 유지, 날짜를 추측해 넣지 않음)
+  - `npm run build` 47페이지 유지, 경고/에러 0건
+- [x] **P6 검색/UI 폴리싱 — 완료 (2026-07-31)**
+  - `src/pages/search-index.json.ts`(신규 엔드포인트): 빌드 시 이론 13/문항 180/면접질문 38 = 총 231개 문서를 `{type, id, title, meta, href, keywords}`로 평탄화해 정적 JSON으로 출력. FR-8.1이 "제목·태그"만 검색 대상으로 규정하지만 문항 콘텐츠엔 title/tags가 없어, `question` 텍스트를 title로, 카테고리/소분류/tags를 keywords로 매핑(본문·해설은 인덱싱하지 않음 — 인덱스 크기와 FR-8.1 범위를 넘지 않기 위해)
+  - `src/components/react/SiteSearch.tsx`(신규): `/search`의 유일한 아일랜드. 인덱스를 fetch해 전량 메모리에 올리고 모든 매칭을 브라우저 안에서만 수행(검색어 서버 미전송). 토큰화 AND 매칭 + title 가중치(×3) > keywords(×1) 스코어링, 결과는 FR-8.2대로 이론/문항/면접 3그룹으로 묶어 표시. Fuse.js 등 외부 라이브러리 없이 자체 구현 — 문서 231개 규모에서 한글 fuzzy 매칭 라이브러리보다 단순 부분문자열 매칭이 더 예측 가능하다고 판단. `history.replaceState`로 `?q=`를 URL에 반영해 북마크/공유 가능
+  - `Header.astro`: xl(1280px) 이상에서 실제 입력 가능한 `<form action="/search" method="get">` 검색창 추가(제출 시 `/search?q=...`로 이동 → SiteSearch가 그 쿼리로 즉시 검색). xl 미만은 공간 부족으로 기존 아이콘 링크 유지 — D-day 칩과 같은 "두 벌 렌더, 하나는 CSS로 숨김" 패턴(NavLinks desktop/mobile과 동일 이유)
+  - **UI 폴리싱**: 별도 Explore 에이전트로 반응형/접근성/일관성/데드코드 감사를 병렬 실행해 확인된 실제 버그만 수정 — (1) `WrongNoteList`/`TimeAttack`의 터치 타깃이 28~32px로 모바일 44px 권장치 미달이던 것을 `py-2` 이상으로 확대, (2) `CardLink`가 `badge` 텍스트를 항상 `Badge variant="neutral"`로 하드코딩해 `guide/index.astro`의 "예정(가안)" 배지가 회색으로 렌더되던 핵심 원칙 4 위반을 `badgeVariant` prop 추가로 수정, (3) 사이트 전역 h2 섹션 제목이 `font-semibold`(다수)와 `font-bold tracking-tight`(소수, P1~P3 페이지 잔존)로 갈라져 있던 것을 `font-semibold`로 통일, (4) `WrongNoteList`의 오답 재풀이 카드가 항상 "Q1"로 표시되던 버그를 세트 내 실제 순번을 계산하도록 수정, (5) `ExamResult`의 로딩 문구를 다른 아일랜드와 같은 casual체로 통일
+  - **데드코드 제거**: 어떤 페이지에서도 더 이상 import되지 않던 `PlaceholderCard.astro`(P2~P5를 거치며 실기능으로 전부 교체됨)와, 그것 전용이던 `Badge`의 `phase` variant를 삭제. 관련 잔존 주석(global.css, 404.astro)도 함께 정리
+  - `npm run build` 47페이지 유지(json 엔드포인트는 페이지 카운트에 안 잡힘), 경고/에러 0건. 브라우저에서 영문(XSS)·한글(리눅스/지원동기) 검색, 헤더 검색창→결과 페이지 이동, 오답노트 터치 타깃/Q번호 수정, guide 배지 색상을 실제 조작으로 end-to-end 검증
+  - 다크모드는 요구사양서에 "선택" 항목으로 남아 있어 이번 Phase에서는 구현하지 않음(범위 밖으로 명시적 보류)
+- **다음 작업: P7 콘텐츠 채우기** — 나머지 Phase(P7~P8)는 아래 "개발 로드맵" 참고
 - 작업을 시작하거나 재개할 때는 이 섹션의 체크박스 상태를 확인하고, Phase를 완료하면 이 파일의 체크박스도 함께 갱신할 것
 
 ## 참고 문서 (반드시 확인)

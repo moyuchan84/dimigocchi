@@ -91,3 +91,33 @@ export function setInterviewAnswer(questionId: string, text: string): void {
 	data.interviewAnswers = { ...data.interviewAnswers, [questionId]: text };
 	writeProgress(data);
 }
+
+/**
+ * 챕터 id → 학습 완료 여부 맵을 반환한다.
+ *
+ * ⚠️ 로드맵 이탈 기록: FR-2.3("학습 완료" 버튼)은 원래 P2 UC-02 범위였지만, 이 값을 쓰는
+ * 화면(대시보드 FR-1.1)이 없어 P2 에서는 만들지 않았다. P5 에서 대시보드 진행률 집계가
+ * 필요해지며 챕터 상세 페이지의 버튼과 함께 이 시점에 추가한다.
+ */
+export function getTheoryProgress(): Record<string, boolean> {
+	return readProgress().theory;
+}
+
+/** 챕터 1개의 학습 완료 상태를 갱신한다(FR-2.3). */
+export function setTheoryComplete(chapterId: string, completed: boolean): void {
+	const data = readProgress();
+	data.theory = { ...data.theory, [chapterId]: completed };
+	writeProgress(data);
+}
+
+/** 체크리스트 항목 id → 체크 여부 맵을 반환한다(FR-7.1). */
+export function getChecklist(): Record<string, boolean> {
+	return readProgress().checklist;
+}
+
+/** 체크리스트 항목 1개의 체크 상태를 갱신한다(FR-7.1). */
+export function setChecklistItem(itemId: string, checked: boolean): void {
+	const data = readProgress();
+	data.checklist = { ...data.checklist, [itemId]: checked };
+	writeProgress(data);
+}

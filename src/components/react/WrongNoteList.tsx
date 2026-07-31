@@ -37,6 +37,18 @@ export default function WrongNoteList({ allQuestions }: WrongNoteListProps) {
 	const [retryAnswers, setRetryAnswers] = useState<Record<string, ExamAnswerValue>>({});
 	const [feedback, setFeedback] = useState<Record<string, boolean>>({});
 
+	/** 문항 id -> 자기 세트 안에서의 1-based 순번("Q3"). QuestionCard 의 index 표시가 재풀이에서도 맞도록. */
+	const indexInSet = useMemo(() => {
+		const counters = new Map<string, number>();
+		const map = new Map<string, number>();
+		for (const q of allQuestions) {
+			const next = (counters.get(q.setId) ?? 0) + 1;
+			counters.set(q.setId, next);
+			map.set(q.id, next);
+		}
+		return map;
+	}, [allQuestions]);
+
 	useEffect(() => {
 		const results = getExamResults();
 		// 문항 id -> 가장 최근 발생일. 응시 결과를 오래된 것부터 순회하며 덮어써서
@@ -122,14 +134,14 @@ export default function WrongNoteList({ allQuestions }: WrongNoteListProps) {
 							<button
 								type="button"
 								onClick={() => setSortMode('recent')}
-								className={`rounded-md border px-3 py-1 ${sortMode === 'recent' ? 'border-brand-300 bg-brand-50 text-brand-700' : 'border-slate-300 text-slate-600'}`}
+								className={`rounded-md border px-3 py-2 ${sortMode === 'recent' ? 'border-brand-300 bg-brand-50 text-brand-700' : 'border-slate-300 text-slate-600'}`}
 							>
 								최근순
 							</button>
 							<button
 								type="button"
 								onClick={() => setSortMode('area')}
-								className={`rounded-md border px-3 py-1 ${sortMode === 'area' ? 'border-brand-300 bg-brand-50 text-brand-700' : 'border-slate-300 text-slate-600'}`}
+								className={`rounded-md border px-3 py-2 ${sortMode === 'area' ? 'border-brand-300 bg-brand-50 text-brand-700' : 'border-slate-300 text-slate-600'}`}
 							>
 								영역별
 							</button>
@@ -178,7 +190,7 @@ export default function WrongNoteList({ allQuestions }: WrongNoteListProps) {
 										<button
 											type="button"
 											onClick={() => setExpandedId(isExpanded ? null : item.question.id)}
-											className="shrink-0 rounded-md border border-slate-300 px-3 py-1 text-xs font-semibold text-slate-700"
+											className="shrink-0 rounded-md border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-700"
 										>
 											{isExpanded ? '접기' : '다시 풀기'}
 										</button>
@@ -188,7 +200,7 @@ export default function WrongNoteList({ allQuestions }: WrongNoteListProps) {
 										<div className="mt-3 space-y-3">
 											<QuestionCard
 												question={item.question}
-												index={1}
+												index={indexInSet.get(item.question.id) ?? 1}
 												value={retryAnswers[item.question.id]}
 												onChange={(value) =>
 													setRetryAnswers((prev) => ({ ...prev, [item.question.id]: value }))
