@@ -54,6 +54,8 @@ export interface TheoryChapterRef {
 	/** 검색 키워드(요구사양서 7.1). P6 통합 검색 인덱스에서 사용한다. */
 	tags: string[];
 	estMinutes: number;
+	/** 원본 마크다운 본문(frontmatter 제외). 검색 인덱스 본문 검색용(FR-8.1) — 렌더링에는 쓰지 않는다. */
+	body: string;
 }
 
 export type ExamArea =
@@ -232,6 +234,7 @@ export async function listTheoryChapters(): Promise<TheoryChapterRef[]> {
 			order: e.data.order,
 			tags: e.data.tags,
 			estMinutes: e.data.estMinutes,
+			body: e.body ?? '',
 		}))
 		.sort((a, b) => a.order - b.order);
 }
