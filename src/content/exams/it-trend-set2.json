@@ -1,0 +1,272 @@
+{
+  "setId": "it-trend-set2",
+  "title": "IT 상식 2회",
+  "area": "it-trend",
+  "areaTitle": "IT 상식",
+  "limitMinutes": 20,
+  "questions": [
+    {
+      "id": "it-trend-set2-q01",
+      "category": "aptitude",
+      "subcategory": "it-trend",
+      "type": "single-choice",
+      "question": "한 온라인 쇼핑몰이 세일 기간에 이용자가 몰리면 서버를 자동으로 늘리고, 평소에는 다시 줄여서 비용을 아낀다. 이 회사가 활용하고 있는 방식은?",
+      "choices": ["클라우드", "빅데이터", "사물인터넷", "제로트러스트"],
+      "answer": 0,
+      "explanation": "필요한 만큼만 컴퓨팅 자원을 빌려 쓰고 상황에 따라 늘리거나 줄일 수 있는 것이 클라우드의 대표적인 장점이에요. 직접 서버를 사서 관리할 필요 없이 '남의 컴퓨터'를 빌려 쓰는 셈이죠.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "it-trend-set2-q02",
+      "category": "aptitude",
+      "subcategory": "it-trend",
+      "type": "single-choice",
+      "question": "머신러닝과 생성형 AI의 관계를 가장 바르게 설명한 것은?",
+      "choices": [
+        "머신러닝과 생성형 AI는 서로 관련 없는 별개의 기술이다.",
+        "머신러닝은 새로운 그림이나 글을 만들어내고, 생성형 AI는 데이터에서 규칙을 찾아낸다.",
+        "생성형 AI는 머신러닝(더 넓게는 딥러닝)을 바탕으로, 학습한 내용을 이용해 글·그림·코드 같은 새로운 결과물을 만들어낸다.",
+        "생성형 AI는 딥러닝보다 더 큰 개념으로, 딥러닝을 포함한다."
+      ],
+      "answer": 2,
+      "explanation": "인공지능 ⊃ 머신러닝 ⊃ 딥러닝 ⊃ 생성형 AI 순서로 포함 관계가 있어요. 생성형 AI는 이 안에서 가장 안쪽 개념으로, 학습한 패턴을 바탕으로 '새로운 결과물'을 만들어낸다는 점이 특징입니다.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "it-trend-set2-q03",
+      "category": "aptitude",
+      "subcategory": "it-trend",
+      "type": "single-choice",
+      "question": "빅데이터를 설명할 때 흔히 쓰는 '3V'에 해당하지 않는 것은?",
+      "choices": ["가치(Value)", "크기(Volume)", "속도(Velocity)", "다양성(Variety)"],
+      "answer": 0,
+      "explanation": "빅데이터의 3V는 데이터의 양(Volume), 생성·처리 속도(Velocity), 형태의 다양성(Variety)을 가리켜요. '가치'는 3V에 포함되지 않으니 헷갈리지 않도록 주의하세요.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "it-trend-set2-q04",
+      "category": "aptitude",
+      "subcategory": "it-trend",
+      "type": "single-choice",
+      "question": "A 쇼핑몰 서버가 해킹당해 회원의 아이디와 비밀번호가 밖으로 새어나갔다. 이후 공격자가 그 아이디·비밀번호를 다른 여러 사이트에도 똑같이 입력하며 로그인을 시도했다. 이 '두 번째 시도'를 가리키는 말은?",
+      "choices": ["개인정보 유출", "제로트러스트", "랜섬웨어", "크리덴셜 스터핑"],
+      "answer": 3,
+      "explanation": "서버에서 정보가 새어나가는 사건 자체는 '개인정보 유출'이고, 그렇게 유출된 아이디·비밀번호를 다른 사이트에도 대입해보는 공격을 '크리덴셜 스터핑'이라고 해요. 같은 아이디·비밀번호를 여러 사이트에서 재사용하면 이런 피해로 이어지기 쉽습니다.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "it-trend-set2-q05",
+      "category": "aptitude",
+      "subcategory": "it-trend",
+      "type": "single-choice",
+      "question": "여행 중 인터넷이 끊기자, 클라우드에만 저장해둔 문서를 전혀 열어볼 수 없었다. 이 상황은 클라우드의 어떤 단점과 관련이 있는가?",
+      "choices": [
+        "초기 도입 비용이 매우 높다는 점",
+        "저장할 수 있는 데이터 양이 너무 적다는 점",
+        "인터넷 연결이 끊기면 이용하기 어렵다는 점",
+        "여러 기기에서 동시에 접근할 수 없다는 점"
+      ],
+      "answer": 2,
+      "explanation": "클라우드는 어디서든 접근할 수 있다는 게 장점이지만, 반대로 그 '접근'이 인터넷 연결에 의존한다는 게 단점이 되기도 해요. 인터넷이 끊기면 클라우드에 저장된 자료를 쓸 수 없게 됩니다.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "it-trend-set2-q06",
+      "category": "aptitude",
+      "subcategory": "it-trend",
+      "type": "single-choice",
+      "question": "가정에 설치한 IP 카메라를 구매 당시 받은 비밀번호 그대로 계속 사용하다가 외부인이 몰래 영상을 훔쳐보는 사고가 발생했다. 이런 사고를 예방하기 위한 가장 기본적인 방법은?",
+      "choices": [
+        "카메라의 인터넷 연결을 아예 끊어 버린다.",
+        "제품에 설정된 초기 비밀번호를 다른 값으로 바꾼다.",
+        "카메라의 화질을 최대한 낮춘다.",
+        "카메라 데이터를 반드시 클라우드에만 저장한다."
+      ],
+      "answer": 1,
+      "explanation": "IoT 기기는 종류가 많고 한 번 설치하면 방치되기 쉬워서, 처음 설정된 비밀번호를 그대로 두는 경우가 많아요. 가장 기본적이면서 중요한 예방책은 초기 비밀번호를 바로 변경하는 것입니다.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "it-trend-set2-q07",
+      "category": "aptitude",
+      "subcategory": "it-trend",
+      "type": "single-choice",
+      "question": "개인정보의 '비식별화'에 대한 설명으로 가장 알맞은 것은?",
+      "choices": [
+        "열쇠(키)가 있어야만 원래 내용으로 되돌릴 수 있도록 데이터를 암호로 바꾸는 것",
+        "개인정보를 여러 서버에 나누어 저장해 한 곳이 뚫려도 안전하게 만드는 것",
+        "개인정보 자체를 완전히 삭제해서 데이터를 남기지 않는 것",
+        "이름, 주민등록번호처럼 특정 개인을 알아볼 수 있는 부분을 지우거나 다른 값으로 바꿔 누구인지 알아보기 어렵게 만드는 것"
+      ],
+      "answer": 3,
+      "explanation": "비식별화는 '암호화'와 다른 개념이에요. 암호화는 키가 있으면 원래대로 되돌릴 수 있지만, 비식별화는 특정 개인을 알아볼 수 없도록 정보를 가공하는 것을 말합니다. 데이터를 삭제하는 것도 아니라는 점을 기억하세요.",
+      "difficulty": "hard"
+    },
+    {
+      "id": "it-trend-set2-q08",
+      "category": "aptitude",
+      "subcategory": "it-trend",
+      "type": "single-choice",
+      "question": "챗봇에게 어떤 역사적 사실을 물어봤더니, 실제로는 존재하지 않는 책 제목과 저자 이름을 아주 그럴듯하게 지어내어 답했다. 이런 현상을 부르는 말은?",
+      "choices": ["할루시네이션(환각)", "AI 편향", "비식별화", "크리덴셜 스터핑"],
+      "answer": 0,
+      "explanation": "AI가 사실이 아닌 내용을 마치 사실인 것처럼 그럴듯하게 만들어내는 현상을 할루시네이션(환각)이라고 해요. AI 답변을 그대로 믿기보다 사실인지 다시 확인하는 습관이 필요합니다.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "it-trend-set2-q09",
+      "category": "aptitude",
+      "subcategory": "it-trend",
+      "type": "single-choice",
+      "question": "공격자가 회사의 중요한 파일들을 몰래 암호화한 뒤, 이를 다시 풀어주는 대가로 돈을 요구했다. 이런 공격을 무엇이라 하는가?",
+      "choices": ["피싱", "제로트러스트", "랜섬웨어", "크리덴셜 스터핑"],
+      "answer": 2,
+      "explanation": "파일이나 시스템을 몰래 암호화해 쓸 수 없게 만든 뒤 몸값(ransom)을 요구하는 악성코드를 랜섬웨어라고 해요. 평소 중요한 자료를 별도로 백업해두는 것이 좋은 대비책입니다.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "it-trend-set2-q10",
+      "category": "aptitude",
+      "subcategory": "it-trend",
+      "type": "single-choice",
+      "question": "'택배가 도착했습니다'라는 문자와 함께 온 링크를 눌렀더니, 실제 택배회사 사이트와 거의 똑같이 생긴 가짜 사이트가 나타나 개인정보를 입력하도록 유도했다. 이런 수법을 무엇이라 하는가?",
+      "choices": ["랜섬웨어", "할루시네이션", "비식별화", "피싱"],
+      "answer": 3,
+      "explanation": "진짜처럼 꾸민 가짜 사이트나 메시지로 이용자를 속여 개인정보를 입력하게 만드는 수법을 피싱이라고 해요. 출처가 불분명한 링크는 누르기 전에 주소를 꼼꼼히 확인하는 습관이 중요합니다.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "it-trend-set2-q11",
+      "category": "aptitude",
+      "subcategory": "it-trend",
+      "type": "single-choice",
+      "question": "회사 내부 네트워크에 접속한 직원이라도 예외 없이, 매번 로그인할 때마다 신원을 다시 확인하고 접근 권한을 검사하는 보안 방식은?",
+      "choices": ["제로트러스트", "클라우드", "빅데이터", "사물인터넷"],
+      "answer": 0,
+      "explanation": "'내부망이라도 일단 의심한다'는 생각으로, 내부 사용자라도 매번 권한과 신원을 다시 확인하는 보안 원칙을 제로트러스트라고 해요. 한 번 들어왔다고 무조건 믿지 않는 것이 핵심입니다.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "it-trend-set2-q12",
+      "category": "aptitude",
+      "subcategory": "it-trend",
+      "type": "single-choice",
+      "question": "다음 중 개념의 범위가 넓은 것부터 좁은 것 순서로 올바르게 나열한 것은?",
+      "choices": [
+        "머신러닝 > 인공지능 > 생성형 AI > 딥러닝",
+        "딥러닝 > 머신러닝 > 인공지능 > 생성형 AI",
+        "인공지능 > 머신러닝 > 딥러닝 > 생성형 AI",
+        "생성형 AI > 딥러닝 > 머신러닝 > 인공지능"
+      ],
+      "answer": 2,
+      "explanation": "인공지능(AI)이 가장 넓은 개념이고, 그 안에 머신러닝, 그 안에 다시 딥러닝, 가장 안쪽에 생성형 AI가 있는 포함 관계예요. '인공지능 ⊃ 머신러닝 ⊃ 딥러닝 ⊃ 생성형 AI' 순서로 기억해두세요.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "it-trend-set2-q13",
+      "category": "aptitude",
+      "subcategory": "it-trend",
+      "type": "single-choice",
+      "question": "어떤 앱이 '지도 서비스 제공'을 목적으로 위치정보 수집 동의를 받은 뒤, 같은 위치정보를 광고회사에 팔아 넘겼다. 이는 개인정보 보호 4원칙 중 어떤 원칙을 어긴 것에 가장 가까운가?",
+      "choices": ["최소 수집 원칙", "동의 원칙", "안전조치 원칙", "목적 제한 원칙"],
+      "answer": 3,
+      "explanation": "개인정보는 처음에 밝힌 목적 범위 안에서만 사용해야 한다는 것이 목적 제한 원칙이에요. 지도 서비스를 위해 받은 위치정보를 광고 목적으로 다시 사용(판매)한 것은 이 원칙을 벗어난 사용입니다.",
+      "difficulty": "hard"
+    },
+    {
+      "id": "it-trend-set2-q14",
+      "category": "aptitude",
+      "subcategory": "it-trend",
+      "type": "single-choice",
+      "question": "센서가 달린 수많은 가전제품과 기기들이 인터넷으로 서로 연결되어 데이터를 주고받는 환경을 가리키는 말은?",
+      "choices": ["클라우드", "사물인터넷", "빅데이터", "제로트러스트"],
+      "answer": 1,
+      "explanation": "사물인터넷(IoT)은 여러 기기가 인터넷으로 연결되어 데이터를 주고받는 환경을 뜻해요. 기기 수가 많고 관리가 소홀해지기 쉬워서 보안에 특히 신경 써야 합니다.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "it-trend-set2-q15",
+      "category": "aptitude",
+      "subcategory": "it-trend",
+      "type": "multi-choice",
+      "question": "사물인터넷(IoT) 기기를 안전하게 사용하기 위한 방법으로 옳은 것을 모두 고르시오.",
+      "choices": [
+        "기기를 구매했을 때 설정되어 있던 초기 비밀번호를 그대로 계속 사용한다.",
+        "제조사가 제공하는 펌웨어 업데이트를 꾸준히 적용한다.",
+        "사용하지 않는 기능이나 원격 접속은 꺼 둔다.",
+        "기기가 인터넷에 연결되어 있는지는 신경 쓰지 않아도 된다."
+      ],
+      "answer": [1, 2],
+      "explanation": "IoT 기기는 초기 비밀번호 변경, 펌웨어(소프트웨어) 업데이트, 안 쓰는 기능 끄기가 기본적인 방어 수칙이에요. 초기 비밀번호를 그대로 두거나 연결 상태를 신경 쓰지 않는 것은 보안을 위협하는 습관입니다.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "it-trend-set2-q16",
+      "category": "aptitude",
+      "subcategory": "it-trend",
+      "type": "multi-choice",
+      "question": "개인정보 보호의 4원칙에 대한 설명으로 옳은 것을 모두 고르시오.",
+      "choices": [
+        "서비스 제공에 꼭 필요한 최소한의 개인정보만 수집해야 한다.",
+        "한 번 동의를 받으면 그 정보를 어떤 목적으로 사용해도 상관없다.",
+        "개인정보를 수집할 때는 이용자의 동의를 받아야 한다.",
+        "개인정보는 유출되지 않도록 별도의 안전조치를 하지 않아도 된다."
+      ],
+      "answer": [0, 2],
+      "explanation": "개인정보 보호 4원칙은 최소 수집, 목적 제한, 동의, 안전 조치예요. 동의를 받았다고 목적과 상관없이 마음대로 써도 되는 것은 아니고, 안전조치도 반드시 필요합니다.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "it-trend-set2-q17",
+      "category": "aptitude",
+      "subcategory": "it-trend",
+      "type": "multi-choice",
+      "question": "다음 설명 중 '생성형 AI'에 해당하는 것을 모두 고르시오.",
+      "choices": [
+        "사용자의 질문에 맞춰 새로운 글을 작성해 준다.",
+        "학습한 화풍을 바탕으로 새로운 그림을 그려 준다.",
+        "데이터를 저장만 할 뿐 아무 것도 만들어내지 않는 하드디스크",
+        "정해진 경로만 청소하도록 프로그래밍된 단순 로봇청소기"
+      ],
+      "answer": [0, 1],
+      "explanation": "생성형 AI는 학습한 내용을 바탕으로 글, 그림, 코드처럼 '새로운 결과물'을 만들어내는 것이 특징이에요. 단순히 저장만 하거나 정해진 동작만 반복하는 기기는 생성형 AI에 해당하지 않습니다.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "it-trend-set2-q18",
+      "category": "aptitude",
+      "subcategory": "it-trend",
+      "type": "multi-choice",
+      "question": "다음 중 '피싱' 공격의 특징으로 옳은 것을 모두 고르시오.",
+      "choices": [
+        "실제 사이트와 비슷하게 꾸민 가짜 사이트나 메시지로 개인정보를 입력하도록 속인다.",
+        "이용자가 눈치채지 못하는 사이 가짜 링크를 클릭하도록 유도한다.",
+        "파일을 강제로 암호화한 뒤 풀어주는 대가로 돈을 요구한다.",
+        "내부 네트워크 사용자라도 매번 신원과 권한을 다시 확인한다."
+      ],
+      "answer": [0, 1],
+      "explanation": "피싱은 진짜처럼 꾸민 가짜 사이트·메시지로 이용자를 속여 개인정보를 입력하게 만드는 수법이에요. 파일을 암호화해 돈을 요구하는 것은 랜섬웨어, 내부 사용자도 매번 확인하는 것은 제로트러스트에 대한 설명입니다.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "it-trend-set2-q19",
+      "category": "aptitude",
+      "subcategory": "it-trend",
+      "type": "short-answer",
+      "question": "이용자가 실제 은행 사이트와 매우 비슷하게 생긴 가짜 웹사이트에 속아 아이디, 비밀번호, 계좌번호 등을 직접 입력하게 만드는 사기 수법을 무엇이라고 하는가? (한글 또는 영어로 답하시오)",
+      "answer": ["피싱", "피싱 공격", "phishing"],
+      "explanation": "정답은 피싱(phishing)이에요. 진짜와 매우 비슷한 가짜 사이트나 메시지로 개인정보를 빼내는 수법으로, 링크의 주소를 꼼꼼히 확인하는 습관으로 예방할 수 있습니다.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "it-trend-set2-q20",
+      "category": "aptitude",
+      "subcategory": "it-trend",
+      "type": "short-answer",
+      "question": "회사 내부 네트워크에 있다는 이유만으로 무조건 믿지 않고, 모든 접속 시도에 대해 매번 신원과 권한을 다시 확인하는 보안 원칙을 무엇이라고 하는가? (한글 또는 영어로 답하시오)",
+      "answer": ["제로트러스트", "제로 트러스트", "zero trust"],
+      "explanation": "정답은 제로트러스트(zero trust)예요. '내부망이라도 일단 의심한다'는 생각으로, 접속할 때마다 신원과 권한을 다시 검사하는 보안 방식입니다.",
+      "difficulty": "medium"
+    }
+  ]
+}

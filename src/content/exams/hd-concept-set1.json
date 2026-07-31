@@ -1,0 +1,247 @@
+{
+	"setId": "hd-concept-set1",
+	"title": "해킹방어 개념 종합 1회",
+	"area": "hd-concept",
+	"areaTitle": "해킹방어 개념 종합",
+	"limitMinutes": 25,
+	"questions": [
+		{
+			"id": "hd-concept-set1-q01",
+			"category": "hacking-defense",
+			"subcategory": "infosec",
+			"type": "single-choice",
+			"question": "다음 중 정보보호의 3요소(CIA)에 해당하지 않는 것은?",
+			"choices": ["기밀성", "무결성", "가용성", "확장성"],
+			"answer": 3,
+			"explanation": "정보보호의 3요소는 기밀성(Confidentiality)·무결성(Integrity)·가용성(Availability)이며, 확장성은 포함되지 않는다.",
+			"difficulty": "easy"
+		},
+		{
+			"id": "hd-concept-set1-q02",
+			"category": "hacking-defense",
+			"subcategory": "infosec",
+			"type": "single-choice",
+			"question": "온라인 쇼핑몰이 디도스 공격으로 몇 시간 동안 접속되지 않았지만, 고객 정보가 유출되거나 주문 내역이 바뀌지는 않았다. 이때 침해된 정보보호 요소는?",
+			"choices": ["기밀성", "무결성", "인가", "가용성"],
+			"answer": 3,
+			"explanation": "정보가 새어 나가거나(기밀성) 바뀌지(무결성) 않았지만 필요할 때 쓸 수 없었으므로 가용성이 침해된 사례다.",
+			"difficulty": "easy"
+		},
+		{
+			"id": "hd-concept-set1-q03",
+			"category": "hacking-defense",
+			"subcategory": "infosec",
+			"type": "multi-choice",
+			"question": "다음 설명 중 '인가(Authorization)'에 해당하는 것을 모두 고르시오.",
+			"choices": [
+				"로그인한 사용자가 관리자 페이지에 접근할 권한이 있는지 서버가 확인한다",
+				"아이디와 비밀번호를 입력해 본인이 맞는지 확인한다",
+				"일반 회원 계정으로는 결제 내역 삭제 기능을 쓸 수 없게 막는다",
+				"지문 인식으로 등록된 사용자 본인임을 확인한다"
+			],
+			"answer": [0, 2],
+			"explanation": "인가는 '이 사람이 이걸 해도 되는가'를 확인하는 절차다. 아이디/비밀번호 확인과 지문 인식은 '너 누구야'를 확인하는 인증에 해당한다.",
+			"difficulty": "medium"
+		},
+		{
+			"id": "hd-concept-set1-q04",
+			"category": "hacking-defense",
+			"subcategory": "network",
+			"type": "single-choice",
+			"question": "OSI 7계층 중 IP 주소를 이용해 목적지 컴퓨터까지 가는 길을 정하는 계층은?",
+			"choices": ["물리 계층", "데이터 링크 계층", "네트워크 계층", "전송 계층"],
+			"answer": 2,
+			"explanation": "네트워크 계층(3계층)은 IP 주소를 기반으로 라우팅(경로 설정)을 담당한다.",
+			"difficulty": "easy"
+		},
+		{
+			"id": "hd-concept-set1-q05",
+			"category": "hacking-defense",
+			"subcategory": "network",
+			"type": "single-choice",
+			"question": "실시간 화상통화처럼 약간의 데이터 손실은 괜찮지만 지연이 없어야 하는 서비스에 더 적합한 전송 계층 프로토콜은?",
+			"choices": ["HTTP", "UDP", "DNS", "TCP"],
+			"answer": 1,
+			"explanation": "TCP는 도착 확인과 재전송을 보장하지만 그만큼 느리다. UDP는 보장이 없는 대신 빠르고 가벼워 실시간 통신에 적합하다.",
+			"difficulty": "easy"
+		},
+		{
+			"id": "hd-concept-set1-q06",
+			"category": "hacking-defense",
+			"subcategory": "network",
+			"type": "multi-choice",
+			"question": "다음 중 HTTP 상태 코드에 대한 설명으로 옳은 것을 모두 고르시오.",
+			"choices": [
+				"200번대는 요청이 성공했음을 뜻한다",
+				"404는 서버 내부에 오류가 생겼다는 뜻이다",
+				"4xx는 요청한 클라이언트 쪽의 문제를 나타낸다",
+				"503은 서버가 일시적으로 요청을 처리할 수 없다는 뜻이다"
+			],
+			"answer": [0, 2, 3],
+			"explanation": "404는 서버 오류(5xx)가 아니라 요청한 주소가 없다는 4xx 오류다. 4xx는 클라이언트 쪽 문제, 5xx는 서버 쪽 문제를 나타낸다.",
+			"difficulty": "medium"
+		},
+		{
+			"id": "hd-concept-set1-q07",
+			"category": "hacking-defense",
+			"subcategory": "linux",
+			"type": "single-choice",
+			"question": "리눅스에서 현재 작업 중인 디렉터리의 절대경로를 출력하는 명령어는?",
+			"choices": ["ls", "cd", "cat", "pwd"],
+			"answer": 3,
+			"explanation": "pwd(print working directory)는 현재 위치를 절대경로로 보여준다.",
+			"difficulty": "easy"
+		},
+		{
+			"id": "hd-concept-set1-q08",
+			"category": "hacking-defense",
+			"subcategory": "linux",
+			"type": "single-choice",
+			"question": "권한이 -rw-r--r-- 인 파일을 chmod 숫자 표기로 바꾸면?",
+			"choices": ["644", "744", "700", "777"],
+			"answer": 0,
+			"explanation": "소유자 rw-=6, 그룹 r--=4, 기타 r--=4 이므로 644다.",
+			"difficulty": "medium"
+		},
+		{
+			"id": "hd-concept-set1-q09",
+			"category": "hacking-defense",
+			"subcategory": "c-ds",
+			"type": "single-choice",
+			"question": "오늘날 PC·서버 환경에서 int 형 변수가 흔히 차지하는 메모리 크기는?",
+			"choices": ["1바이트", "2바이트", "8바이트", "4바이트"],
+			"answer": 3,
+			"explanation": "오늘날 PC·서버 환경에서 int는 보통 4바이트를 차지한다(C 표준이 정확한 크기를 못 박지는 않는다).",
+			"difficulty": "easy"
+		},
+		{
+			"id": "hd-concept-set1-q10",
+			"category": "hacking-defense",
+			"subcategory": "c-ds",
+			"type": "single-choice",
+			"question": "int a = 5; int *p = &a; 라고 할 때 *p 가 뜻하는 것은?",
+			"choices": ["p라는 변수 자체의 주소", "a의 주소를 10진수로 나타낸 값", "p가 가리키는 주소에 저장된 값", "a라는 이름 자체"],
+			"answer": 2,
+			"explanation": "*(역참조)는 포인터가 가리키는 주소에 저장된 값을 뜻한다. p가 a의 주소를 담고 있으므로 *p는 a의 값인 5다.",
+			"difficulty": "medium"
+		},
+		{
+			"id": "hd-concept-set1-q11",
+			"category": "hacking-defense",
+			"subcategory": "c-ds",
+			"type": "short-answer",
+			"question": "웹 브라우저의 '뒤로 가기'처럼 가장 최근에 방문한 것부터 먼저 되돌아가는, 나중에 넣은 것을 먼저 꺼내는 자료구조를 한글 또는 영어로 쓰세요.",
+			"answer": ["스택", "stack"],
+			"explanation": "나중에 넣은 것을 먼저 꺼내는 LIFO 구조를 스택(stack)이라고 하며, 브라우저 뒤로 가기와 실행 취소(Ctrl+Z)가 대표적인 예다.",
+			"difficulty": "medium"
+		},
+		{
+			"id": "hd-concept-set1-q12",
+			"category": "hacking-defense",
+			"subcategory": "web-hacking",
+			"type": "single-choice",
+			"question": "게시판에 사용자가 입력한 글자가 화면(HTML)에서 코드로 잘못 해석되어 실행되는 취약점의 이름은?",
+			"choices": ["SQL 인젝션", "XSS", "IDOR", "버퍼 오버플로우"],
+			"answer": 1,
+			"explanation": "사용자 입력이 브라우저 화면의 코드 자리로 해석되어 실행되는 문제를 XSS(크로스 사이트 스크립팅)라고 한다.",
+			"difficulty": "easy"
+		},
+		{
+			"id": "hd-concept-set1-q13",
+			"category": "hacking-defense",
+			"subcategory": "web-hacking",
+			"type": "single-choice",
+			"question": "SQL 인젝션을 막기 위한 가장 근본적인 방어 방법은?",
+			"choices": ["오류 메시지를 자세히 보여준다", "사용자 입력을 문자열로 그대로 이어 붙인다", "파라미터 바인딩(Prepared Statement)을 사용한다", "화면에서 입력 칸을 숨긴다"],
+			"answer": 2,
+			"explanation": "파라미터 바인딩은 문장 구조를 먼저 확정하고 값을 별도로 전달해, 입력값에 어떤 기호가 있든 '값'으로만 처리되게 한다.",
+			"difficulty": "medium"
+		},
+		{
+			"id": "hd-concept-set1-q14",
+			"category": "hacking-defense",
+			"subcategory": "web-hacking",
+			"type": "multi-choice",
+			"question": "접근 통제 실패(IDOR)를 막기 위한 방법으로 옳은 것을 모두 고르시오.",
+			"choices": [
+				"모든 요청마다 서버에서 요청한 사람이 그 데이터의 소유자인지 확인한다",
+				"화면에서 다른 사람 데이터로 가는 버튼만 숨기면 충분하다",
+				"권한이 없을 때는 '권한 없음' 대신 '존재하지 않는 데이터'로 응답해 존재 여부를 숨긴다",
+				"추측하기 어려운 식별자를 보조 수단으로 함께 사용한다"
+			],
+			"answer": [0, 2, 3],
+			"explanation": "화면에서 버튼을 숨기는 것은 방어가 아니다. 요청은 화면 없이도 보낼 수 있으므로 반드시 서버에서 소유자 검증을 해야 하며, 나머지는 이를 보강하는 방법이다.",
+			"difficulty": "medium"
+		},
+		{
+			"id": "hd-concept-set1-q15",
+			"category": "hacking-defense",
+			"subcategory": "reversing",
+			"type": "single-choice",
+			"question": "실행 파일을 실행하지 않고 파일 구조만 살펴보는 분석 방법은?",
+			"choices": ["동적 분석", "정적 분석", "침투 테스트", "사회공학"],
+			"answer": 1,
+			"explanation": "실행하지 않고 파일 자체를 살펴보는 방법이 정적 분석이며, 실제로 실행하며 관찰하는 것은 동적 분석이다.",
+			"difficulty": "easy"
+		},
+		{
+			"id": "hd-concept-set1-q16",
+			"category": "hacking-defense",
+			"subcategory": "reversing",
+			"type": "single-choice",
+			"question": "컴파일된 실행 파일을 디스어셈블해도 원래의 C 소스 코드를 완전히 복원할 수 없는 이유는?",
+			"choices": ["기계어가 어셈블리보다 더 자세한 정보를 담고 있어서", "컴파일 과정에서 변수 이름과 주석 같은 정보가 사라지기 때문에", "디스어셈블러의 성능이 부족해서", "실행 파일에는 애초에 코드가 들어 있지 않아서"],
+			"answer": 1,
+			"explanation": "컴파일 과정에서 변수·함수 이름과 주석 같은 사람을 위한 정보가 사라지므로, 어셈블리에서 원본 소스로의 복원은 불가능하고 추측·재구성만 가능하다.",
+			"difficulty": "medium"
+		},
+		{
+			"id": "hd-concept-set1-q17",
+			"category": "hacking-defense",
+			"subcategory": "pwnable",
+			"type": "single-choice",
+			"question": "정해진 크기의 메모리 공간보다 많은 데이터를 써 넣어 옆 메모리를 덮어쓰는 문제를 무엇이라 하는가?",
+			"choices": ["버퍼 오버플로우", "포트 스캐닝", "피싱", "스푸핑"],
+			"answer": 0,
+			"explanation": "정해진 버퍼 크기를 넘겨 데이터를 쓰는 것을 버퍼 오버플로우라고 하며, 옆에 있던 다른 데이터를 덮어써 프로그램을 오동작시킬 수 있다.",
+			"difficulty": "easy"
+		},
+		{
+			"id": "hd-concept-set1-q18",
+			"category": "hacking-defense",
+			"subcategory": "pwnable",
+			"type": "multi-choice",
+			"question": "버퍼 오버플로우를 예방하기 위한 안전한 코딩 습관으로 옳은 것을 모두 고르시오.",
+			"choices": [
+				"gets() 대신 fgets()를 사용한다",
+				"strcpy 대신 목적지 크기를 함께 넘기는 snprintf를 사용한다",
+				"배열 인덱스가 범위 안인지 확인하지 않고 바로 사용한다",
+				"사용자 입력을 printf의 형식 문자열 자리에 직접 넣지 않는다"
+			],
+			"answer": [0, 1, 3],
+			"explanation": "배열 인덱스는 반드시 범위를 확인한 뒤 사용해야 한다. 확인 없이 바로 쓰는 것은 오히려 위험한 습관이다.",
+			"difficulty": "medium"
+		},
+		{
+			"id": "hd-concept-set1-q19",
+			"category": "hacking-defense",
+			"subcategory": "crypto",
+			"type": "single-choice",
+			"question": "같은 열쇠로 데이터를 잠그고 여는 암호 방식은?",
+			"choices": ["대칭키 암호", "공개키 암호", "해시", "전자서명"],
+			"answer": 0,
+			"explanation": "대칭키 암호는 잠그는 키와 여는 키가 같다. 대표적으로 AES가 있다.",
+			"difficulty": "easy"
+		},
+		{
+			"id": "hd-concept-set1-q20",
+			"category": "hacking-defense",
+			"subcategory": "crypto",
+			"type": "short-answer",
+			"question": "비밀번호를 데이터베이스에 저장할 때, 원본 대신 저장하는 되돌릴 수 없는 지문 값을 무엇이라고 부르나요?",
+			"answer": ["해시", "해시값", "hash"],
+			"explanation": "비밀번호는 되돌릴 수 없는 해시 값으로 저장해, 데이터베이스가 유출되더라도 원본 비밀번호가 그대로 노출되지 않게 한다.",
+			"difficulty": "medium"
+		}
+	]
+}

@@ -1,0 +1,202 @@
+{
+  "setId": "problem-solving-set2",
+  "title": "문제해결·알고리즘 2회",
+  "area": "problem-solving",
+  "areaTitle": "문제해결·알고리즘",
+  "limitMinutes": 25,
+  "questions": [
+    {
+      "id": "problem-solving-set2-q01",
+      "category": "aptitude",
+      "subcategory": "problem-solving",
+      "type": "single-choice",
+      "question": "다음 중 '알고리즘의 4가지 조건'에 해당하지 않는 것은?",
+      "choices": ["명확성", "유한성", "효율성", "출력"],
+      "answer": 2,
+      "explanation": "알고리즘이 갖춰야 할 4가지 조건은 명확성(각 단계가 모호하지 않을 것), 유한성(정해진 횟수 안에 반드시 끝날 것), 입력, 출력이에요. '효율성'(가장 빠르고 자원을 적게 쓰는 것)은 좋은 알고리즘을 만들 때 신경 쓰면 좋은 요소이지만, 알고리즘이라고 부르기 위한 필수 조건은 아니에요. 느리더라도 명확하고 유한하게 끝나며 입출력이 있으면 알고리즘이라고 할 수 있어요.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "problem-solving-set2-q02",
+      "category": "aptitude",
+      "subcategory": "problem-solving",
+      "type": "single-choice",
+      "question": "은지는 아침에 '하늘을 보고, 비가 오면 우산을 챙기고, 비가 오지 않으면 우산을 챙기지 않는다'라고 계획을 세웠어요. 이 계획에서 조건에 따라 서로 다른 행동을 고르는 부분은 세 가지 제어 구조 중 무엇에 해당할까요?",
+      "choices": ["선택", "순차", "반복", "해당 없음"],
+      "answer": 0,
+      "explanation": "제어 구조는 크게 순차(정해진 순서대로 한 번씩 실행), 선택(조건에 따라 서로 다른 길로 갈라짐), 반복(같은 동작을 여러 번 되풀이)으로 나뉘어요. '비가 오면 A, 오지 않으면 B'처럼 조건의 참/거짓에 따라 실행할 내용이 갈라지는 것은 선택 구조의 전형적인 예시예요. 순서도에서는 마름모 기호로 표현돼요.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "problem-solving-set2-q03",
+      "category": "aptitude",
+      "subcategory": "problem-solving",
+      "type": "single-choice",
+      "question": "리스트 [-7, -3, -15, -1]에서 챔피언-도전자 방식으로 최댓값을 구하는데, 리스트의 첫 번째 값 대신 실수로 champion의 초기값을 0으로 정했어요. 이렇게 하면 어떤 문제가 생길까요?",
+      "choices": [
+        "항상 정확한 최댓값이 나온다",
+        "프로그램이 무한 반복에 빠진다",
+        "리스트의 첫 번째 원소가 무시된다",
+        "어떤 도전자도 0보다 크지 않아 champion이 그대로 0으로 남아 틀린 결과가 나온다"
+      ],
+      "answer": 3,
+      "explanation": "이 리스트의 진짜 최댓값은 -1이에요. 그런데 champion의 초기값을 0으로 정하면, -7, -3, -15, -1 중 어느 것도 0보다 크지 않기 때문에 champion은 한 번도 바뀌지 않고 끝까지 0으로 남아요. 결국 리스트에 있지도 않은 0이 최댓값이라고 잘못 출력돼요. 그래서 champion의 초기값은 임의의 수가 아니라 반드시 '리스트의 첫 번째 값'으로 정해야 음수만 있는 경우에도 안전해요.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "problem-solving-set2-q04",
+      "category": "aptitude",
+      "subcategory": "problem-solving",
+      "type": "single-choice",
+      "question": "리스트 [4, 9, 2, 15, 7]에서 챔피언-도전자 방식으로 최댓값을 찾을 때(첫 번째 값 4를 챔피언으로 시작), 챔피언이 자리를 바꾸는 횟수는 총 몇 번일까요?",
+      "choices": ["1번", "2번", "3번", "4번"],
+      "answer": 1,
+      "explanation": "순서대로 추적해볼게요. champion=4로 시작 → 도전자 9: 9>4이므로 교체(champion=9, 1번째 교체) → 도전자 2: 2>9 거짓, 그대로 → 도전자 15: 15>9이므로 교체(champion=15, 2번째 교체) → 도전자 7: 7>15 거짓, 그대로. 최종 champion은 15이고, 교체는 총 2번 일어났어요.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "problem-solving-set2-q05",
+      "category": "aptitude",
+      "subcategory": "problem-solving",
+      "type": "single-choice",
+      "question": "1부터 50까지의 합을 구하는 두 가지 방법이 있어요. (가) 1과 50을 짝지어 51, 2와 49를 짝지어 51, ... 이렇게 25개의 짝을 만든 뒤 51×25를 계산한다. (나) 1부터 50까지 순서대로 하나씩 차례로 더한다(1+2+3+...+50). 두 방법 중 계산 횟수(덧셈·곱셈 등 연산 수)가 더 적은 쪽은 어디일까요?",
+      "choices": [
+        "(가) 짝짓기 방법",
+        "(나) 하나씩 더하는 방법",
+        "두 방법의 계산 횟수는 같다",
+        "리스트의 크기에 따라 달라진다"
+      ],
+      "answer": 0,
+      "explanation": "(가) 방법은 51이라는 짝의 합을 한 번 구하고, 짝이 25개라는 것을 곱셈 한 번(51×25)으로 처리하면 끝나요. 즉 숫자가 몇 개든 몇 번의 연산으로 끝낼 수 있어요. 반면 (나) 방법은 1에 2를 더하고, 그 결과에 3을 더하고... 이런 식으로 49번의 덧셈을 실제로 다 해야 해요. 그래서 (가) 방법이 훨씬 적은 계산으로 같은 결과(1275)를 얻을 수 있어요.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "problem-solving-set2-q06",
+      "category": "aptitude",
+      "subcategory": "problem-solving",
+      "type": "single-choice",
+      "question": "반복(loop) 구조를 짤 때, 무한 반복에 빠지지 않으려면 반드시 있어야 하는 것은 무엇일까요?",
+      "choices": ["입력값", "출력 문장", "종료 조건을 향해 변하는 값(증감식)", "판단 기호(마름모)"],
+      "answer": 2,
+      "explanation": "반복문은 조건이 거짓이 될 때까지 계속 실행돼요. 만약 반복할 때마다 변수 값이 종료 조건 쪽으로 변하지 않는다면(예: 증가시키거나 감소시키는 식을 빠뜨리면), 조건은 영원히 참으로 남아서 무한 반복에 빠져요. 그래서 반복문 안에는 반드시 종료 조건에 다가가도록 변수를 바꿔주는 증감식이 있어야 해요.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "problem-solving-set2-q07",
+      "category": "aptitude",
+      "subcategory": "problem-solving",
+      "type": "single-choice",
+      "question": "다음 의사코드를 실행하면 count의 최종값은 얼마일까요?\ncount ← 0\nn ← 10\nn이 0보다 큰 동안 반복:\n    n ← n - 3\n    count ← count + 1",
+      "choices": ["3", "5", "10", "4"],
+      "answer": 3,
+      "explanation": "n의 값을 따라가 볼게요. n=10(0보다 큼)→ n=7, count=1 / n=7(0보다 큼)→ n=4, count=2 / n=4(0보다 큼)→ n=1, count=3 / n=1(0보다 큼)→ n=-2, count=4 / n=-2는 0보다 크지 않으므로 반복 종료. 따라서 count의 최종값은 4예요. 표를 그려서 한 줄씩 따라가면 실수 없이 확인할 수 있어요.",
+      "difficulty": "hard"
+    },
+    {
+      "id": "problem-solving-set2-q08",
+      "category": "aptitude",
+      "subcategory": "problem-solving",
+      "type": "single-choice",
+      "question": "'정해진 조건이 참인 동안 같은 동작을 여러 번 되풀이하는 구조'는 순차·선택·반복 중 무엇일까요?",
+      "choices": ["선택", "반복", "순차", "단말"],
+      "answer": 1,
+      "explanation": "순차는 정해진 순서를 한 번씩 차례로 실행하는 구조, 선택은 조건에 따라 서로 다른 길로 갈라지는 구조, 반복은 조건이 만족되는 동안 같은 동작을 여러 번 되풀이하는 구조예요. '단말'은 제어 구조가 아니라 순서도에서 시작/끝을 나타내는 타원 기호를 부르는 말이에요.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "problem-solving-set2-q09",
+      "category": "aptitude",
+      "subcategory": "problem-solving",
+      "type": "single-choice",
+      "question": "리스트 [8, 3, 8, 5]에서 챔피언-도전자 방식(도전자가 챔피언보다 '더 클 때만' 자리를 바꿈)으로 최댓값을 찾을 때, 챔피언이 바뀌는 횟수는 몇 번일까요?",
+      "choices": ["1번", "3번", "0번", "2번"],
+      "answer": 2,
+      "explanation": "champion=8(첫 번째 값)로 시작 → 도전자 3: 3>8 거짓, 그대로 → 도전자 8: 8>8은 '더 크다'가 아니라 '같다'이므로 거짓, 그대로 → 도전자 5: 5>8 거짓, 그대로. 챔피언은 한 번도 바뀌지 않고(0번) 그대로 8이며, 이는 실제 최댓값과 정확히 일치해요. 값이 같을 때 굳이 자리를 바꾸지 않아도 결과에는 아무 영향이 없다는 걸 보여주는 예시예요.",
+      "difficulty": "hard"
+    },
+    {
+      "id": "problem-solving-set2-q10",
+      "category": "aptitude",
+      "subcategory": "problem-solving",
+      "type": "single-choice",
+      "question": "의사코드에서 'x ← x + 1'이라는 표현이 의미하는 것은 무엇일까요?",
+      "choices": [
+        "x의 값에 1을 더해서 다시 x에 저장한다",
+        "x와 x+1이 같다는 수학적 등식이다",
+        "x라는 새로운 변수를 하나 더 만든다",
+        "문법 오류이므로 실행되지 않는다"
+      ],
+      "answer": 0,
+      "explanation": "의사코드의 화살표(←)는 '='처럼 수학적으로 같다는 뜻이 아니라, 오른쪽 값을 계산해서 왼쪽 변수에 저장하라는 대입(assignment) 명령이에요. 'x ← x + 1'은 현재 x의 값에 1을 더한 결과를 다시 x라는 자리에 저장하라는 뜻으로, 반복문에서 변수를 1씩 증가시킬 때 자주 쓰여요.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "problem-solving-set2-q11",
+      "category": "aptitude",
+      "subcategory": "problem-solving",
+      "type": "multi-choice",
+      "question": "다음 중 '알고리즘의 4가지 조건'에 해당하는 것을 모두 고르세요.",
+      "choices": [
+        "효율성 - 반드시 가장 빠른 방법이어야 한다",
+        "명확성 - 각 단계가 모호하지 않고 명확해야 한다",
+        "복잡성 - 여러 단계로 이루어져야 한다",
+        "유한성 - 유한한 단계 안에 끝나야 한다"
+      ],
+      "answer": [1, 3],
+      "explanation": "알고리즘의 4가지 조건은 입력, 출력, 명확성, 유한성이에요. '효율성'은 알고리즘의 좋고 나쁨을 평가할 때 중요한 기준이지만 필수 조건은 아니고, '복잡성'은 애초에 알고리즘의 조건이 아니에요. 그래서 정답은 명확성과 유한성이에요.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "problem-solving-set2-q12",
+      "category": "aptitude",
+      "subcategory": "problem-solving",
+      "type": "multi-choice",
+      "question": "순서도 기호에 대한 설명으로 옳은 것을 모두 고르세요.",
+      "choices": [
+        "평행사변형은 시작과 끝을 나타낸다",
+        "마름모는 조건 판단을 나타내며 Yes/No 두 갈래로 갈라진다",
+        "직사각형은 조건에 따라 두 갈래로 나뉜다",
+        "화살표는 흐름의 방향을 나타낸다"
+      ],
+      "answer": [1, 3],
+      "explanation": "시작과 끝을 나타내는 기호는 타원(단말)이고, 평행사변형은 입출력을 나타내요. 직사각형은 처리(계산, 대입 등)를 나타내고, 조건에 따라 두 갈래로 갈라지는 것은 마름모의 역할이에요. 화살표(흐름선)는 순서도 안에서 처리가 진행되는 방향을 보여줘요. 따라서 옳은 설명은 '마름모는 조건 판단...'과 '화살표는 흐름의 방향...' 두 가지예요.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "problem-solving-set2-q13",
+      "category": "aptitude",
+      "subcategory": "problem-solving",
+      "type": "multi-choice",
+      "question": "챔피언-도전자 방식으로 리스트의 최댓값을 찾는 알고리즘에 대한 설명으로 옳은 것을 모두 고르세요.",
+      "choices": [
+        "챔피언은 매 반복마다 반드시 값이 바뀐다",
+        "리스트의 원소가 1개면 이 알고리즘은 실행할 수 없다",
+        "챔피언의 초기값으로 리스트의 첫 번째 값을 사용하면 리스트에 음수만 있어도 안전하게 동작한다",
+        "도전자가 챔피언과 값이 같을 때는 자리를 바꾸지 않아도 최종 결과에는 영향이 없다"
+      ],
+      "answer": [2, 3],
+      "explanation": "챔피언은 '도전자가 더 클 때만' 바뀌므로 매번 바뀌는 것은 아니에요. 원소가 1개인 리스트도 문제없이 동작해요 — 반복문이 아예 실행되지 않고 champion(=유일한 원소)이 그대로 답이 되니까요. 챔피언의 초기값을 0처럼 임의의 수가 아니라 '리스트의 첫 번째 값'으로 정하면 리스트에 음수만 있어도 정확한 최댓값을 구할 수 있어요. 또한 도전자가 챔피언과 값이 같을 때는 자리를 바꾸지 않아도 최댓값 자체는 달라지지 않으므로 결과에 영향이 없어요.",
+      "difficulty": "hard"
+    },
+    {
+      "id": "problem-solving-set2-q14",
+      "category": "aptitude",
+      "subcategory": "problem-solving",
+      "type": "short-answer",
+      "question": "1부터 50까지의 자연수를 순서대로 하나씩 더한다고 해요. 즉 1에 2를 더하고, 그 결과에 3을 더하고, 다시 4를 더하는 식으로 마지막에 50을 더할 때까지 계속 더해요. 이때 덧셈(+) 연산은 총 몇 번 이루어질까요? (숫자만 입력)",
+      "answer": ["49", "49번"],
+      "explanation": "더하는 숫자는 1부터 50까지 총 50개이지만, 첫 번째 숫자인 1은 그냥 시작값일 뿐 덧셈이 필요 없어요. 그 뒤 2, 3, 4, ..., 50까지 남은 49개의 숫자를 하나씩 더할 때마다 덧셈이 한 번씩 필요하므로, 전체 덧셈 횟수는 49번이에요.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "problem-solving-set2-q15",
+      "category": "aptitude",
+      "subcategory": "problem-solving",
+      "type": "short-answer",
+      "question": "다음 의사코드를 끝까지 실행하면 total의 최종값은 얼마일까요? (숫자만 입력)\ntotal ← 0\ni ← 1\ni가 6보다 작거나 같은 동안 반복:\n    total ← total + i * 2\n    i ← i + 1",
+      "answer": ["42"],
+      "explanation": "표로 따라가 볼게요. i=1: total=0+2=2 / i=2: total=2+4=6 / i=3: total=6+6=12 / i=4: total=12+8=20 / i=5: total=20+10=30 / i=6: total=30+12=42 → i=7이 되면 7≤6이 거짓이라 반복이 끝나요. 최종 total은 42예요. 참고로 2×(1+2+3+4+5+6)=2×21=42로 검산해도 같은 값이 나와요.",
+      "difficulty": "hard"
+    }
+  ]
+}

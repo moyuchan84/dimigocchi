@@ -1,0 +1,172 @@
+{
+	"setId": "math-reasoning-set2",
+	"title": "수리추론 2회",
+	"area": "math-reasoning",
+	"areaTitle": "수리추론",
+	"limitMinutes": 25,
+	"questions": [
+		{
+			"id": "math-reasoning-set2-q01",
+			"category": "aptitude",
+			"subcategory": "math-reasoning",
+			"type": "single-choice",
+			"question": "다음 빈칸에 알맞은 수는? 6, 11, 16, 21, 26, ( ? )",
+			"choices": ["29", "30", "31", "33"],
+			"answer": 2,
+			"explanation": "이웃한 두 항의 차이가 항상 5인 등차수열이다. 26 + 5 = 31.",
+			"difficulty": "easy"
+		},
+		{
+			"id": "math-reasoning-set2-q02",
+			"category": "aptitude",
+			"subcategory": "math-reasoning",
+			"type": "single-choice",
+			"question": "첫째 항이 8, 공차가 6인 등차수열의 7번째 항은?",
+			"choices": ["44", "50", "48", "56"],
+			"answer": 0,
+			"explanation": "n번째 항 = 첫째 항 + 공차 × (n - 1) 이므로 8 + 6 × (7 - 1) = 8 + 36 = 44이다. 50은 (n - 1) 대신 n을 곱한 값, 48은 첫째 항과 공차를 곱해버린 값, 56은 공차를 한 번 더 더한 값이다.",
+			"difficulty": "medium"
+		},
+		{
+			"id": "math-reasoning-set2-q03",
+			"category": "aptitude",
+			"subcategory": "math-reasoning",
+			"type": "single-choice",
+			"question": "다음 빈칸에 알맞은 수는? 5, 15, 45, 135, ( ? )",
+			"choices": ["270", "540", "150", "405"],
+			"answer": 3,
+			"explanation": "이웃한 항끼리 나누면 항상 3이 되는 등비수열이다. 135 × 3 = 405.",
+			"difficulty": "easy"
+		},
+		{
+			"id": "math-reasoning-set2-q04",
+			"category": "aptitude",
+			"subcategory": "math-reasoning",
+			"type": "single-choice",
+			"question": "첫째 항이 4이고 공비가 3인 등비수열의 5번째 항은?",
+			"choices": ["324", "972", "60", "768"],
+			"answer": 0,
+			"explanation": "n번째 항 = 첫째 항 × 공비^(n - 1) 이므로 4 × 3^4 = 4 × 81 = 324이다. 972는 지수를 (n - 1) 대신 n으로 계산한 값, 60은 첫째 항 × 공비 × n으로 잘못 계산한 값, 768은 첫째 항과 공비 자리를 바꿔 계산한 값이다.",
+			"difficulty": "medium"
+		},
+		{
+			"id": "math-reasoning-set2-q05",
+			"category": "aptitude",
+			"subcategory": "math-reasoning",
+			"type": "single-choice",
+			"question": "다음 빈칸에 알맞은 수는? 2, 3, 5, 8, 12, ( ? )",
+			"choices": ["16", "17", "18", "15"],
+			"answer": 1,
+			"explanation": "차이를 적으면 1, 2, 3, 4로 1씩 커지는 계차수열이다. 다음 차이는 5이므로 12 + 5 = 17.",
+			"difficulty": "medium"
+		},
+		{
+			"id": "math-reasoning-set2-q06",
+			"category": "aptitude",
+			"subcategory": "math-reasoning",
+			"type": "single-choice",
+			"question": "다음 빈칸에 알맞은 수는? 3, 5, 9, 15, 23, ( ? )",
+			"choices": ["32", "33", "31", "34"],
+			"answer": 1,
+			"explanation": "차이를 적으면 2, 4, 6, 8로 2씩 커지는 계차수열이다. 다음 차이는 10이므로 23 + 10 = 33.",
+			"difficulty": "medium"
+		},
+		{
+			"id": "math-reasoning-set2-q07",
+			"category": "aptitude",
+			"subcategory": "math-reasoning",
+			"type": "single-choice",
+			"question": "다음 빈칸에 알맞은 수는? 4, 9, 16, 25, 36, ( ? )",
+			"choices": ["42", "48", "49", "56"],
+			"answer": 2,
+			"explanation": "2², 3², 4², 5², 6²으로 이어지는 제곱수 수열이다. 7번째 항은 7² = 49.",
+			"difficulty": "easy"
+		},
+		{
+			"id": "math-reasoning-set2-q08",
+			"category": "aptitude",
+			"subcategory": "math-reasoning",
+			"type": "single-choice",
+			"question": "앞의 두 항을 더해 다음 항을 만드는 수열이다. 빈칸에 알맞은 수는? 1, 1, 2, 3, 5, 8, ( ? )",
+			"choices": ["13", "11", "12", "14"],
+			"answer": 0,
+			"explanation": "5 + 8 = 13으로, 앞의 두 항을 더해 다음 항을 만드는 피보나치식 수열이다.",
+			"difficulty": "medium"
+		},
+		{
+			"id": "math-reasoning-set2-q09",
+			"category": "aptitude",
+			"subcategory": "math-reasoning",
+			"type": "single-choice",
+			"question": "다음은 두 수열이 번갈아 섞인 수열이다. 7번째 항은? 3, 60, 6, 54, 12, 48, ( ? )",
+			"choices": ["18", "24", "42", "20"],
+			"answer": 1,
+			"explanation": "홀수 번째 항만 모으면 3, 6, 12로 공비 2인 등비수열이고, 짝수 번째 항만 모으면 60, 54, 48로 공차 -6인 등차수열이다. 7번째 항은 홀수 번째이므로 홀수 줄을 이어가면 12 × 2 = 24.",
+			"difficulty": "hard"
+		},
+		{
+			"id": "math-reasoning-set2-q10",
+			"category": "aptitude",
+			"subcategory": "math-reasoning",
+			"type": "single-choice",
+			"question": "정삼각형을 이어 붙여 만드는 도형에서 삼각형 1개에는 성냥개비 3개, 2개에는 5개, 3개에는 7개가 필요하다. 삼각형 6개를 만들려면 성냥개비가 몇 개 필요한가?",
+			"choices": ["12", "15", "13", "18"],
+			"answer": 2,
+			"explanation": "삼각형이 하나씩 늘 때마다 옆 삼각형과 변을 하나 나눠 쓰므로 2개씩만 늘어난다. 필요한 성냥개비 = 3 + 2 × (n - 1) = 2n + 1이므로 n = 6일 때 2 × 6 + 1 = 13.",
+			"difficulty": "medium"
+		},
+		{
+			"id": "math-reasoning-set2-q11",
+			"category": "aptitude",
+			"subcategory": "math-reasoning",
+			"type": "single-choice",
+			"question": "다음 빈칸에 알맞은 수는? 1, 3, 6, 10, 15, ( ? )",
+			"choices": ["18", "20", "19", "21"],
+			"answer": 3,
+			"explanation": "차이를 적으면 2, 3, 4, 5로 1씩 커지는 계차수열(삼각수)이다. 다음 차이는 6이므로 15 + 6 = 21.",
+			"difficulty": "hard"
+		},
+		{
+			"id": "math-reasoning-set2-q12",
+			"category": "aptitude",
+			"subcategory": "math-reasoning",
+			"type": "multi-choice",
+			"question": "다음 중 계차수열(이웃한 두 항의 차이가 1, 2, 3, 4, ...처럼 점점 커지는 규칙)인 것을 모두 고르시오.",
+			"choices": ["1, 2, 4, 7, 11", "5, 10, 15, 20, 25", "3, 4, 6, 9, 13", "2, 4, 8, 16, 32"],
+			"answer": [0, 2],
+			"explanation": "첫 번째는 차이가 1, 2, 3, 4로 커지는 계차수열이고, 세 번째도 차이가 1, 2, 3, 4로 커지는 계차수열이다. 두 번째는 차이가 항상 5인 등차수열이고, 네 번째는 공비 2인 등비수열이다.",
+			"difficulty": "medium"
+		},
+		{
+			"id": "math-reasoning-set2-q13",
+			"category": "aptitude",
+			"subcategory": "math-reasoning",
+			"type": "multi-choice",
+			"question": "다음 중 앞의 두 항을 더해 다음 항을 만드는(피보나치식) 수열을 모두 고르시오.",
+			"choices": ["1, 2, 3, 5, 8", "2, 4, 6, 10, 16", "1, 3, 5, 7, 9", "1, 2, 4, 8, 16"],
+			"answer": [0, 1],
+			"explanation": "첫 번째는 1 + 2 = 3, 2 + 3 = 5, 3 + 5 = 8로 앞의 두 항의 합이 다음 항이 된다. 두 번째도 2 + 4 = 6, 4 + 6 = 10, 6 + 10 = 16으로 같은 규칙이다. 세 번째는 공차 2인 등차수열이고, 네 번째는 공비 2인 등비수열이다.",
+			"difficulty": "medium"
+		},
+		{
+			"id": "math-reasoning-set2-q14",
+			"category": "aptitude",
+			"subcategory": "math-reasoning",
+			"type": "short-answer",
+			"question": "첫째 항이 9이고 공차가 4인 등차수열의 12번째 항을 숫자로만 쓰세요.",
+			"answer": ["53"],
+			"explanation": "n번째 항 = 첫째 항 + 공차 × (n - 1) 이므로 9 + 4 × (12 - 1) = 9 + 44 = 53.",
+			"difficulty": "medium"
+		},
+		{
+			"id": "math-reasoning-set2-q15",
+			"category": "aptitude",
+			"subcategory": "math-reasoning",
+			"type": "short-answer",
+			"question": "첫째 항이 6이고 공비가 4인 등비수열의 4번째 항을 숫자로만 쓰세요.",
+			"answer": ["384"],
+			"explanation": "n번째 항 = 첫째 항 × 공비^(n - 1) 이므로 6 × 4^3 = 6 × 64 = 384.",
+			"difficulty": "medium"
+		}
+	]
+}

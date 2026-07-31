@@ -95,12 +95,125 @@ const schedule = defineCollection({
 	}),
 });
 
-export const collections = { theory, guide, schedule };
+/**
+ * 모의고사 문항 (UC-03 / FR-3, 요구사양서 7.2). 파일 경로: `src/content/exams/{setId}.json`
+ *
+ * `schedule` 과 같은 "파일 1개 = 엔티티 1개" 패턴이다. 다만 엔티티가 개별 문항이 아니라
+ * **세트**다 — `listExamSets()`/`getExamSet()` 이 요구하는 title/area/areaTitle/limitMinutes 는
+ * 세트 단위 정보라 문항 배열만으로는 만들 수 없기 때문이다. `questions[]` 각 원소가 7.2 의
+ * 문항 스키마(id/category/subcategory/type/question/choices/answer/explanation/difficulty)다.
+ *
+ * type 에 따라 choices/answer 모양이 달라져 discriminatedUnion 으로 분기한다.
+ * "answer 인덱스가 choices 범위 안인지" 같은 교차 필드 검증은 discriminatedUnion 이 표현하지
+ * 못하므로(분기마다 .refine() 을 걸면 ZodEffects 가 되어 discriminatedUnion 배열에 넣을 수 없다)
+ * union 을 만든 뒤 별도 superRefine 으로 보강한다.
+ */
+const examQuestionBase = {
+	/** 문항 고유 id. 세트 안에서 유일해야 하며 관례상 `{setId}-q{NN}` 형태를 쓴다. */
+	id: z.string(),
+	category: z.enum(['aptitude', 'hacking-defense']),
+	/** 이론 챕터의 subcategory 와 같은 값 체계 — 결과 화면의 소분류별 정답률 집계 키로 쓰인다. */
+	subcategory: z.string(),
+	question: z.string(),
+	explanation: z.string(),
+	difficulty: z.enum(['easy', 'medium', 'hard']),
+};
+
+const singleChoiceQuestion = z.object({
+	...examQuestionBase,
+	type: z.literal('single-choice'),
+	choices: z.array(z.string()).min(2),
+	/** choices 배열의 0-based 인덱스. */
+	answer: z.number().int().nonnegative(),
+});
+
+const multiChoiceQuestion = z.object({
+	...examQuestionBase,
+	type: z.literal('multi-choice'),
+	choices: z.array(z.string()).min(2),
+	/** choices 배열의 0-based 인덱스 목록. 채점은 순서 무관 완전 일치(부분점수 없음). */
+	answer: z.array(z.number().int().nonnegative()).min(1),
+});
+
+const shortAnswerQuestion = z.object({
+	...examQuestionBase,
+	type: z.literal('short-answer'),
+	// short-answer 는 choices 필드를 갖지 않는다.
+	/** 허용 답안(정규화 전 원문) 목록. 채점 시 trim/공백축약/소문자화 후 비교한다. */
+	answer: z.array(z.string().min(1)).min(1),
+});
+
+const examQuestionSchema = z
+	.discriminatedUnion('type', [singleChoiceQuestion, multiChoiceQuestion, shortAnswerQuestion])
+	.superRefine((q, ctx) => {
+		if (q.type === 'single-choice' && (q.answer < 0 || q.answer >= q.choices.length)) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				path: ['answer'],
+				message: `answer 인덱스(${q.answer})가 choices 범위(0~${q.choices.length - 1})를 벗어났습니다.`,
+			});
+		}
+		if (q.type === 'multi-choice') {
+			const seen = new Set<number>();
+			for (const idx of q.answer) {
+				if (idx < 0 || idx >= q.choices.length) {
+					ctx.addIssue({
+						code: z.ZodIssueCode.custom,
+						path: ['answer'],
+						message: `answer 인덱스(${idx})가 choices 범위(0~${q.choices.length - 1})를 벗어났습니다.`,
+					});
+				}
+				if (seen.has(idx)) {
+					ctx.addIssue({
+						code: z.ZodIssueCode.custom,
+						path: ['answer'],
+						message: `answer 에 중복 인덱스(${idx})가 있습니다.`,
+					});
+				}
+				seen.add(idx);
+			}
+		}
+	});
+
+const exams = defineCollection({
+	loader: glob({ pattern: '*.json', base: './src/content/exams' }),
+	schema: z
+		.object({
+			/** 파일명과 같아야 한다(파일명이 곧 컬렉션 id). `/exam/{setId}` 라우트로 쓰인다. */
+			setId: z.string(),
+			title: z.string(),
+			area: z.enum(['math-reasoning', 'problem-solving', 'it-trend', 'hd-concept', 'mock-full']),
+			areaTitle: z.string(),
+			limitMinutes: z.number().int().positive(),
+			questions: z.array(examQuestionSchema).min(1),
+		})
+		.superRefine((set, ctx) => {
+			// 문항 id 전역 고유성은 "{setId}-" 접두어 컨벤션으로 보장한다(zod 스키마 함수는
+			// 다른 파일의 내용을 알 수 없어 파일 간 교차 검증은 불가능하다).
+			const seenIds = new Set<string>();
+			set.questions.forEach((q, i) => {
+				if (!q.id.startsWith(`${set.setId}-`)) {
+					ctx.addIssue({
+						code: z.ZodIssueCode.custom,
+						path: ['questions', i, 'id'],
+						message: `문항 id는 "${set.setId}-"로 시작해야 합니다(실제: ${q.id}).`,
+					});
+				}
+				if (seenIds.has(q.id)) {
+					ctx.addIssue({
+						code: z.ZodIssueCode.custom,
+						path: ['questions', i, 'id'],
+						message: `세트 내 중복된 문항 id: ${q.id}`,
+					});
+				}
+				seenIds.add(q.id);
+			});
+		}),
+});
+
+export const collections = { theory, guide, schedule, exams };
 
 // ── 이후 Phase 에서 추가할 컬렉션 ────────────────────────────────────────────
-// P3 에서 등록: exams — 7.2 스키마
-//   id, setId, category, subcategory, type('single-choice'|'multi-choice'|'short-answer'),
-//   question, choices[], answer, explanation, difficulty
 // P4 에서 등록: interview — 7.3 스키마
 //   id, category, question, intent, answerGuide
 // 지금 등록하면 콘텐츠가 없어 매 빌드마다 빈 컬렉션 경고가 뜨므로 해당 Phase 에서 함께 추가한다.
