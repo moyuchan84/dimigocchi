@@ -10,8 +10,9 @@
  *              의 frontmatter 가 유일한 소스다(리터럴 THEORY_CHAPTERS 는 삭제됨).
  * - `guide`  : ✅ 이관 완료. `src/content/guide/{id}.md` → `listGuideSections()`
  *              (하드코딩 상수 GUIDE_SECTIONS 는 삭제됨).
- * - `exams`  : ⏳ 아직 아래 리터럴(EXAM_SETS). **P3** 에서 `getCollection('exams')` 로
- *              같은 방식(시그니처 고정, 본문만 교체) 전환 + 리터럴 삭제.
+ * - `exams`  : ✅ P3 완료. `src/content/exams/{setId}.json`(세트 1파일)의
+ *              setId/title/area/areaTitle/limitMinutes/questions 가 유일한 소스다
+ *              (리터럴 EXAM_SETS 는 삭제됨). questionCount 는 questions.length 로 파생한다.
  * - `interview` : ⏳ 아직 리터럴(INTERVIEW_CATEGORIES). **P4** 에서 동일하게 전환.
  *
  * ── THEORY_CATEGORIES 를 상수로 남긴 이유 (삭제 금지) ──
@@ -68,6 +69,38 @@ export interface ExamSetRef {
 	questionCount: number;
 	limitMinutes: number;
 }
+
+export type ExamQuestionType = 'single-choice' | 'multi-choice' | 'short-answer';
+export type ExamDifficulty = 'easy' | 'medium' | 'hard';
+
+interface ExamQuestionBase {
+	id: string;
+	category: TheoryCategory;
+	subcategory: string;
+	question: string;
+	explanation: string;
+	difficulty: ExamDifficulty;
+}
+
+export interface SingleChoiceQuestion extends ExamQuestionBase {
+	type: 'single-choice';
+	choices: string[];
+	answer: number;
+}
+
+export interface MultiChoiceQuestion extends ExamQuestionBase {
+	type: 'multi-choice';
+	choices: string[];
+	answer: number[];
+}
+
+export interface ShortAnswerQuestion extends ExamQuestionBase {
+	type: 'short-answer';
+	answer: string[];
+}
+
+/** 모의고사 문항 판별 유니온. `question.type` 으로 좁혀서 choices/answer 모양을 구분한다. */
+export type ExamQuestion = SingleChoiceQuestion | MultiChoiceQuestion | ShortAnswerQuestion;
 
 export type InterviewCategorySlug =
 	| 'motivation'
@@ -132,81 +165,17 @@ export const THEORY_CATEGORIES: readonly TheoryCategoryRef[] = [
  * 모의고사 (UC-03)
  * ------------------------------------------------------------------ */
 
-/** 모의고사 9세트. questionCount / limitMinutes 는 요구사양서 6.3 콘텐츠 목표치 기준. */
-const EXAM_SETS: readonly ExamSetRef[] = [
-	{
-		setId: 'math-reasoning-set1',
-		title: '수리추론 1회',
-		area: 'math-reasoning',
-		areaTitle: '수리추론',
-		questionCount: 15,
-		limitMinutes: 25,
-	},
-	{
-		setId: 'math-reasoning-set2',
-		title: '수리추론 2회',
-		area: 'math-reasoning',
-		areaTitle: '수리추론',
-		questionCount: 15,
-		limitMinutes: 25,
-	},
-	{
-		setId: 'problem-solving-set1',
-		title: '문제해결·알고리즘 1회',
-		area: 'problem-solving',
-		areaTitle: '문제해결·알고리즘',
-		questionCount: 15,
-		limitMinutes: 25,
-	},
-	{
-		setId: 'problem-solving-set2',
-		title: '문제해결·알고리즘 2회',
-		area: 'problem-solving',
-		areaTitle: '문제해결·알고리즘',
-		questionCount: 15,
-		limitMinutes: 25,
-	},
-	{
-		setId: 'it-trend-set1',
-		title: 'IT 상식 1회',
-		area: 'it-trend',
-		areaTitle: 'IT 상식',
-		questionCount: 20,
-		limitMinutes: 20,
-	},
-	{
-		setId: 'it-trend-set2',
-		title: 'IT 상식 2회',
-		area: 'it-trend',
-		areaTitle: 'IT 상식',
-		questionCount: 20,
-		limitMinutes: 20,
-	},
-	{
-		setId: 'hd-concept-set1',
-		title: '해킹방어 개념 종합 1회',
-		area: 'hd-concept',
-		areaTitle: '해킹방어 개념 종합',
-		questionCount: 20,
-		limitMinutes: 25,
-	},
-	{
-		setId: 'hd-concept-set2',
-		title: '해킹방어 개념 종합 2회',
-		area: 'hd-concept',
-		areaTitle: '해킹방어 개념 종합',
-		questionCount: 20,
-		limitMinutes: 25,
-	},
-	{
-		setId: 'mock-full-set1',
-		title: '종합 모의고사 1회',
-		area: 'mock-full',
-		areaTitle: '종합 모의고사',
-		questionCount: 40,
-		limitMinutes: 60,
-	},
-] as const;
+/**
+ * area 표시 순서. 세트 콘텐츠(`src/content/exams/*.json`)에는 순서 필드가 없으므로,
+ * `listExamSets()` 가 이 순서 + setId 문자열 비교(set1 < set2)로 정의 순서를 재구성한다.
+ */
+const AREA_ORDER: readonly ExamArea[] = [
+	'math-reasoning',
+	'problem-solving',
+	'it-trend',
+	'hd-concept',
+	'mock-full',
+];
 
 /* ------------------------------------------------------------------ *
  * 면접 (UC-05)
@@ -305,15 +274,45 @@ export async function listGuideSections(): Promise<GuideSectionRef[]> {
 
 /** 전체 모의고사 세트를 정의 순서대로 반환한다. */
 export async function listExamSets(): Promise<ExamSetRef[]> {
-	// P3: getCollection('exams') 로 교체. 세트별 JSON 에서 setId/title/area/questionCount/limitMinutes 를 읽는다.
-	return [...EXAM_SETS];
+	const entries = await getCollection('exams');
+	return entries
+		.map((e) => ({
+			setId: e.data.setId,
+			title: e.data.title,
+			area: e.data.area,
+			areaTitle: e.data.areaTitle,
+			questionCount: e.data.questions.length,
+			limitMinutes: e.data.limitMinutes,
+		}))
+		.sort((a, b) => {
+			const areaDiff = AREA_ORDER.indexOf(a.area) - AREA_ORDER.indexOf(b.area);
+			return areaDiff !== 0 ? areaDiff : a.setId.localeCompare(b.setId);
+		});
 }
 
 /** setId 로 모의고사 세트 1개를 찾는다. 없으면 undefined. */
 export async function getExamSet(setId: string): Promise<ExamSetRef | undefined> {
-	// P3: listExamSets() 결과에서 찾는 방식 그대로 유지 — 컬렉션 교체 시 자동으로 따라온다.
 	const all = await listExamSets();
 	return all.find((s) => s.setId === setId);
+}
+
+/** 세트 1개의 전체 문항(정답/해설 포함)을 반환한다. 응시 화면·채점·결과 화면에서 쓴다. */
+export async function getExamQuestions(setId: string): Promise<ExamQuestion[] | undefined> {
+	const entries = await getCollection('exams');
+	return entries.find((e) => e.data.setId === setId)?.data.questions;
+}
+
+/**
+ * 전체 세트의 문항을 setId/areaTitle 을 붙여 평탄화한다.
+ * 오답노트가 wrong 문항 id → 문항 데이터(질문/해설/영역)를 역참조할 때 쓴다.
+ */
+export async function listAllExamQuestions(): Promise<
+	(ExamQuestion & { setId: string; areaTitle: string })[]
+> {
+	const entries = await getCollection('exams');
+	return entries.flatMap((e) =>
+		e.data.questions.map((q) => ({ ...q, setId: e.data.setId, areaTitle: e.data.areaTitle })),
+	);
 }
 
 /** 면접 카테고리 5개를 정의 순서대로 반환한다(timeattack 미포함). */

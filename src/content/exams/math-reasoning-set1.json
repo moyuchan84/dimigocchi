@@ -1,0 +1,172 @@
+{
+	"setId": "math-reasoning-set1",
+	"title": "수리추론 1회",
+	"area": "math-reasoning",
+	"areaTitle": "수리추론",
+	"limitMinutes": 25,
+	"questions": [
+		{
+			"id": "math-reasoning-set1-q01",
+			"category": "aptitude",
+			"subcategory": "math-reasoning",
+			"type": "single-choice",
+			"question": "다음 빈칸에 알맞은 수는? 3, 7, 11, 15, 19, ( ? )",
+			"choices": ["21", "22", "23", "24"],
+			"answer": 2,
+			"explanation": "이웃한 두 항의 차이가 항상 4인 등차수열이다. 19 + 4 = 23.",
+			"difficulty": "easy"
+		},
+		{
+			"id": "math-reasoning-set1-q02",
+			"category": "aptitude",
+			"subcategory": "math-reasoning",
+			"type": "single-choice",
+			"question": "첫째 항이 5, 공차가 6인 등차수열의 8번째 항은?",
+			"choices": ["47", "41", "42", "53"],
+			"answer": 0,
+			"explanation": "n번째 항 = 첫째 항 + 공차 × (n - 1) 이므로 5 + 6 × (8 - 1) = 5 + 42 = 47이다. 41은 6번 더한 값, 53은 8번 더한 값(첫째 항에 공차를 이미 더한 것처럼 착각한 실수)이다.",
+			"difficulty": "medium"
+		},
+		{
+			"id": "math-reasoning-set1-q03",
+			"category": "aptitude",
+			"subcategory": "math-reasoning",
+			"type": "single-choice",
+			"question": "다음 빈칸에 알맞은 수는? 2, 6, 18, 54, ( ? )",
+			"choices": ["108", "150", "180", "162"],
+			"answer": 3,
+			"explanation": "이웃한 항끼리 나누면 항상 3이 되는 등비수열이다. 54 × 3 = 162.",
+			"difficulty": "medium"
+		},
+		{
+			"id": "math-reasoning-set1-q04",
+			"category": "aptitude",
+			"subcategory": "math-reasoning",
+			"type": "single-choice",
+			"question": "첫째 항이 3이고 공비가 2인 등비수열의 6번째 항은?",
+			"choices": ["48", "96", "64", "192"],
+			"answer": 1,
+			"explanation": "n번째 항 = 첫째 항 × 공비^(n - 1) 이므로 3 × 2^5 = 3 × 32 = 96이다.",
+			"difficulty": "medium"
+		},
+		{
+			"id": "math-reasoning-set1-q05",
+			"category": "aptitude",
+			"subcategory": "math-reasoning",
+			"type": "single-choice",
+			"question": "다음 빈칸에 알맞은 수는? 4, 5, 7, 10, 14, ( ? )",
+			"choices": ["17", "18", "19", "20"],
+			"answer": 2,
+			"explanation": "차이를 적으면 1, 2, 3, 4로 1씩 커지는 계차수열이다. 다음 차이는 5이므로 14 + 5 = 19.",
+			"difficulty": "medium"
+		},
+		{
+			"id": "math-reasoning-set1-q06",
+			"category": "aptitude",
+			"subcategory": "math-reasoning",
+			"type": "single-choice",
+			"question": "다음 빈칸에 알맞은 수는? 1, 4, 9, 16, 25, ( ? )",
+			"choices": ["36", "30", "32", "42"],
+			"answer": 0,
+			"explanation": "1², 2², 3², 4², 5²으로 이어지는 제곱수 수열이다. 6번째 항은 6² = 36.",
+			"difficulty": "easy"
+		},
+		{
+			"id": "math-reasoning-set1-q07",
+			"category": "aptitude",
+			"subcategory": "math-reasoning",
+			"type": "single-choice",
+			"question": "다음은 두 수열이 번갈아 섞인 수열이다. 7번째 항은? 2, 50, 4, 45, 8, 40, ( ? )",
+			"choices": ["12", "14", "32", "16"],
+			"answer": 3,
+			"explanation": "홀수 번째 항만 모으면 2, 4, 8로 공비 2인 등비수열이고, 짝수 번째 항만 모으면 50, 45, 40으로 공차 -5인 등차수열이다. 7번째 항은 홀수 번째이므로 홀수 줄을 이어가면 8 × 2 = 16.",
+			"difficulty": "hard"
+		},
+		{
+			"id": "math-reasoning-set1-q08",
+			"category": "aptitude",
+			"subcategory": "math-reasoning",
+			"type": "single-choice",
+			"question": "다음 빈칸에 알맞은 수는? 100, 91, 82, 73, ( ? )",
+			"choices": ["62", "64", "63", "65"],
+			"answer": 1,
+			"explanation": "이웃한 항의 차이가 항상 -9인 등차수열이다. 73 - 9 = 64.",
+			"difficulty": "easy"
+		},
+		{
+			"id": "math-reasoning-set1-q09",
+			"category": "aptitude",
+			"subcategory": "math-reasoning",
+			"type": "single-choice",
+			"question": "앞의 두 항을 더해 다음 항을 만드는 수열이다. 빈칸에 알맞은 수는? 2, 3, 5, 8, 13, ( ? )",
+			"choices": ["18", "20", "21", "24"],
+			"answer": 2,
+			"explanation": "8 + 13 = 21로, 앞의 두 항을 더해 다음 항을 만드는 피보나치식 수열이다.",
+			"difficulty": "medium"
+		},
+		{
+			"id": "math-reasoning-set1-q10",
+			"category": "aptitude",
+			"subcategory": "math-reasoning",
+			"type": "single-choice",
+			"question": "정사각형을 이어 붙여 만드는 도형에서 사각형 1개에는 성냥개비 4개, 2개에는 7개, 3개에는 10개가 필요하다. 사각형 6개를 만들려면 성냥개비가 몇 개 필요한가?",
+			"choices": ["19", "16", "18", "21"],
+			"answer": 0,
+			"explanation": "사각형이 하나씩 늘 때마다 옆 사각형과 변을 하나 나눠 쓰므로 3개씩만 늘어난다. 필요한 성냥개비 = 4 + 3 × (n - 1) = 3n + 1이므로 n = 6일 때 3 × 6 + 1 = 19.",
+			"difficulty": "medium"
+		},
+		{
+			"id": "math-reasoning-set1-q11",
+			"category": "aptitude",
+			"subcategory": "math-reasoning",
+			"type": "single-choice",
+			"question": "다음 빈칸에 알맞은 수는? 5, 10, 20, 40, ( ? )",
+			"choices": ["60", "70", "90", "80"],
+			"answer": 3,
+			"explanation": "이웃한 항끼리 나누면 항상 2가 되는 등비수열이다. 40 × 2 = 80.",
+			"difficulty": "easy"
+		},
+		{
+			"id": "math-reasoning-set1-q12",
+			"category": "aptitude",
+			"subcategory": "math-reasoning",
+			"type": "multi-choice",
+			"question": "다음 중 등차수열인 것을 모두 고르시오.",
+			"choices": ["2, 5, 8, 11, 14", "3, 6, 12, 24, 48", "10, 7, 4, 1, -2", "1, 4, 9, 16, 25"],
+			"answer": [0, 2],
+			"explanation": "첫 번째는 공차 3, 세 번째는 공차 -3인 등차수열이다. 두 번째는 공비 2인 등비수열이고, 네 번째는 차이가 3, 5, 7, 9로 일정하지 않은 제곱수 수열이다.",
+			"difficulty": "medium"
+		},
+		{
+			"id": "math-reasoning-set1-q13",
+			"category": "aptitude",
+			"subcategory": "math-reasoning",
+			"type": "multi-choice",
+			"question": "다음 중 등비수열인 것을 모두 고르시오.",
+			"choices": ["1, 2, 4, 8, 16", "5, 10, 15, 20, 25", "3, 9, 27, 81, 243", "2, 4, 6, 8, 10"],
+			"answer": [0, 2],
+			"explanation": "첫 번째는 공비 2, 세 번째는 공비 3인 등비수열이다. 두 번째와 네 번째는 차이가 각각 5, 2로 일정한 등차수열이지 등비수열이 아니다.",
+			"difficulty": "medium"
+		},
+		{
+			"id": "math-reasoning-set1-q14",
+			"category": "aptitude",
+			"subcategory": "math-reasoning",
+			"type": "short-answer",
+			"question": "첫째 항이 7이고 공차가 5인 등차수열의 10번째 항을 숫자로만 쓰세요.",
+			"answer": ["52"],
+			"explanation": "n번째 항 = 첫째 항 + 공차 × (n - 1) 이므로 7 + 5 × (10 - 1) = 7 + 45 = 52.",
+			"difficulty": "medium"
+		},
+		{
+			"id": "math-reasoning-set1-q15",
+			"category": "aptitude",
+			"subcategory": "math-reasoning",
+			"type": "short-answer",
+			"question": "첫째 항이 2이고 공비가 3인 등비수열의 5번째 항을 숫자로만 쓰세요.",
+			"answer": ["162"],
+			"explanation": "n번째 항 = 첫째 항 × 공비^(n - 1) 이므로 2 × 3^4 = 2 × 81 = 162.",
+			"difficulty": "medium"
+		}
+	]
+}

@@ -1,0 +1,237 @@
+{
+  "setId": "problem-solving-set1",
+  "title": "문제해결·알고리즘 1회",
+  "area": "problem-solving",
+  "areaTitle": "문제해결·알고리즘",
+  "limitMinutes": 25,
+  "questions": [
+    {
+      "id": "problem-solving-set1-q01",
+      "category": "aptitude",
+      "subcategory": "problem-solving",
+      "type": "single-choice",
+      "question": "순서도(플로우차트)에서 '마름모' 기호가 나타내는 것은 무엇일까요?",
+      "choices": [
+        "조건에 따라 흐름을 나눈다 (예/아니오)",
+        "시작과 끝을 나타낸다",
+        "값을 계산하고 처리한다",
+        "데이터를 입력하거나 출력한다"
+      ],
+      "answer": 0,
+      "explanation": "마름모는 '판단(조건)' 기호예요. 순서도 기호 중 유일하게 화살표가 두 갈래(예/아니오)로 갈라져 나가는 기호라는 점을 꼭 기억하세요. 나머지 보기는 각각 타원(시작/끝), 직사각형(처리), 평행사변형(입출력)에 해당해요.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "problem-solving-set1-q02",
+      "category": "aptitude",
+      "subcategory": "problem-solving",
+      "type": "single-choice",
+      "question": "순서도에서 '평행사변형' 기호가 나타내는 것은 무엇일까요?",
+      "choices": [
+        "시작/끝(단말)",
+        "조건 판단",
+        "반복 처리",
+        "입력 또는 출력"
+      ],
+      "answer": 3,
+      "explanation": "평행사변형은 자료를 입력받거나 결과를 출력할 때 쓰는 기호예요. 조건을 판단하는 기호(마름모)와 헷갈리기 쉬우니 모양으로 구분하는 연습을 해두세요.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "problem-solving-set1-q03",
+      "category": "aptitude",
+      "subcategory": "problem-solving",
+      "type": "single-choice",
+      "question": "다음 중 알고리즘의 '명확성' 조건을 위반하는 지시로 가장 알맞은 것은?",
+      "choices": [
+        "변수 i에 1을 저장한다",
+        "i가 10보다 작으면 반복한다",
+        "합계에 적당히 더한다",
+        "결과값을 출력한다"
+      ],
+      "answer": 2,
+      "explanation": "'적당히 더한다'는 사람마다 다르게 해석할 수 있는 모호한 표현이에요. 알고리즘의 각 단계는 누가 실행해도 똑같은 결과가 나오도록 명확해야 하는데, '적당히'는 그 기준이 없어서 명확성 조건을 위반합니다.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "problem-solving-set1-q04",
+      "category": "aptitude",
+      "subcategory": "problem-solving",
+      "type": "single-choice",
+      "question": "다음 의사코드를 순서대로 실행했을 때, 마지막에 출력되는 a와 b의 값은 무엇일까요?\na ← 3\nb ← 5\na ← a + b\nb ← a - b\n출력: a, b",
+      "choices": [
+        "a=3, b=5",
+        "a=8, b=3",
+        "a=8, b=5",
+        "a=5, b=8"
+      ],
+      "answer": 1,
+      "explanation": "차근차근 추적해봐요. ① a←3, b←5. ② a←a+b = 3+5 = 8 (이제 a는 8). ③ b←a-b = 8-5 = 3 (이제 b는 3). 따라서 최종 출력은 a=8, b=3이에요. ←는 '오른쪽 값을 계산해서 왼쪽에 저장'하라는 뜻이지 수학의 등호가 아니라는 점이 핵심이에요.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "problem-solving-set1-q05",
+      "category": "aptitude",
+      "subcategory": "problem-solving",
+      "type": "single-choice",
+      "question": "다음 의사코드를 실행하면 최종적으로 출력되는 합계는 얼마일까요?\n합계 ← 0\ni ← 1\n반복 (i가 5보다 작거나 같을 때):\n    만약 i가 짝수이면:\n        합계 ← 합계 + i\n    i ← i + 1\n출력: 합계",
+      "choices": [
+        "9",
+        "10",
+        "15",
+        "6"
+      ],
+      "answer": 3,
+      "explanation": "추적표로 확인해봐요. i=1(홀수, 건너뜀)→i=2(짝수, 합계=0+2=2)→i=3(홀수, 건너뜀)→i=4(짝수, 합계=2+4=6)→i=5(홀수, 건너뜀)→i=6이 되어 반복 종료. 짝수인 2와 4만 더해졌으므로 합계는 6이에요.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "problem-solving-set1-q06",
+      "category": "aptitude",
+      "subcategory": "problem-solving",
+      "type": "single-choice",
+      "question": "다음 의사코드에서 점수가 85점일 때 최종적으로 출력되는 등급은 무엇일까요?\n점수 ← 85\n만약 점수 >= 90:\n    등급 ← \"A\"\n아니면 만약 점수 >= 80:\n    등급 ← \"B\"\n아니면 만약 점수 >= 70:\n    등급 ← \"C\"\n아니면:\n    등급 ← \"D\"\n출력: 등급",
+      "choices": [
+        "B",
+        "A",
+        "C",
+        "D"
+      ],
+      "answer": 0,
+      "explanation": "위에서부터 순서대로 조건을 확인해요. 85>=90은 거짓이라 다음 조건으로 넘어가고, 85>=80은 참이므로 등급은 'B'로 결정되고 그 아래 조건들은 더 이상 검사하지 않아요. elif(아니면 만약) 구조는 앞 조건이 거짓일 때만 다음 조건을 확인한다는 점을 기억하세요.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "problem-solving-set1-q07",
+      "category": "aptitude",
+      "subcategory": "problem-solving",
+      "type": "single-choice",
+      "question": "다음은 세 수 중 가장 큰 값을 구하려는 코드인데, 실행해보니 결과가 이상하게 나옵니다. 무엇이 문제일까요?\n최댓값 ← 0\n숫자들 ← [-4, -9, -2]\n각 숫자에 대해:\n    만약 숫자 > 최댓값이면:\n        최댓값 ← 숫자\n출력: 최댓값",
+      "choices": [
+        "비교 연산자가 잘못되었다 (< 를 <= 로 바꿔야 한다)",
+        "반복문에 증가식이 빠졌다",
+        "조건문의 순서가 잘못되었다",
+        "최댓값의 초깃값이 잘못되었다 (0이 아니라 숫자들 중 하나로 시작해야 한다)"
+      ],
+      "answer": 3,
+      "explanation": "숫자들이 전부 음수(-4, -9, -2)인데 최댓값의 초깃값을 0으로 정해버렸어요. 그러면 '숫자 > 최댓값(0)'이 세 숫자 모두에서 거짓이 되어 최댓값이 끝까지 0으로 남아버려요. 실제 최댓값은 -2인데 말이죠. 이런 문제를 피하려면 초깃값을 숫자들 중 첫 번째 값처럼 실제 데이터에서 가져와야 해요.",
+      "difficulty": "hard"
+    },
+    {
+      "id": "problem-solving-set1-q08",
+      "category": "aptitude",
+      "subcategory": "problem-solving",
+      "type": "single-choice",
+      "question": "다음 코드를 실행하면 어떤 문제가 발생할까요?\ni ← 1\n반복 (i가 5보다 작거나 같을 때):\n    출력: i",
+      "choices": [
+        "i가 1부터 5까지 정상 출력된다",
+        "반복문이 한 번도 실행되지 않는다",
+        "i를 증가시키는 부분이 없어 무한 반복된다",
+        "i가 6일 때 한 번 더 출력된다"
+      ],
+      "answer": 2,
+      "explanation": "반복문 안에 i를 증가시키는 명령(i ← i + 1)이 없어요. 그래서 i는 계속 1로 남아있고, 'i가 5보다 작거나 같다'는 조건이 영원히 참이 되어 1만 끝없이 출력되는 무한 반복에 빠져요. 이는 알고리즘의 4조건 중 '유한성'을 위반하는 대표적인 예시예요.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "problem-solving-set1-q09",
+      "category": "aptitude",
+      "subcategory": "problem-solving",
+      "type": "single-choice",
+      "question": "원래 1부터 5까지의 합을 구하려고 만든 코드인데, 실행해보니 예상과 다른 값이 나왔습니다. 실제로 출력되는 값은 얼마일까요?\n합계 ← 0\ni ← 1\n반복 (i가 5보다 작을 때):\n    합계 ← 합계 + i\n    i ← i + 1\n출력: 합계",
+      "choices": [
+        "15",
+        "10",
+        "14",
+        "20"
+      ],
+      "answer": 1,
+      "explanation": "조건이 'i < 5'로 되어 있어서 i가 5가 되는 순간 반복이 멈춰버려요. 추적해보면 i=1(합계=1)→i=2(합계=3)→i=3(합계=6)→i=4(합계=10)→i=5일 때 조건 5<5가 거짓이라 종료. 그래서 1+2+3+4=10까지만 더해지고, 원래 의도였던 5는 더해지지 않았어요. i<=5로 고쳐야 15가 나와요.",
+      "difficulty": "hard"
+    },
+    {
+      "id": "problem-solving-set1-q10",
+      "category": "aptitude",
+      "subcategory": "problem-solving",
+      "type": "single-choice",
+      "question": "다음 이중 반복문을 실행하면 최종적으로 출력되는 합계는 얼마일까요?\n합계 ← 0\ni ← 1\n반복 (i가 3보다 작거나 같을 때):\n    j ← 1\n    반복 (j가 2보다 작거나 같을 때):\n        합계 ← 합계 + (i * j)\n        j ← j + 1\n    i ← i + 1\n출력: 합계",
+      "choices": [
+        "18",
+        "9",
+        "15",
+        "21"
+      ],
+      "answer": 0,
+      "explanation": "바깥쪽 i가 한 번 돌 때마다 안쪽 j가 1, 2로 두 번 도는 구조예요. 추적표로 정리하면: i=1일 때 (1*1)+(1*2)=1+2=3, i=2일 때 (2*1)+(2*2)=2+4=6, i=3일 때 (3*1)+(3*2)=3+6=9. 전체 합계는 3+6+9=18이에요. 중첩 반복문은 안쪽 반복이 완전히 끝나야 바깥쪽이 다음 단계로 넘어간다는 점이 핵심이에요.",
+      "difficulty": "hard"
+    },
+    {
+      "id": "problem-solving-set1-q11",
+      "category": "aptitude",
+      "subcategory": "problem-solving",
+      "type": "multi-choice",
+      "question": "다음 중 알고리즘이 갖추어야 할 조건에 대한 설명으로 옳은 것을 모두 고르세요. (2개)",
+      "choices": [
+        "모든 단계는 실행 가능하고 명확해야 한다",
+        "알고리즘은 몇 단계이든 상관없이 영원히 실행되어도 된다",
+        "출력은 반드시 존재해야 하며, 하나 이상의 결과를 내야 한다",
+        "입력값은 항상 정확히 2개여야 한다"
+      ],
+      "answer": [0, 2],
+      "explanation": "알고리즘은 명확성(모든 단계가 모호함 없이 실행 가능해야 함)과 출력(반드시 결과를 내야 함) 조건을 갖춰야 해요. 반대로 '영원히 실행되어도 된다'는 유한성 조건을 정면으로 위반하는 설명이고, 입력의 개수가 항상 2개로 고정되어야 한다는 규칙도 없어요.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "problem-solving-set1-q12",
+      "category": "aptitude",
+      "subcategory": "problem-solving",
+      "type": "multi-choice",
+      "question": "순서도 기호에 대한 설명으로 옳은 것을 모두 고르세요. (2개)",
+      "choices": [
+        "마름모는 조건에 따라 두 갈래로 흐름을 나눌 수 있는 유일한 기호이다",
+        "직사각형은 시작과 끝을 나타낸다",
+        "화살표는 처리의 흐름 방향을 나타낸다",
+        "평행사변형은 조건을 판단하는 기호이다"
+      ],
+      "answer": [0, 2],
+      "explanation": "마름모(판단)만이 예/아니오 두 갈래로 흐름이 갈라지는 기호이고, 화살표는 각 기호를 잇는 흐름선으로 처리 순서(방향)를 보여줘요. 시작과 끝을 나타내는 기호는 직사각형이 아니라 타원(단말)이고, 조건을 판단하는 기호는 평행사변형이 아니라 마름모예요.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "problem-solving-set1-q13",
+      "category": "aptitude",
+      "subcategory": "problem-solving",
+      "type": "multi-choice",
+      "question": "다음 코드에 대한 설명으로 옳은 것을 모두 고르세요. (2개)\n점수 ← 95\n만약 점수 >= 70:\n    등급 ← \"C\"\n아니면 만약 점수 >= 90:\n    등급 ← \"A\"\n아니면 만약 점수 >= 80:\n    등급 ← \"B\"\n아니면:\n    등급 ← \"D\"\n출력: 등급",
+      "choices": [
+        "이 코드를 실행하면 등급 'C'가 출력된다",
+        "조건을 낮은 점수부터 확인해서, 정작 90점 이상인데도 'C'로 잘못 분류된다",
+        "본래 의도한 등급인 'A'가 정확히 출력된다",
+        "이 코드는 유한성 조건을 위반하여 무한 반복된다"
+      ],
+      "answer": [0, 1],
+      "explanation": "95점이지만 맨 처음 조건이 '점수 >= 70'이라 곧바로 참이 되어버려서 등급이 'C'로 정해지고, 그 뒤의 90점 이상 조건은 아예 검사되지 않아요. 그래서 실제로는 'C'가 출력되고(0번 참), 90점 이상인데도 낮은 조건부터 확인해서 잘못 분류된 것(1번 참)이 맞아요. 본래 의도한 'A'는 출력되지 않으므로 2번은 틀렸고, 이 코드에는 반복문 자체가 없으니 무한 반복(유한성 위반)과도 관계없어요. elif 체인은 조건 순서가 겹치는 범위를 판단할 때 특히 조심해야 해요.",
+      "difficulty": "hard"
+    },
+    {
+      "id": "problem-solving-set1-q14",
+      "category": "aptitude",
+      "subcategory": "problem-solving",
+      "type": "short-answer",
+      "question": "다음 의사코드를 실행하면 최종적으로 출력되는 합계는 얼마인가요? 숫자만 입력하세요.\n합계 ← 0\nn ← 1\n반복 (n이 6보다 작거나 같을 때):\n    합계 ← 합계 + n\n    n ← n + 1\n출력: 합계",
+      "answer": ["21"],
+      "explanation": "추적표로 확인하면 n=1(합계=1)→n=2(합계=3)→n=3(합계=6)→n=4(합계=10)→n=5(합계=15)→n=6(합계=21)→n=7이 되는 순간 조건 7<=6이 거짓이라 반복이 끝나요. 즉 1부터 6까지 모두 더한 값인 21이 최종 출력이에요.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "problem-solving-set1-q15",
+      "category": "aptitude",
+      "subcategory": "problem-solving",
+      "type": "short-answer",
+      "question": "순차, 반복과 함께 알고리즘의 3가지 제어 구조 중 하나로, 조건이 참인지 거짓인지에 따라 실행할 명령을 다르게 고르는 구조(if/아니면 만약/아니면 구문으로 표현되는 구조)를 한글로 무엇이라고 부르나요?",
+      "answer": ["선택", "선택 구조", "선택구조"],
+      "explanation": "정답은 '선택(구조)'이에요. 순차 구조는 위에서 아래로 차례대로 실행하고, 반복 구조는 조건이 만족되는 동안 같은 부분을 되풀이하며, 선택 구조는 조건의 참/거짓에 따라 서로 다른 명령을 실행해요. if, 아니면 만약(elif), 아니면(else)이 바로 선택 구조를 표현하는 문법이에요.",
+      "difficulty": "easy"
+    }
+  ]
+}
